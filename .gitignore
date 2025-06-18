@@ -25,9 +25,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# Database
-/data
-
-# Python Related Files
-/.venv

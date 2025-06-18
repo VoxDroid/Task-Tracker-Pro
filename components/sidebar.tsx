@@ -1,21 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import {
-  LayoutDashboard,
-  CheckSquare,
-  FolderOpen,
-  Archive,
-  Activity,
-  Clock,
-  Menu,
-  X,
-  Plus,
-  Settings,
-} from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { LayoutDashboard, CheckSquare, FolderOpen, Archive, Activity, Clock, Menu, X, Settings } from "lucide-react"
+import SearchBar from "./search-bar"
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -34,16 +24,49 @@ interface SidebarProps {
 export default function Sidebar({ children }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true)
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
+  const router = useRouter()
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Save and restore scroll position
+  useEffect(() => {
+    const savedScrollPosition = localStorage.getItem("sidebar-scroll-position")
+    if (savedScrollPosition && scrollRef.current) {
+      scrollRef.current.scrollTop = Number.parseInt(savedScrollPosition, 10)
+    }
+  }, [])
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      localStorage.setItem("sidebar-scroll-position", scrollRef.current.scrollTop.toString())
+    }
+  }
+
+  const handleSearchResult = (result: any) => {
+    switch (result.type) {
+      case "task":
+        router.push("/tasks")
+        break
+      case "project":
+        router.push(`/projects/${result.id}`)
+        break
+      case "time_entry":
+        router.push("/time-tracking")
+        break
+      case "archived_task":
+        router.push("/archive")
+        break
+    }
+  }
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[var(--color-background)]">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed top-4 z-50 p-3 bg-white rounded-xl border-2 border-black shadow-lg hover:bg-gray-50 transition-all duration-300 ${
-          isOpen ? "left-60" : "left-4"
+        className={`fixed top-4 z-50 p-3 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl transition-all duration-300 ${
+          isOpen ? "left-[340px]" : "left-4"
         }`}
+        style={{ color: "var(--color-text)" }}
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
@@ -52,61 +75,47 @@ export default function Sidebar({ children }: SidebarProps) {
       <div
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed left-0 top-0 h-full w-64 bg-white border-r-2 border-black transition-transform duration-300 ease-in-out shadow-xl z-40`}
+        } fixed left-0 top-0 h-full w-80 bg-[var(--color-surface)] border-r-2 border-[var(--color-border)] transition-transform duration-300 ease-in-out shadow-2xl z-40 flex flex-col`}
       >
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="p-6 border-b-2 border-black">
-            <h1 className="text-2xl font-bold text-black">Task Tracker Pro</h1>
-            <p className="text-sm text-gray-600 mt-1">Manage your productivity</p>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 p-4">
-            <ul className="space-y-2">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href
-                return (
-                  <li key={item.name}>
-                    <Link
-                      href={item.href}
-                      className={`flex items-center px-4 py-3 rounded-xl border-2 border-black transition-all duration-200 ${
-                        isActive
-                          ? "bg-blue-100 text-blue-800 shadow-md transform scale-105"
-                          : "text-gray-700 hover:bg-gray-100 hover:shadow-md hover:transform hover:scale-105"
-                      }`}
-                    >
-                      <item.icon size={20} />
-                      <span className="ml-3 font-medium">{item.name}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </nav>
-
-          {/* Quick Actions */}
-          {!collapsed && (
-            <div className="p-4 border-t-2 border-black bg-gray-50">
-              <div className="space-y-3">
-                <button
-                  onClick={() => window.dispatchEvent(new CustomEvent("openTaskModal"))}
-                  className="flex items-center w-full px-4 py-3 bg-green-100 text-green-800 rounded-xl border-2 border-black hover:bg-green-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200"
-                >
-                  <Plus size={16} />
-                  <span className="ml-2 text-sm font-medium">New Task</span>
-                </button>
-                <button
-                  onClick={() => window.dispatchEvent(new CustomEvent("openProjectModal"))}
-                  className="flex items-center w-full px-4 py-3 bg-purple-100 text-purple-800 rounded-xl border-2 border-black hover:bg-purple-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200"
-                >
-                  <Plus size={16} />
-                  <span className="ml-2 text-sm font-medium">New Project</span>
-                </button>
-              </div>
-            </div>
-          )}
+        {/* Header */}
+        <div className="p-6 border-b-2 border-[var(--color-border)] flex-shrink-0">
+          <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+            Task Tracker Pro
+          </h1>
+          <p className="text-sm opacity-70 mt-1" style={{ color: "var(--color-text)" }}>
+            Manage your productivity
+          </p>
         </div>
+
+        {/* Search */}
+        <div className="p-4 border-b-2 border-[var(--color-border)] flex-shrink-0">
+          <SearchBar onResultClick={handleSearchResult} placeholder="Search tasks, projects..." className="w-full" />
+        </div>
+
+        {/* Navigation - Scrollable */}
+        <nav className="flex-1 p-4 overflow-y-auto" ref={scrollRef} onScroll={handleScroll}>
+          <ul className="space-y-2">
+            {navigation.map((item) => {
+              const isActive = pathname === item.href
+              return (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 ${
+                      isActive
+                        ? "bg-[var(--color-primary)] bg-opacity-20 shadow-md transform scale-105"
+                        : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
+                    }`}
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    <item.icon size={20} />
+                    <span className="ml-3 font-medium">{item.name}</span>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </nav>
       </div>
 
       {/* Backdrop for mobile */}
@@ -115,8 +124,10 @@ export default function Sidebar({ children }: SidebarProps) {
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${isOpen ? "ml-64" : "ml-0"}`}>
-        <div className="pt-16">{children}</div>
+      <div className={`flex-1 transition-all duration-300 ${isOpen ? "ml-80" : "ml-0"}`}>
+        <div className="pt-16 min-h-screen" style={{ backgroundColor: "var(--color-background)" }}>
+          {children}
+        </div>
       </div>
     </div>
   )

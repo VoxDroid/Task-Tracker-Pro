@@ -6,7 +6,7 @@ import { useState } from "react"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import { useTheme } from "@/components/theme-provider"
-import { Settings, Palette, Database, Download, Upload, Trash2 } from "lucide-react"
+import { Settings, Palette, Database, Download, Upload, Trash2, Monitor, Moon, Sun } from "lucide-react"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
@@ -125,52 +125,100 @@ export default function SettingsPage() {
     setTheme("custom")
     addNotification({
       type: "success",
-      title: "Theme Saved",
+      title: "Theme Applied",
       message: "Your custom theme has been applied successfully.",
     })
+  }
+
+  const getThemeIcon = (themeKey: string) => {
+    switch (themeKey) {
+      case "dark":
+      case "softDark":
+        return <Moon className="w-5 h-5" />
+      case "default":
+        return <Sun className="w-5 h-5" />
+      default:
+        return <Monitor className="w-5 h-5" />
+    }
   }
 
   return (
     <Sidebar>
       <div className="p-8">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 flex items-center">
+          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
             <Settings className="mr-4" />
             Settings
           </h1>
-          <p className="text-lg text-gray-600">Customize your Task Tracker Pro experience</p>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+            Customize your Task Tracker Pro experience
+          </p>
         </div>
 
         <div className="space-y-8">
           {/* Theme Settings */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center mb-6">
               <Palette className="w-6 h-6 text-purple-600 mr-3" />
-              <h2 className="text-2xl font-bold text-black">Theme Settings</h2>
+              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                Theme Settings
+              </h2>
             </div>
 
             {/* Preset Themes */}
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-black mb-4">Preset Themes</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
+                Preset Themes
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(themes).map(([key, theme]) => (
                   <button
                     key={key}
                     onClick={() => setTheme(key)}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 ${
+                    className={`relative p-6 rounded-xl border-2 transition-all duration-200 ${
                       currentTheme === key
-                        ? "border-black bg-blue-50 shadow-lg transform scale-105"
-                        : "border-gray-300 hover:border-black hover:shadow-md hover:transform hover:scale-105"
+                        ? "border-[var(--color-primary)] bg-[var(--color-primary)] bg-opacity-10 shadow-lg"
+                        : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-md hover:transform hover:scale-[1.02]"
                     }`}
+                    style={{
+                      transform: currentTheme === key ? "scale(1)" : undefined,
+                      zIndex: currentTheme === key ? 10 : 1,
+                    }}
                   >
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="flex space-x-1">
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: theme.colors.primary }} />
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: theme.colors.secondary }} />
-                        <div className="w-4 h-4 rounded-full" style={{ backgroundColor: theme.colors.accent }} />
-                      </div>
-                      <span className="font-semibold text-black">{theme.name}</span>
+                    <div className="flex items-center space-x-3 mb-4">
+                      {getThemeIcon(key)}
+                      <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                        {theme.name}
+                      </span>
                     </div>
+                    <div className="flex space-x-2 mb-3">
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: theme.colors.primary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: theme.colors.secondary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: theme.colors.accent }}
+                      />
+                    </div>
+                    <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                      {key === "default" && "Clean and professional"}
+                      {key === "dark" && "Easy on the eyes"}
+                      {key === "softDark" && "Gentle dark theme"}
+                      {key === "ocean" && "Cool and refreshing"}
+                      {key === "forest" && "Natural and calming"}
+                      {key === "sunset" && "Warm and energetic"}
+                    </div>
+                    {currentTheme === key && (
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -178,57 +226,70 @@ export default function SettingsPage() {
 
             {/* Custom Theme */}
             <div>
-              <h3 className="text-lg font-semibold text-black mb-4">Custom Theme</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                {Object.entries(customColors).map(([key, value]) => (
-                  <div key={key}>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
-                      {key.replace(/([A-Z])/g, " $1")}
-                    </label>
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="color"
-                        value={value}
-                        onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
-                        className="w-12 h-12 rounded-xl border-2 border-black cursor-pointer"
-                      />
-                      <input
-                        type="text"
-                        value={value}
-                        onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
-                        className="flex-1 px-3 py-2 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                      />
+              <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
+                Custom Theme
+              </h3>
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {Object.entries(customColors).map(([key, value]) => (
+                    <div key={key} className="space-y-3">
+                      <label className="block text-sm font-medium capitalize" style={{ color: "var(--color-text)" }}>
+                        {key.replace(/([A-Z])/g, " $1")}
+                      </label>
+                      <div className="space-y-2">
+                        <input
+                          type="color"
+                          value={value}
+                          onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
+                          className="w-full h-12 rounded-xl border-2 border-[var(--color-border)] cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-background)]"
+                          style={{ color: "var(--color-text)" }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <button
+                  onClick={saveCustomTheme}
+                  className="px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  Apply Custom Theme
+                </button>
               </div>
-              <button
-                onClick={saveCustomTheme}
-                className="px-6 py-3 bg-purple-100 text-purple-800 rounded-xl border-2 border-black hover:bg-purple-200 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-              >
-                Apply Custom Theme
-              </button>
             </div>
           </div>
 
           {/* Database Settings */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center mb-6">
               <Database className="w-6 h-6 text-blue-600 mr-3" />
-              <h2 className="text-2xl font-bold text-black">Database Management</h2>
+              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                Database Management
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Export Data */}
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-black">
-                  <Download className="w-8 h-8 text-green-600" />
+                <div className="w-20 h-20 bg-green-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
+                  <Download className="w-10 h-10 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-black mb-2">Export Data</h3>
-                <p className="text-sm text-gray-600 mb-4">Download a backup of all your data</p>
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                  Export Data
+                </h3>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                  Download a backup of all your data
+                </p>
                 <button
                   onClick={exportData}
-                  className="px-4 py-2 bg-green-100 text-green-800 rounded-xl border-2 border-black hover:bg-green-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                  className="px-6 py-3 bg-green-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-text)" }}
                 >
                   Export
                 </button>
@@ -236,12 +297,19 @@ export default function SettingsPage() {
 
               {/* Import Data */}
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-black">
-                  <Upload className="w-8 h-8 text-blue-600" />
+                <div className="w-20 h-20 bg-blue-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
+                  <Upload className="w-10 h-10 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-black mb-2">Import Data</h3>
-                <p className="text-sm text-gray-600 mb-4">Restore data from a backup file</p>
-                <label className="inline-block px-4 py-2 bg-blue-100 text-blue-800 rounded-xl border-2 border-black hover:bg-blue-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium cursor-pointer">
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                  Import Data
+                </h3>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                  Restore data from a backup file
+                </p>
+                <label
+                  className="inline-block px-6 py-3 bg-blue-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium cursor-pointer"
+                  style={{ color: "var(--color-text)" }}
+                >
                   Import
                   <input type="file" accept=".json" onChange={importData} className="hidden" />
                 </label>
@@ -249,15 +317,20 @@ export default function SettingsPage() {
 
               {/* Reset Database */}
               <div className="text-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-black">
-                  <Trash2 className="w-8 h-8 text-red-600" />
+                <div className="w-20 h-20 bg-red-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
+                  <Trash2 className="w-10 h-10 text-red-600" />
                 </div>
-                <h3 className="font-semibold text-black mb-2">Reset Database</h3>
-                <p className="text-sm text-gray-600 mb-4">Delete all data and start fresh</p>
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                  Reset Database
+                </h3>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                  Delete all data and start fresh
+                </p>
                 <button
                   onClick={resetDatabase}
                   disabled={loading}
-                  className="px-4 py-2 bg-red-100 text-red-800 rounded-xl border-2 border-black hover:bg-red-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ color: "var(--color-text)" }}
                 >
                   {loading ? "Resetting..." : "Reset"}
                 </button>

@@ -12,6 +12,71 @@
   --color-border: #000000;
 }
 
+/* Theme classes for better targeting */
+.theme-default {
+  --color-primary: #3b82f6;
+  --color-secondary: #8b5cf6;
+  --color-accent: #10b981;
+  --color-background: #f9fafb;
+  --color-surface: #ffffff;
+  --color-text: #000000;
+  --color-border: #000000;
+}
+
+.theme-dark {
+  --color-primary: #60a5fa;
+  --color-secondary: #a78bfa;
+  --color-accent: #34d399;
+  --color-background: #111827;
+  --color-surface: #1f2937;
+  --color-text: #ffffff;
+  --color-border: #374151;
+}
+
+.theme-softDark {
+  --color-primary: #818cf8;
+  --color-secondary: #c084fc;
+  --color-accent: #34d399;
+  --color-background: #1e293b;
+  --color-surface: #334155;
+  --color-text: #f1f5f9;
+  --color-border: #475569;
+}
+
+.theme-ocean {
+  --color-primary: #0ea5e9;
+  --color-secondary: #06b6d4;
+  --color-accent: #0891b2;
+  --color-background: #f0f9ff;
+  --color-surface: #ffffff;
+  --color-text: #0c4a6e;
+  --color-border: #0c4a6e;
+}
+
+.theme-forest {
+  --color-primary: #059669;
+  --color-secondary: #10b981;
+  --color-accent: #34d399;
+  --color-background: #f0fdf4;
+  --color-surface: #ffffff;
+  --color-text: #064e3b;
+  --color-border: #064e3b;
+}
+
+.theme-sunset {
+  --color-primary: #ea580c;
+  --color-secondary: #f97316;
+  --color-accent: #fb923c;
+  --color-background: #fff7ed;
+  --color-surface: #ffffff;
+  --color-text: #9a3412;
+  --color-border: #9a3412;
+}
+
+.theme-custom {
+  /* Custom theme variables will be set dynamically */
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -20,6 +85,22 @@
   body {
     background-color: var(--color-background);
     color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Ensure proper contrast for form elements */
+  input,
+  textarea,
+  select {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-text);
+    opacity: 0.5;
   }
 
   /* Remove text gradients */
@@ -30,11 +111,14 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-2xl border-2 border-black shadow-lg;
+    background-color: var(--color-surface);
+    border: 2px solid var(--color-border);
+    @apply rounded-2xl shadow-lg;
   }
 
   .btn {
-    @apply px-6 py-3 rounded-2xl border-2 border-black font-medium transition-all duration-200;
+    @apply px-6 py-3 rounded-2xl border-2 font-medium transition-all duration-200;
+    border-color: var(--color-border);
   }
 
   .btn:hover {
@@ -42,66 +126,230 @@
   }
 
   .btn-primary {
-    @apply bg-blue-100 text-blue-800 hover:bg-blue-200;
+    background-color: var(--color-primary);
+    background-opacity: 0.1;
+    color: var(--color-text);
+  }
+
+  .btn-primary:hover {
+    background-opacity: 0.2;
   }
 
   .btn-secondary {
-    @apply bg-gray-100 text-gray-800 hover:bg-gray-200;
+    background-color: var(--color-secondary);
+    background-opacity: 0.1;
+    color: var(--color-text);
   }
 
-  .btn-success {
-    @apply bg-green-100 text-green-800 hover:bg-green-200;
+  .btn-secondary:hover {
+    background-opacity: 0.2;
   }
 
-  .btn-danger {
-    @apply bg-red-100 text-red-800 hover:bg-red-200;
+  .btn-accent {
+    background-color: var(--color-accent);
+    background-opacity: 0.1;
+    color: var(--color-text);
   }
 
-  .btn-purple {
-    @apply bg-purple-100 text-purple-800 hover:bg-purple-200;
+  .btn-accent:hover {
+    background-opacity: 0.2;
   }
 
   .input {
-    @apply px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+    @apply px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
   }
 
   .select {
-    @apply px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+    @apply px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
   }
 
   .textarea {
-    @apply px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none;
+    @apply px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  .textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  }
+
+  /* Minimalist tag styles using theme colors */
+  .tag {
+    @apply px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200;
+    border-color: var(--color-border);
+  }
+
+  .tag-priority-low {
+    background-color: var(--color-primary);
+    background-opacity: 0.1;
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    border-opacity: 0.2;
+  }
+
+  .tag-priority-medium {
+    background-color: var(--color-primary);
+    background-opacity: 0.2;
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    border-opacity: 0.3;
+  }
+
+  .tag-priority-high {
+    background-color: var(--color-primary);
+    background-opacity: 0.3;
+    color: var(--color-text);
+    border-color: var(--color-primary);
+    border-opacity: 0.4;
+  }
+
+  .tag-priority-urgent {
+    background-color: var(--color-primary);
+    background-opacity: 0.4;
+    color: var(--color-text);
+    border-color: var(--color-primary);
+  }
+
+  .tag-status-todo {
+    background-color: var(--color-secondary);
+    background-opacity: 0.1;
+    color: var(--color-text);
+    border-color: var(--color-secondary);
+    border-opacity: 0.2;
+  }
+
+  .tag-status-progress {
+    background-color: var(--color-secondary);
+    background-opacity: 0.2;
+    color: var(--color-text);
+    border-color: var(--color-secondary);
+    border-opacity: 0.3;
+  }
+
+  .tag-status-completed {
+    background-color: var(--color-accent);
+    background-opacity: 0.2;
+    color: var(--color-text);
+    border-color: var(--color-accent);
+    border-opacity: 0.3;
+  }
+
+  .tag-status-archived {
+    background-color: var(--color-text);
+    background-opacity: 0.1;
+    color: var(--color-text);
+    border-color: var(--color-text);
+    border-opacity: 0.2;
   }
 }
 
-/* Custom scrollbar with rounded corners */
+/* Custom scrollbar with theme support */
 ::-webkit-scrollbar {
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded-full;
+  background: var(--color-background);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-400 rounded-full border-2 border-gray-100;
+  background: var(--color-border);
+  border-radius: 6px;
+  border: 2px solid var(--color-background);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
+  background: var(--color-text);
+  opacity: 0.7;
+}
+
+/* Dark mode specific improvements */
+.theme-dark ::-webkit-scrollbar-thumb,
+.theme-softDark ::-webkit-scrollbar-thumb {
+  background: var(--color-text);
+  opacity: 0.3;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb:hover,
+.theme-softDark ::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}
+
+/* Improve text contrast in dark themes */
+.theme-dark,
+.theme-softDark {
+  --text-opacity-high: 0.95;
+  --text-opacity-medium: 0.8;
+  --text-opacity-low: 0.6;
+}
+
+.theme-dark .opacity-70,
+.theme-softDark .opacity-70 {
+  opacity: var(--text-opacity-medium) !important;
+}
+
+.theme-dark .opacity-60,
+.theme-softDark .opacity-60 {
+  opacity: var(--text-opacity-low) !important;
+}
+
+.theme-dark .opacity-50,
+.theme-softDark .opacity-50 {
+  opacity: var(--text-opacity-low) !important;
+}
+
+/* Ensure form elements have proper contrast */
+.theme-dark input,
+.theme-dark textarea,
+.theme-dark select,
+.theme-softDark input,
+.theme-softDark textarea,
+.theme-softDark select {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.theme-dark input::placeholder,
+.theme-dark textarea::placeholder,
+.theme-softDark input::placeholder,
+.theme-softDark textarea::placeholder {
+  color: var(--color-text);
+  opacity: 0.6;
 }
 
 /* Chart customizations with rounded corners */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: #e5e7eb;
+  stroke: var(--color-border);
   stroke-width: 1;
+  opacity: 0.3;
 }
 
 .recharts-tooltip-wrapper {
-  border: 2px solid #000 !important;
+  border: 2px solid var(--color-border) !important;
   border-radius: 12px !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  background-color: var(--color-surface) !important;
 }
 
 /* Smooth animations */
@@ -122,12 +370,28 @@
 
 /* Focus styles */
 .focus-ring {
-  @apply focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-opacity-50;
+  @apply focus:outline-none focus:ring-4 focus:ring-opacity-50;
+  --tw-ring-color: var(--color-primary);
 }
 
 /* Hover effects */
 .hover-lift {
   @apply hover:transform hover:scale-105 hover:shadow-lg transition-all duration-200;
+}
+
+/* Minimalist selection circle */
+.selection-circle {
+  @apply w-6 h-6 rounded-full border-2 transition-all duration-200 cursor-pointer;
+  border-color: var(--color-border);
+}
+
+.selection-circle:hover {
+  border-color: var(--color-primary);
+}
+
+.selection-circle.selected {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 /* Remove any gradient text colors */
@@ -139,4 +403,82 @@
   background: none !important;
   -webkit-background-clip: unset !important;
   -webkit-text-fill-color: unset !important;
+}
+
+/* Enhanced notification styles */
+.notification {
+  @apply rounded-xl border-2 shadow-lg backdrop-blur-sm;
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.notification.success {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+  background-opacity: 0.1;
+}
+
+.notification.error {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  background-opacity: 0.1;
+}
+
+.notification.warning {
+  border-color: var(--color-secondary);
+  background-color: var(--color-secondary);
+  background-opacity: 0.1;
+}
+
+.notification.info {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  background-opacity: 0.1;
+}
+
+/* Professional minimalist design */
+.card-minimal {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  @apply rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+}
+
+.btn-minimal {
+  @apply px-4 py-2 rounded-lg border font-medium transition-all duration-200;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-minimal:hover {
+  background-color: var(--color-primary);
+  background-opacity: 0.1;
+  @apply shadow-sm transform scale-105;
+}
+
+/* Clean spacing and typography */
+.text-hierarchy-1 {
+  @apply text-4xl font-bold;
+  color: var(--color-text);
+}
+
+.text-hierarchy-2 {
+  @apply text-2xl font-semibold;
+  color: var(--color-text);
+}
+
+.text-hierarchy-3 {
+  @apply text-lg font-medium;
+  color: var(--color-text);
+}
+
+.text-muted {
+  color: var(--color-text);
+  opacity: 0.7;
+}
+
+.text-subtle {
+  color: var(--color-text);
+  opacity: 0.5;
 }

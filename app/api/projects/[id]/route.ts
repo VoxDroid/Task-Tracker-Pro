@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getDatabase, logActivity } from "@/lib/database"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const projectId = Number.parseInt(params.id)
+    const { id } = await params
+    const projectId = Number.parseInt(id)
     const db = getDatabase()
 
     const project = db
@@ -29,9 +30,10 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const projectId = Number.parseInt(params.id)
+    const { id } = await params
+    const projectId = Number.parseInt(id)
     const body = await request.json()
 
     const db = getDatabase()
@@ -79,9 +81,10 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const projectId = Number.parseInt(params.id)
+    const { id } = await params
+    const projectId = Number.parseInt(id)
 
     const db = getDatabase()
 

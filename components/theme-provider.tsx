@@ -77,6 +77,18 @@ const themes: Record<string, Theme> = {
       border: "#9a3412",
     },
   },
+  softDark: {
+    name: "Soft Dark",
+    colors: {
+      primary: "#818cf8",
+      secondary: "#c084fc",
+      accent: "#34d399",
+      background: "#1e293b",
+      surface: "#334155",
+      text: "#f1f5f9",
+      border: "#475569",
+    },
+  },
 }
 
 interface ThemeContextType {
@@ -113,6 +125,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       Object.entries(theme.colors).forEach(([key, value]) => {
         root.style.setProperty(`--color-${key}`, value)
       })
+
+      // Apply theme class to body for better CSS targeting
+      document.body.className = `theme-${currentTheme}`
     }
   }, [currentTheme, customTheme])
 

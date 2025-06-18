@@ -55,18 +55,28 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
         {/* Modal */}
         <div
-          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl bg-white border-2 border-black shadow-2xl transition-all`}
+          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl shadow-2xl transition-all`}
+          style={{
+            backgroundColor: "var(--color-surface)",
+            border: "2px solid var(--color-border)",
+          }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b-2 border-black">
-            <h3 className="text-xl font-bold text-black">{title}</h3>
+          <div
+            className="flex items-center justify-between p-6 border-b-2"
+            style={{ borderColor: "var(--color-border)" }}
+          >
+            <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+              {title}
+            </h3>
             <button
               onClick={onClose}
-              className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              className="rounded-xl p-2 hover:bg-opacity-10 hover:bg-gray-500 transition-colors"
+              style={{ color: "var(--color-text)" }}
             >
               <X className="w-5 h-5" />
             </button>

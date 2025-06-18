@@ -4,24 +4,45 @@ import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import type { Task } from "@/lib/types"
-import { Archive, RotateCcw, Trash2 } from "lucide-react"
+import { Archive, RotateCcw, Trash2, Search, Calendar, FolderOpen, User } from "lucide-react"
+import TaskViewModal from "@/components/task-view-modal"
 
 export default function ArchivePage() {
   const [archivedTasks, setArchivedTasks] = useState<Task[]>([])
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const { addNotification } = useNotification()
 
   useEffect(() => {
     fetchArchivedTasks()
   }, [])
 
+  useEffect(() => {
+    let filtered = Array.isArray(archivedTasks) ? [...archivedTasks] : []
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          task.project_name?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    }
+
+    setFilteredTasks(filtered)
+  }, [archivedTasks, searchQuery])
+
   const fetchArchivedTasks = async () => {
     try {
       const response = await fetch("/api/tasks?archived=true")
       const data = await response.json()
-      setArchivedTasks(data)
+      setArchivedTasks(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error("Error fetching archived tasks:", error)
+      setArchivedTasks([])
     } finally {
       setLoading(false)
     }
@@ -79,11 +100,23 @@ export default function ArchivePage() {
     }
   }
 
+  const priorityConfig = {
+    low: { bg: "bg-green-500", text: "text-white", label: "Low" },
+    medium: { bg: "bg-yellow-500", text: "text-white", label: "Medium" },
+    high: { bg: "bg-orange-500", text: "text-white", label: "High" },
+    urgent: { bg: "bg-red-500", text: "text-white", label: "Urgent" },
+  }
+
   if (loading) {
     return (
       <Sidebar>
         <div className="flex items-center justify-center h-full">
-          <div className="text-lg font-medium text-gray-600">Loading archived tasks...</div>
+          <div className="text-center">
+            <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+              Loading archived tasks...
+            </div>
+          </div>
         </div>
       </Sidebar>
     )
@@ -92,53 +125,140 @@ export default function ArchivePage() {
   return (
     <Sidebar>
       <div className="p-8">
+        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2 flex items-center">
+          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
             <Archive className="mr-4" />
             Archive
           </h1>
-          <p className="text-lg text-gray-600">Manage your archived tasks</p>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+            Manage your archived tasks
+          </p>
+        </div>
+
+        {/* Stats */}
+        <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                Archived Tasks
+              </p>
+              <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                {filteredTasks.length}
+              </p>
+            </div>
+            <Archive className="w-8 h-8 text-gray-500" />
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
+              style={{ color: "var(--color-text)" }}
+            />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search archived tasks..."
+              className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-background)]"
+              style={{ color: "var(--color-text)" }}
+            />
+          </div>
         </div>
 
         {/* Archived Tasks */}
         <div className="space-y-6">
-          {archivedTasks.length === 0 ? (
+          {filteredTasks.length === 0 ? (
             <div className="text-center py-16">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-black">
-                <Archive className="w-12 h-12 text-gray-400" />
+              <div className="w-24 h-24 bg-gray-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
+                <Archive className="w-12 h-12 opacity-40" style={{ color: "var(--color-text)" }} />
               </div>
-              <p className="text-gray-500 text-xl mb-2">No archived tasks</p>
-              <p className="text-gray-400 text-lg">Tasks you archive will appear here</p>
+              <p className="text-xl mb-2 opacity-70" style={{ color: "var(--color-text)" }}>
+                {searchQuery ? `No archived tasks found for "${searchQuery}"` : "No archived tasks"}
+              </p>
+              <p className="text-lg opacity-50" style={{ color: "var(--color-text)" }}>
+                Tasks you archive will appear here
+              </p>
             </div>
           ) : (
-            archivedTasks.map((task) => (
+            filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg opacity-75 hover:opacity-100 hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-200"
+                className="p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg opacity-75 hover:opacity-100 hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-200 cursor-pointer"
+                style={{ backgroundColor: "var(--color-surface)" }}
+                onClick={() => {
+                  setSelectedTask(task)
+                  setShowViewModal(true)
+                }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-black mb-3">{task.title}</h3>
-                    {task.description && <p className="text-gray-600 mb-4 text-lg">{task.description}</p>}
-                    <div className="text-sm text-gray-500 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 inline-block">
-                      Archived on {new Date(task.updated_at).toLocaleDateString()}
+                    <div className="flex items-center space-x-3 mb-3">
+                      <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+                        {task.title}
+                      </h3>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text}`}
+                      >
+                        {priorityConfig[task.priority].label}
+                      </span>
+                    </div>
+                    {task.description && (
+                      <p className="mb-4 text-lg opacity-80" style={{ color: "var(--color-text)" }}>
+                        {task.description}
+                      </p>
+                    )}
+                    <div className="flex items-center space-x-4 mb-4">
+                      {task.project_name && (
+                        <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
+                          <FolderOpen size={16} style={{ color: "var(--color-text)" }} />
+                          <span className="ml-2 font-medium text-sm" style={{ color: "var(--color-text)" }}>
+                            {task.project_name}
+                          </span>
+                        </div>
+                      )}
+                      {task.assigned_to && (
+                        <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
+                          <User size={16} style={{ color: "var(--color-text)" }} />
+                          <span className="ml-2 font-medium text-sm" style={{ color: "var(--color-text)" }}>
+                            {task.assigned_to}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
+                        <Calendar size={16} style={{ color: "var(--color-text)" }} />
+                        <span className="ml-2 font-medium text-sm" style={{ color: "var(--color-text)" }}>
+                          Archived on {new Date(task.updated_at).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-2">
                     <button
-                      onClick={() => restoreTask(task.id, task.title)}
-                      className="flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-xl border-2 border-black hover:bg-blue-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        restoreTask(task.id, task.title)
+                      }}
+                      className="p-3 hover:bg-blue-500 hover:bg-opacity-10 rounded-xl transition-all duration-200"
+                      style={{ color: "var(--color-text)" }}
+                      title="Restore Task"
                     >
-                      <RotateCcw size={16} />
-                      <span className="ml-2">Restore</span>
+                      <RotateCcw size={18} />
                     </button>
                     <button
-                      onClick={() => deleteTask(task.id, task.title)}
-                      className="flex items-center px-4 py-2 bg-red-100 text-red-800 rounded-xl border-2 border-black hover:bg-red-200 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-bold"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        deleteTask(task.id, task.title)
+                      }}
+                      className="p-3 hover:bg-red-500 hover:bg-opacity-10 rounded-xl transition-all duration-200"
+                      style={{ color: "var(--color-text)" }}
+                      title="Delete Task"
                     >
-                      <Trash2 size={16} />
-                      <span className="ml-2">Delete</span>
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </div>
@@ -146,6 +266,14 @@ export default function ArchivePage() {
             ))
           )}
         </div>
+
+        <TaskViewModal
+          isOpen={showViewModal}
+          onClose={() => setShowViewModal(false)}
+          onSuccess={fetchArchivedTasks}
+          task={selectedTask}
+          onRestore={restoreTask}
+        />
       </div>
     </Sidebar>
   )

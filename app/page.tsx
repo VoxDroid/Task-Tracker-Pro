@@ -19,13 +19,25 @@ import {
   Area,
   AreaChart,
 } from "recharts"
-import { TrendingUp, CheckCircle, Clock, AlertTriangle, FolderOpen, Activity } from "lucide-react"
+import {
+  TrendingUp,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  FolderOpen,
+  Activity,
+  Calendar,
+  Target,
+  Zap,
+} from "lucide-react"
 
-const COLORS = ["#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444"]
+const COLORS = ["var(--color-primary)", "var(--color-secondary)", "var(--color-accent)"]
 
 export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [charts, setCharts] = useState<any>(null)
+  const [recentActivity, setRecentActivity] = useState<any[]>([])
+  const [upcomingTasks, setUpcomingTasks] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -34,15 +46,30 @@ export default function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsRes, chartsRes] = await Promise.all([fetch("/api/dashboard/stats"), fetch("/api/dashboard/charts")])
+      const [statsRes, chartsRes, activityRes, tasksRes] = await Promise.all([
+        fetch("/api/dashboard/stats"),
+        fetch("/api/dashboard/charts"),
+        fetch("/api/logs?limit=5"),
+        fetch("/api/tasks?limit=5"),
+      ])
 
       const statsData = await statsRes.json()
       const chartsData = await chartsRes.json()
+      const activityData = await activityRes.json()
+      const tasksData = await tasksRes.json()
 
       setStats(statsData)
       setCharts(chartsData)
+      setRecentActivity(Array.isArray(activityData.logs) ? activityData.logs : [])
+      setUpcomingTasks(
+        Array.isArray(tasksData)
+          ? tasksData.filter((task: any) => task.due_date && task.status !== "completed").slice(0, 5)
+          : [],
+      )
     } catch (error) {
       console.error("Error fetching dashboard data:", error)
+      setRecentActivity([])
+      setUpcomingTasks([])
     } finally {
       setLoading(false)
     }
@@ -52,7 +79,12 @@ export default function Dashboard() {
     return (
       <Sidebar>
         <div className="flex items-center justify-center h-full">
-          <div className="text-lg font-medium text-gray-600">Loading dashboard...</div>
+          <div className="text-center">
+            <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+              Loading dashboard...
+            </div>
+          </div>
         </div>
       </Sidebar>
     )
@@ -63,43 +95,37 @@ export default function Dashboard() {
       title: "Total Tasks",
       value: stats?.totalTasks || 0,
       icon: CheckCircle,
-      color: "bg-blue-100 text-blue-800",
-      iconColor: "text-blue-600",
+      colorVar: "--color-primary",
     },
     {
       title: "Completed",
       value: stats?.completedTasks || 0,
-      icon: CheckCircle,
-      color: "bg-green-100 text-green-800",
-      iconColor: "text-green-600",
+      icon: Target,
+      colorVar: "--color-accent",
     },
     {
       title: "In Progress",
       value: stats?.inProgressTasks || 0,
       icon: Clock,
-      color: "bg-yellow-100 text-yellow-800",
-      iconColor: "text-yellow-600",
+      colorVar: "--color-secondary",
     },
     {
       title: "Overdue",
       value: stats?.overdueTasks || 0,
       icon: AlertTriangle,
-      color: "bg-red-100 text-red-800",
-      iconColor: "text-red-600",
+      colorVar: "--color-primary",
     },
     {
       title: "Active Projects",
       value: stats?.activeProjects || 0,
       icon: FolderOpen,
-      color: "bg-purple-100 text-purple-800",
-      iconColor: "text-purple-600",
+      colorVar: "--color-secondary",
     },
     {
-      title: "Time Logged",
-      value: `${Math.round((stats?.totalTimeLogged || 0) / 60)}h`,
-      icon: Activity,
-      color: "bg-cyan-100 text-cyan-800",
-      iconColor: "text-cyan-600",
+      title: "Hours Logged",
+      value: `${stats?.totalTimeLogged ? Math.round(stats.totalTimeLogged / 60) : 0}h`,
+      icon: Zap,
+      colorVar: "--color-accent",
     },
   ]
 
@@ -107,9 +133,16 @@ export default function Dashboard() {
     <Sidebar>
       <div className="p-8 space-y-8">
         {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-black mb-3">Dashboard</h1>
-          <p className="text-lg text-gray-600">Welcome back! Here's your productivity overview</p>
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-bold mb-4" style={{ color: "var(--color-text)" }}>
+            Dashboard
+          </h1>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+            Welcome back! Here's your productivity overview
+          </p>
+          <div className="mt-4 text-sm opacity-60" style={{ color: "var(--color-text)" }}>
+            Last updated: {new Date().toLocaleString()}
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -117,50 +150,66 @@ export default function Dashboard() {
           {statCards.map((card, index) => (
             <div
               key={card.title}
-              className={`${card.color} p-6 rounded-2xl border-2 border-black shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-200`}
+              className="relative overflow-hidden bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300"
             >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium opacity-80 mb-1">{card.title}</p>
-                  <p className="text-3xl font-bold">{card.value}</p>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-4">
+                  <div
+                    className="p-3 rounded-xl shadow-lg"
+                    style={{
+                      backgroundColor: `var(${card.colorVar})`,
+                      opacity: 0.1,
+                    }}
+                  >
+                    <card.icon className="w-6 h-6" style={{ color: `var(${card.colorVar})` }} />
+                  </div>
                 </div>
-                <card.icon className={`w-8 h-8 ${card.iconColor}`} />
+                <div>
+                  <p className="text-sm font-medium opacity-70 mb-2" style={{ color: "var(--color-text)" }}>
+                    {card.title}
+                  </p>
+                  <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                    {card.value}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Charts Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Task Completion Trend */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
+          <div className="xl:col-span-2 bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center mb-6">
-              <TrendingUp className="w-6 h-6 text-green-600 mr-3" />
-              <h3 className="text-xl font-bold text-black">Task Completion Trend</h3>
+              <TrendingUp className="w-6 h-6 mr-3" style={{ color: "var(--color-accent)" }} />
+              <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                Task Completion Trend
+              </h3>
             </div>
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={charts?.completionTrend || []}>
                 <defs>
                   <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="var(--color-accent)" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="var(--color-accent)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" opacity={0.3} />
+                <XAxis dataKey="date" stroke="var(--color-text)" opacity={0.7} />
+                <YAxis stroke="var(--color-text)" opacity={0.7} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid black",
+                    backgroundColor: "var(--color-surface)",
+                    border: "2px solid var(--color-border)",
                     borderRadius: "12px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    color: "var(--color-text)",
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="completed"
-                  stroke="#10b981"
+                  stroke="var(--color-accent)"
                   strokeWidth={3}
                   fill="url(#completionGradient)"
                 />
@@ -169,8 +218,10 @@ export default function Dashboard() {
           </div>
 
           {/* Tasks by Status */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
-            <h3 className="text-xl font-bold text-black mb-6">Tasks by Status</h3>
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+            <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+              Tasks by Status
+            </h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -182,7 +233,7 @@ export default function Dashboard() {
                   outerRadius={100}
                   fill="#8884d8"
                   dataKey="count"
-                  stroke="#000"
+                  stroke="var(--color-border)"
                   strokeWidth={2}
                 >
                   {(charts?.tasksByStatus || []).map((entry: any, index: number) => (
@@ -191,66 +242,131 @@ export default function Dashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid black",
+                    backgroundColor: "var(--color-surface)",
+                    border: "2px solid var(--color-border)",
                     borderRadius: "12px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    color: "var(--color-text)",
                   }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Tasks by Priority */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
-            <h3 className="text-xl font-bold text-black mb-6">Tasks by Priority</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={charts?.tasksByPriority || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="priority" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid black",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
-                <Bar dataKey="count" fill="#8b5cf6" stroke="#000" strokeWidth={1} radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Recent Activity */}
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+            <div className="flex items-center mb-6">
+              <Activity className="w-6 h-6 mr-3" style={{ color: "var(--color-primary)" }} />
+              <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                Recent Activity
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {recentActivity.length === 0 ? (
+                <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
+                  No recent activity
+                </p>
+              ) : (
+                recentActivity.map((activity) => (
+                  <div
+                    key={activity.id}
+                    className="flex items-start space-x-3 p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
+                    style={{ backgroundColor: "var(--color-background)" }}
+                    onClick={() => {
+                      // Navigate based on entity type
+                      if (activity.entity_type === "task") {
+                        window.location.href = "/tasks"
+                      } else if (activity.entity_type === "project") {
+                        window.location.href = "/projects"
+                      }
+                    }}
+                  >
+                    <div
+                      className="w-2 h-2 rounded-full mt-2"
+                      style={{ backgroundColor: "var(--color-primary)" }}
+                    ></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                        {activity.details}
+                      </p>
+                      <p className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
+                        {new Date(activity.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Upcoming Tasks */}
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+            <div className="flex items-center mb-6">
+              <Calendar className="w-6 h-6 mr-3" style={{ color: "var(--color-secondary)" }} />
+              <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                Upcoming Tasks
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {upcomingTasks.length === 0 ? (
+                <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
+                  No upcoming tasks
+                </p>
+              ) : (
+                upcomingTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
+                    style={{ backgroundColor: "var(--color-background)" }}
+                    onClick={() => (window.location.href = "/tasks")}
+                  >
+                    <h4 className="font-semibold text-sm mb-1" style={{ color: "var(--color-text)" }}>
+                      {task.title}
+                    </h4>
+                    <div
+                      className="flex items-center justify-between text-xs opacity-60"
+                      style={{ color: "var(--color-text)" }}
+                    >
+                      <span>{task.project_name || "No project"}</span>
+                      <span>{new Date(task.due_date).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           {/* Project Progress */}
-          <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
-            <h3 className="text-xl font-bold text-black mb-6">Project Progress</h3>
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+            <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+              Project Progress
+            </h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={charts?.projectProgress || []}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" opacity={0.3} />
+                <XAxis dataKey="name" stroke="var(--color-text)" opacity={0.7} />
+                <YAxis stroke="var(--color-text)" opacity={0.7} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "white",
-                    border: "2px solid black",
+                    backgroundColor: "var(--color-surface)",
+                    border: "2px solid var(--color-border)",
                     borderRadius: "12px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                    color: "var(--color-text)",
                   }}
                 />
                 <Bar
                   dataKey="total_tasks"
-                  fill="#e5e7eb"
+                  fill="var(--color-border)"
                   name="Total Tasks"
-                  stroke="#000"
+                  stroke="var(--color-border)"
                   strokeWidth={1}
                   radius={[4, 4, 0, 0]}
+                  opacity={0.3}
                 />
                 <Bar
                   dataKey="completed_tasks"
-                  fill="#10b981"
+                  fill="var(--color-accent)"
                   name="Completed Tasks"
-                  stroke="#000"
+                  stroke="var(--color-border)"
                   strokeWidth={1}
                   radius={[4, 4, 0, 0]}
                 />
@@ -260,28 +376,30 @@ export default function Dashboard() {
         </div>
 
         {/* Activity Trend */}
-        <div className="bg-white p-8 rounded-2xl border-2 border-black shadow-lg">
-          <h3 className="text-xl font-bold text-black mb-6">Activity Trend (Last 7 Days)</h3>
+        <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+          <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+            Activity Trend (Last 7 Days)
+          </h3>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={charts?.activityTrend || []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis dataKey="date" stroke="#6b7280" />
-              <YAxis stroke="#6b7280" />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" opacity={0.3} />
+              <XAxis dataKey="date" stroke="var(--color-text)" opacity={0.7} />
+              <YAxis stroke="var(--color-text)" opacity={0.7} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "white",
-                  border: "2px solid black",
+                  backgroundColor: "var(--color-surface)",
+                  border: "2px solid var(--color-border)",
                   borderRadius: "12px",
-                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                  color: "var(--color-text)",
                 }}
               />
               <Line
                 type="monotone"
                 dataKey="activities"
-                stroke="#06b6d4"
+                stroke="var(--color-primary)"
                 strokeWidth={4}
-                dot={{ fill: "#06b6d4", strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8, stroke: "#000", strokeWidth: 2 }}
+                dot={{ fill: "var(--color-primary)", strokeWidth: 2, r: 6 }}
+                activeDot={{ r: 8, stroke: "var(--color-border)", strokeWidth: 2 }}
               />
             </LineChart>
           </ResponsiveContainer>

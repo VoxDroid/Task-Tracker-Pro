@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase, logActivity } from "@/lib/database"
+import { executeQuery, executeUpdate, logActivity } from "@/lib/database"
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,8 +7,8 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status")
     const projectId = searchParams.get("project_id")
     const archived = searchParams.get("archived") === "true"
+    const favorites = searchParams.get("favorites") === "true"
 
-    const db = getDatabase()
     let query = `
       SELECT t.*, p.name as project_name, p.color as project_color
       FROM tasks t
@@ -35,9 +35,13 @@ export async function GET(request: NextRequest) {
       params.push(Number.parseInt(projectId))
     }
 
+    if (favorites) {
+      query += " AND t.is_favorite = 1"
+    }
+
     query += " ORDER BY t.created_at DESC"
 
-    const tasks = db.prepare(query).all(...params)
+    const tasks = executeQuery(query, params)
     return NextResponse.json(tasks)
   } catch (error) {
     console.error("Error fetching tasks:", error)
@@ -54,25 +58,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 })
     }
 
-    const db = getDatabase()
-    const stmt = db.prepare(`
+    const result = executeUpdate(
+      `
       INSERT INTO tasks (title, description, project_id, priority, assigned_to, due_date)
       VALUES (?, ?, ?, ?, ?, ?)
-    `)
+    `,
+      [title, description, project_id, priority || "medium", assigned_to, due_date],
+    )
 
-    const result = stmt.run(title, description, project_id, priority || "medium", assigned_to, due_date)
-    const taskId = result.lastInsertRowid as number
+    if (result.changes === 0) {
+      return NextResponse.json({ error: "Failed to create task" }, { status: 500 })
+    }
 
+    const taskId = result.lastInsertRowid
     logActivity("created", "task", taskId, `Created task: ${title}`)
 
-    const task = db
-      .prepare(`
+    const task = executeQuery(
+      `
       SELECT t.*, p.name as project_name, p.color as project_color
       FROM tasks t
       LEFT JOIN projects p ON t.project_id = p.id
       WHERE t.id = ?
-    `)
-      .get(taskId)
+    `,
+      [taskId],
+    )[0]
 
     return NextResponse.json(task)
   } catch (error) {

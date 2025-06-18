@@ -1,11 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase, logActivity } from "@/lib/database"
+import { executeQuery, executeUpdate, logActivity } from "@/lib/database"
 
 export async function GET() {
   try {
-    const db = getDatabase()
-    const projects = db
-      .prepare(`
+    const projects = executeQuery(`
       SELECT p.*, 
              COUNT(t.id) as task_count,
              COUNT(CASE WHEN t.status = 'completed' THEN 1 END) as completed_tasks
@@ -15,7 +13,6 @@ export async function GET() {
       GROUP BY p.id
       ORDER BY p.created_at DESC
     `)
-      .all()
 
     return NextResponse.json(projects)
   } catch (error) {
@@ -33,18 +30,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    const db = getDatabase()
-    const stmt = db.prepare(`
+    const result = executeUpdate(
+      `
       INSERT INTO projects (name, description, color)
       VALUES (?, ?, ?)
-    `)
+    `,
+      [name, description, color || "#6366f1"],
+    )
 
-    const result = stmt.run(name, description, color || "#6366f1")
-    const projectId = result.lastInsertRowid as number
+    if (result.changes === 0) {
+      return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
+    }
 
+    const projectId = result.lastInsertRowid
     logActivity("created", "project", projectId, `Created project: ${name}`)
 
-    const project = db.prepare("SELECT * FROM projects WHERE id = ?").get(projectId)
+    const project = executeQuery("SELECT * FROM projects WHERE id = ?", [projectId])[0]
     return NextResponse.json(project)
   } catch (error) {
     console.error("Error creating project:", error)

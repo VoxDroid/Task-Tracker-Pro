@@ -13,14 +13,26 @@ interface ProjectFormModalProps {
 }
 
 const projectColors = [
-  "#6366f1", // Indigo
-  "#8b5cf6", // Purple
-  "#06b6d4", // Cyan
-  "#10b981", // Emerald
-  "#f59e0b", // Amber
-  "#ef4444", // Red
-  "#ec4899", // Pink
-  "#84cc16", // Lime
+  "#6366f1",
+  "#8b5cf6",
+  "#a855f7",
+  "#d946ef",
+  "#ec4899",
+  "#f43f5e",
+  "#ef4444",
+  "#f97316",
+  "#f59e0b",
+  "#eab308",
+  "#84cc16",
+  "#22c55e",
+  "#10b981",
+  "#14b8a6",
+  "#06b6d4",
+  "#0ea5e9",
+  "#3b82f6",
+  "#1d4ed8",
+  "#7c3aed",
+  "#be185d",
 ]
 
 export default function ProjectFormModal({ isOpen, onClose, onSuccess }: ProjectFormModalProps) {
@@ -99,9 +111,9 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
           <div className="flex flex-wrap gap-3">
-            {projectColors.map((color) => (
+            {projectColors.map((color, index) => (
               <button
-                key={color}
+                key={`${color}-${index}`}
                 type="button"
                 onClick={() => setFormData({ ...formData, color })}
                 className={`w-10 h-10 rounded-xl border-2 transition-all ${
@@ -117,7 +129,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl border-2 border-black hover:bg-gray-200 transition-colors font-medium"
+            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
           >
             Cancel
           </button>

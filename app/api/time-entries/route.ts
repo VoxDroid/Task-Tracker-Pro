@@ -1,11 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase, logActivity } from "@/lib/database"
+import { executeQuery, executeUpdate, logActivity } from "@/lib/database"
 
 export async function GET() {
   try {
-    const db = getDatabase()
-    const entries = db
-      .prepare(`
+    const entries = executeQuery(`
       SELECT te.*, t.title as task_title, p.name as project_name
       FROM time_entries te
       JOIN tasks t ON te.task_id = t.id
@@ -13,7 +11,6 @@ export async function GET() {
       ORDER BY te.created_at DESC
       LIMIT 50
     `)
-      .all()
 
     return NextResponse.json(entries)
   } catch (error) {
@@ -31,26 +28,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Task ID is required" }, { status: 400 })
     }
 
-    const db = getDatabase()
-    const stmt = db.prepare(`
+    const result = executeUpdate(
+      `
       INSERT INTO time_entries (task_id, start_time, description)
       VALUES (?, ?, ?)
-    `)
+    `,
+      [task_id, new Date().toISOString(), description],
+    )
 
-    const result = stmt.run(task_id, new Date().toISOString(), description)
-    const entryId = result.lastInsertRowid as number
+    if (result.changes === 0) {
+      return NextResponse.json({ error: "Failed to create time entry" }, { status: 500 })
+    }
 
+    const entryId = result.lastInsertRowid
     logActivity("started", "time_entry", entryId, `Started time tracking for task`)
 
-    const entry = db
-      .prepare(`
+    const entry = executeQuery(
+      `
       SELECT te.*, t.title as task_title, p.name as project_name
       FROM time_entries te
       JOIN tasks t ON te.task_id = t.id
       LEFT JOIN projects p ON t.project_id = p.id
       WHERE te.id = ?
-    `)
-      .get(entryId)
+    `,
+      [entryId],
+    )[0]
 
     return NextResponse.json(entry)
   } catch (error) {

@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server"
-import { getDatabase } from "@/lib/database"
+import { executeQuery } from "@/lib/database"
 
 export async function GET() {
   try {
-    const db = getDatabase()
-
     // Task completion over time (last 30 days)
-    const completionTrend = db
-      .prepare(`
+    const completionTrend = executeQuery(`
       SELECT 
         DATE(completed_at) as date,
         COUNT(*) as completed
@@ -17,11 +14,9 @@ export async function GET() {
       GROUP BY DATE(completed_at)
       ORDER BY date
     `)
-      .all()
 
     // Tasks by status
-    const tasksByStatus = db
-      .prepare(`
+    const tasksByStatus = executeQuery(`
       SELECT 
         status,
         COUNT(*) as count
@@ -29,11 +24,9 @@ export async function GET() {
       WHERE status != 'archived'
       GROUP BY status
     `)
-      .all()
 
     // Tasks by priority
-    const tasksByPriority = db
-      .prepare(`
+    const tasksByPriority = executeQuery(`
       SELECT 
         priority,
         COUNT(*) as count
@@ -41,11 +34,9 @@ export async function GET() {
       WHERE status != 'archived'
       GROUP BY priority
     `)
-      .all()
 
     // Project progress
-    const projectProgress = db
-      .prepare(`
+    const projectProgress = executeQuery(`
       SELECT 
         p.name,
         COUNT(t.id) as total_tasks,
@@ -57,11 +48,9 @@ export async function GET() {
       HAVING total_tasks > 0
       ORDER BY p.name
     `)
-      .all()
 
     // Activity over time (last 7 days)
-    const activityTrend = db
-      .prepare(`
+    const activityTrend = executeQuery(`
       SELECT 
         DATE(created_at) as date,
         COUNT(*) as activities
@@ -70,7 +59,6 @@ export async function GET() {
       GROUP BY DATE(created_at)
       ORDER BY date
     `)
-      .all()
 
     return NextResponse.json({
       completionTrend,

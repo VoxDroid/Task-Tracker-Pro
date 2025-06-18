@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server"
-import { getDatabase } from "@/lib/database"
+import { executeQuery } from "@/lib/database"
 
 export async function GET() {
   try {
-    const db = getDatabase()
-
     // Get task statistics
-    const taskStats = db
-      .prepare(`
+    const taskStats =
+      executeQuery(`
       SELECT 
         COUNT(*) as total_tasks,
         COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
@@ -15,27 +13,24 @@ export async function GET() {
         COUNT(CASE WHEN due_date < datetime('now') AND status != 'completed' THEN 1 END) as overdue_tasks
       FROM tasks 
       WHERE status != 'archived'
-    `)
-      .get() as any
+    `)[0] || {}
 
     // Get project statistics
-    const projectStats = db
-      .prepare(`
+    const projectStats =
+      executeQuery(`
       SELECT 
         COUNT(*) as total_projects,
         COUNT(CASE WHEN status = 'active' THEN 1 END) as active_projects
       FROM projects 
       WHERE status != 'archived'
-    `)
-      .get() as any
+    `)[0] || {}
 
     // Get time tracking statistics
-    const timeStats = db
-      .prepare(`
+    const timeStats =
+      executeQuery(`
       SELECT COALESCE(SUM(duration), 0) as total_time_logged
       FROM time_entries
-    `)
-      .get() as any
+    `)[0] || {}
 
     const stats = {
       totalTasks: taskStats.total_tasks || 0,
