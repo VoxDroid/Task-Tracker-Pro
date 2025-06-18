@@ -5,7 +5,21 @@ import Link from "next/link"
 import Sidebar from "@/components/sidebar"
 import ProjectFormModal from "@/components/project-form-modal"
 import ProjectEditModal from "@/components/project-edit-modal"
-import { Plus, FolderOpen, CheckCircle, Circle, Search, Target, TrendingUp, Calendar, Clock } from "lucide-react"
+import {
+  Plus,
+  FolderOpen,
+  CheckCircle,
+  Circle,
+  Search,
+  Target,
+  TrendingUp,
+  Calendar,
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react"
+
+const ITEMS_PER_PAGE = 6
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([])
@@ -15,6 +29,7 @@ export default function ProjectsPage() {
   const [showProjectModal, setShowProjectModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     fetchProjects()
@@ -38,6 +53,7 @@ export default function ProjectsPage() {
     }
 
     setFilteredProjects(filtered)
+    setCurrentPage(1)
   }, [projects, searchQuery])
 
   const fetchProjects = async () => {
@@ -62,6 +78,14 @@ export default function ProjectsPage() {
 
     return { total, active, completed, totalTasks }
   }
+
+  const getCurrentPageProjects = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return filteredProjects.slice(startIndex, endIndex)
+  }
+
+  const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE)
 
   const stats = getProjectStats()
 
@@ -103,7 +127,6 @@ export default function ProjectsPage() {
   return (
     <Sidebar>
       <div className="p-8">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
           <div>
             <h1 className="text-5xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
@@ -123,7 +146,6 @@ export default function ProjectsPage() {
           </button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
@@ -179,7 +201,6 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Search */}
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="relative">
             <Search
@@ -197,8 +218,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredProjects.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-secondary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
@@ -217,17 +237,17 @@ export default function ProjectsPage() {
               </button>
             </div>
           ) : (
-            filteredProjects.map((project) => (
+            getCurrentPageProjects().map((project) => (
               <div
                 key={project.id}
-                className="relative p-6 rounded-2xl border-l-4 shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300 overflow-hidden min-h-[320px]"
+                className="relative p-6 rounded-2xl border-2 shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300 overflow-hidden min-h-[320px]"
                 style={{
                   backgroundColor: "var(--color-surface)",
+                  borderColor: "var(--color-border)",
                   borderLeftColor: project.color,
-                  border: "2px solid var(--color-border)",
+                  borderLeftWidth: "4px",
                 }}
               >
-                {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div
                     className="absolute top-0 right-0 w-32 h-32 rounded-full"
@@ -235,7 +255,6 @@ export default function ProjectsPage() {
                   />
                 </div>
 
-                {/* Header */}
                 <div className="relative z-10 mb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -260,7 +279,6 @@ export default function ProjectsPage() {
                   </p>
                 </div>
 
-                {/* Stats */}
                 <div className="relative z-10 grid grid-cols-2 gap-4 mb-6">
                   <div
                     className="p-3 rounded-xl border-2"
@@ -299,7 +317,6 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
-                {/* Progress */}
                 <div className="relative z-10 mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-sm font-medium opacity-70" style={{ color: "var(--color-text)" }}>
@@ -327,7 +344,6 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
-                {/* Timestamps */}
                 <div
                   className="relative z-10 flex items-center justify-between text-xs opacity-60 mb-4"
                   style={{ color: "var(--color-text)" }}
@@ -342,7 +358,6 @@ export default function ProjectsPage() {
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="relative z-10 flex space-x-2">
                   <Link
                     href={`/projects/${project.id}`}
@@ -372,6 +387,43 @@ export default function ProjectsPage() {
             ))
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                  currentPage === page
+                    ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
+                    : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                }`}
+                style={{ color: "var(--color-text)" }}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
 
         <ProjectFormModal
           isOpen={showProjectModal}

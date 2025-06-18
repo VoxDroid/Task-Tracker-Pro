@@ -29,6 +29,9 @@ import {
   Calendar,
   Target,
   Zap,
+  BarChart3,
+  PieChartIcon,
+  LineChartIcon,
 } from "lucide-react"
 
 const COLORS = ["var(--color-primary)", "var(--color-secondary)", "var(--color-accent)"]
@@ -96,43 +99,48 @@ export default function Dashboard() {
       value: stats?.totalTasks || 0,
       icon: CheckCircle,
       colorVar: "--color-primary",
+      bgIcon: Target,
     },
     {
       title: "Completed",
       value: stats?.completedTasks || 0,
       icon: Target,
       colorVar: "--color-accent",
+      bgIcon: CheckCircle,
     },
     {
       title: "In Progress",
       value: stats?.inProgressTasks || 0,
       icon: Clock,
       colorVar: "--color-secondary",
+      bgIcon: Activity,
     },
     {
       title: "Overdue",
       value: stats?.overdueTasks || 0,
       icon: AlertTriangle,
       colorVar: "--color-primary",
+      bgIcon: Clock,
     },
     {
       title: "Active Projects",
       value: stats?.activeProjects || 0,
       icon: FolderOpen,
       colorVar: "--color-secondary",
+      bgIcon: FolderOpen,
     },
     {
       title: "Hours Logged",
       value: `${stats?.totalTimeLogged ? Math.round(stats.totalTimeLogged / 60) : 0}h`,
       icon: Zap,
       colorVar: "--color-accent",
+      bgIcon: Zap,
     },
   ]
 
   return (
     <Sidebar>
       <div className="p-8 space-y-8">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4" style={{ color: "var(--color-text)" }}>
             Dashboard
@@ -145,13 +153,23 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
           {statCards.map((card, index) => (
             <div
               key={card.title}
               className="relative overflow-hidden bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300"
             >
+              <div
+                className="absolute top-0 right-0 w-20 h-20 opacity-5"
+                style={{
+                  background: `radial-gradient(circle, var(${card.colorVar}) 0%, transparent 70%)`,
+                }}
+              />
+              <card.bgIcon
+                className="absolute top-2 right-2 w-8 h-8 opacity-10"
+                style={{ color: `var(${card.colorVar})` }}
+              />
+
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-4">
                   <div
@@ -177,11 +195,13 @@ export default function Dashboard() {
           ))}
         </div>
 
-        {/* Main Content Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {/* Task Completion Trend */}
-          <div className="xl:col-span-2 bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-            <div className="flex items-center mb-6">
+          <div className="xl:col-span-2 bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+            <LineChartIcon
+              className="absolute top-4 right-4 w-12 h-12 opacity-5"
+              style={{ color: "var(--color-accent)" }}
+            />
+            <div className="flex items-center mb-6 relative z-10">
               <TrendingUp className="w-6 h-6 mr-3" style={{ color: "var(--color-accent)" }} />
               <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 Task Completion Trend
@@ -217,9 +237,12 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* Tasks by Status */}
-          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-            <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+            <PieChartIcon
+              className="absolute top-4 right-4 w-12 h-12 opacity-5"
+              style={{ color: "var(--color-primary)" }}
+            />
+            <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
               Tasks by Status
             </h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -252,15 +275,18 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* Recent Activity */}
-          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-            <div className="flex items-center mb-6">
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+            <Activity
+              className="absolute top-4 right-4 w-12 h-12 opacity-5"
+              style={{ color: "var(--color-primary)" }}
+            />
+            <div className="flex items-center mb-6 relative z-10">
               <Activity className="w-6 h-6 mr-3" style={{ color: "var(--color-primary)" }} />
               <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 Recent Activity
               </h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 relative z-10">
               {recentActivity.length === 0 ? (
                 <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
                   No recent activity
@@ -272,7 +298,6 @@ export default function Dashboard() {
                     className="flex items-start space-x-3 p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
                     style={{ backgroundColor: "var(--color-background)" }}
                     onClick={() => {
-                      // Navigate based on entity type
                       if (activity.entity_type === "task") {
                         window.location.href = "/tasks"
                       } else if (activity.entity_type === "project") {
@@ -298,15 +323,18 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Upcoming Tasks */}
-          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-            <div className="flex items-center mb-6">
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+            <Calendar
+              className="absolute top-4 right-4 w-12 h-12 opacity-5"
+              style={{ color: "var(--color-secondary)" }}
+            />
+            <div className="flex items-center mb-6 relative z-10">
               <Calendar className="w-6 h-6 mr-3" style={{ color: "var(--color-secondary)" }} />
               <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 Upcoming Tasks
               </h3>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-4 relative z-10">
               {upcomingTasks.length === 0 ? (
                 <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
                   No upcoming tasks
@@ -335,9 +363,12 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Project Progress */}
-          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-            <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+          <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+            <BarChart3
+              className="absolute top-4 right-4 w-12 h-12 opacity-5"
+              style={{ color: "var(--color-accent)" }}
+            />
+            <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
               Project Progress
             </h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -375,9 +406,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Activity Trend */}
-        <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-          <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
+        <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
+          <LineChartIcon
+            className="absolute top-4 right-4 w-16 h-16 opacity-5"
+            style={{ color: "var(--color-primary)" }}
+          />
+          <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
             Activity Trend (Last 7 Days)
           </h3>
           <ResponsiveContainer width="100%" height={250}>

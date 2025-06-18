@@ -3,7 +3,21 @@
 import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
 import type { ActivityLog } from "@/lib/types"
-import { Activity, Clock, Search, Filter, TrendingUp, Target, Zap, Download, Trash2 } from "lucide-react"
+import {
+  Activity,
+  Clock,
+  Search,
+  Filter,
+  TrendingUp,
+  Target,
+  Zap,
+  Download,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react"
+
+const ITEMS_PER_PAGE = 10
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
@@ -12,6 +26,7 @@ export default function LogsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [actionFilter, setActionFilter] = useState("all")
   const [showResetModal, setShowResetModal] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     fetchLogs()
@@ -34,11 +49,12 @@ export default function LogsPage() {
     }
 
     setFilteredLogs(filtered)
+    setCurrentPage(1)
   }, [logs, searchQuery, actionFilter])
 
   const fetchLogs = async () => {
     try {
-      const response = await fetch("/api/logs?limit=100")
+      const response = await fetch("/api/logs?limit=1000")
       const data = await response.json()
       setLogs(Array.isArray(data.logs) ? data.logs : [])
     } catch (error) {
@@ -75,6 +91,14 @@ export default function LogsPage() {
 
     return { total, todayLogs, actions }
   }
+
+  const getCurrentPageLogs = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return filteredLogs.slice(startIndex, endIndex)
+  }
+
+  const totalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE)
 
   const stats = getLogStats()
   const uniqueActions = [...new Set(logs.map((log) => log.action))]
@@ -132,7 +156,6 @@ export default function LogsPage() {
   return (
     <Sidebar>
       <div className="p-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
             <Activity className="mr-4" />
@@ -143,7 +166,6 @@ export default function LogsPage() {
           </p>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
@@ -192,10 +214,8 @@ export default function LogsPage() {
           </div>
         </div>
 
-        {/* Search and Filters */}
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
-            {/* Search */}
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
@@ -214,7 +234,6 @@ export default function LogsPage() {
               />
             </div>
 
-            {/* Action Filter */}
             <div className="flex items-center space-x-2">
               <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
               <select
@@ -237,7 +256,6 @@ export default function LogsPage() {
           </div>
         </div>
 
-        {/* Export and Reset Actions */}
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
             <h3 className="text-lg font-semibold" style={{ color: "var(--color-text)" }}>
@@ -264,8 +282,7 @@ export default function LogsPage() {
           </div>
         </div>
 
-        {/* Activity Timeline */}
-        <div className="space-y-4">
+        <div className="space-y-4 mb-8">
           {filteredLogs.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
@@ -279,12 +296,11 @@ export default function LogsPage() {
               </p>
             </div>
           ) : (
-            filteredLogs.map((log) => (
+            getCurrentPageLogs().map((log) => (
               <div
                 key={log.id}
                 className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-[1.01] transition-all duration-200 cursor-pointer"
                 onClick={() => {
-                  // Navigate based on entity type
                   if (log.entity_type === "task") {
                     window.location.href = "/tasks"
                   } else if (log.entity_type === "project") {
@@ -331,7 +347,43 @@ export default function LogsPage() {
           )}
         </div>
 
-        {/* Reset Confirmation Modal */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                  currentPage === page
+                    ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
+                    : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                }`}
+                style={{ color: "var(--color-text)" }}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
+
         {showResetModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div
@@ -354,14 +406,14 @@ export default function LogsPage() {
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setShowResetModal(false)}
-                    className="flex-1 px-4 py-3 bg-[var(--color-background)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-md transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={resetLogs}
-                    className="flex-1 px-4 py-3 bg-[var(--color-primary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Reset Logs

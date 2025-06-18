@@ -22,62 +22,74 @@ import {
   Trash2,
   Edit,
   Heart,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react"
 import TaskEditModal from "@/components/task-edit-modal"
 
 const priorityConfig = {
   low: {
-    bg: "bg-[var(--color-primary)] bg-opacity-20",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-primary)] border-opacity-30",
+    bg: "bg-green-500",
+    bgLight: "bg-green-100",
+    text: "text-white",
+    textDark: "text-green-600",
     label: "Low",
+    color: "#10b981",
   },
   medium: {
-    bg: "bg-[var(--color-primary)] bg-opacity-40",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-primary)] border-opacity-50",
+    bg: "bg-yellow-500",
+    bgLight: "bg-yellow-100",
+    text: "text-white",
+    textDark: "text-yellow-600",
     label: "Medium",
+    color: "#f59e0b",
   },
   high: {
-    bg: "bg-[var(--color-primary)] bg-opacity-60",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-primary)] border-opacity-70",
+    bg: "bg-orange-500",
+    bgLight: "bg-orange-100",
+    text: "text-white",
+    textDark: "text-orange-600",
     label: "High",
+    color: "#f97316",
   },
   urgent: {
-    bg: "bg-[var(--color-primary)] bg-opacity-80",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-primary)]",
+    bg: "bg-red-500",
+    bgLight: "bg-red-100",
+    text: "text-white",
+    textDark: "text-red-600",
     label: "Urgent",
+    color: "#ef4444",
   },
 }
 
 const statusConfig = {
   todo: {
-    bg: "bg-[var(--color-secondary)] bg-opacity-20",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-secondary)] border-opacity-30",
+    bg: "bg-blue-500",
+    text: "text-white",
     label: "To Do",
+    color: "#3b82f6",
   },
   in_progress: {
-    bg: "bg-[var(--color-secondary)] bg-opacity-40",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-secondary)] border-opacity-50",
+    bg: "bg-purple-500",
+    text: "text-white",
     label: "In Progress",
+    color: "#8b5cf6",
   },
   completed: {
-    bg: "bg-[var(--color-accent)] bg-opacity-40",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-accent)] border-opacity-50",
+    bg: "bg-green-500",
+    text: "text-white",
     label: "Completed",
+    color: "#10b981",
   },
   archived: {
-    bg: "bg-[var(--color-text)] bg-opacity-20",
-    text: "text-[var(--color-text)]",
-    border: "border-[var(--color-text)] border-opacity-30",
+    bg: "bg-gray-500",
+    text: "text-white",
     label: "Archived",
+    color: "#6b7280",
   },
 }
+
+const ITEMS_PER_PAGE = 6
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -97,6 +109,7 @@ export default function TasksPage() {
   const [selectedTasks, setSelectedTasks] = useState<number[]>([])
   const [favoriteTaskIds, setFavoriteTaskIds] = useState<number[]>([])
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     fetchTasks()
@@ -126,6 +139,7 @@ export default function TasksPage() {
     }
 
     setFilteredTasks(filtered)
+    setCurrentPage(1)
   }, [tasks, searchQuery, favoriteTaskIds, showFavoritesOnly])
 
   const fetchTasks = async () => {
@@ -232,7 +246,8 @@ export default function TasksPage() {
   }
 
   const selectAllTasks = () => {
-    setSelectedTasks(filteredTasks.map((task) => task.id))
+    const currentTasks = getCurrentPageTasks()
+    setSelectedTasks(currentTasks.map((task) => task.id))
   }
 
   const clearSelection = () => {
@@ -310,6 +325,14 @@ export default function TasksPage() {
 
     return { total, completed, inProgress, overdue }
   }
+
+  const getCurrentPageTasks = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return filteredTasks.slice(startIndex, endIndex)
+  }
+
+  const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE)
 
   const stats = getTaskStats()
 
@@ -465,11 +488,11 @@ export default function TasksPage() {
 
             <div className="flex items-center space-x-2">
               <button
-                onClick={selectedTasks.length === filteredTasks.length ? clearSelection : selectAllTasks}
+                onClick={selectedTasks.length === getCurrentPageTasks().length ? clearSelection : selectAllTasks}
                 className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 hover:shadow-md hover:transform hover:scale-105"
                 style={{ color: "var(--color-text)" }}
               >
-                {selectedTasks.length === filteredTasks.length ? "Deselect All" : "Select All"}
+                {selectedTasks.length === getCurrentPageTasks().length ? "Deselect All" : "Select All"}
               </button>
             </div>
           </div>
@@ -510,9 +533,9 @@ export default function TasksPage() {
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredTasks.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
                 <Plus className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
               </div>
@@ -529,165 +552,233 @@ export default function TasksPage() {
               </button>
             </div>
           ) : (
-            filteredTasks.map((task) => (
+            getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-200"
+                className="relative overflow-hidden p-6 rounded-2xl border-2 shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300 min-h-[320px]"
+                style={{
+                  backgroundColor: "var(--color-surface)",
+                  borderColor: "var(--color-border)",
+                  borderLeftColor: priorityConfig[task.priority].color,
+                  borderLeftWidth: "4px",
+                }}
               >
-                <div className="flex items-start space-x-4">
-                  <div className="flex items-center space-x-3 mt-1">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleTaskSelection(task.id)
-                      }}
-                      className={`relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
-                        selectedTasks.includes(task.id)
-                          ? "bg-[var(--color-primary)] border-[var(--color-primary)]"
-                          : "border-[var(--color-border)] hover:border-[var(--color-primary)]"
-                      }`}
-                    >
-                      {selectedTasks.includes(task.id) && <Check className="w-4 h-4 text-white" />}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleFavorite(task.id)
-                      }}
-                      className={`p-1 rounded-full transition-all duration-200 ${
-                        favoriteTaskIds.includes(task.id) ? "scale-110" : "opacity-30 hover:opacity-70 hover:scale-110"
-                      }`}
-                      style={{ color: "var(--color-primary)" }}
-                    >
-                      <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
-                    </button>
+                <div
+                  className="absolute inset-0 opacity-5"
+                  style={{
+                    background: `radial-gradient(circle at top right, ${priorityConfig[task.priority].color}40 0%, transparent 50%)`,
+                  }}
+                />
+
+                <div className="relative z-10">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleTaskSelection(task.id)
+                        }}
+                        className={`relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                          selectedTasks.includes(task.id)
+                            ? "bg-[var(--color-primary)] border-[var(--color-primary)]"
+                            : "border-[var(--color-border)] hover:border-[var(--color-primary)]"
+                        }`}
+                      >
+                        {selectedTasks.includes(task.id) && <Check className="w-4 h-4 text-white" />}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          toggleFavorite(task.id)
+                        }}
+                        className={`p-1 rounded-full transition-all duration-200 ${
+                          favoriteTaskIds.includes(task.id)
+                            ? "scale-110"
+                            : "opacity-30 hover:opacity-70 hover:scale-110"
+                        }`}
+                        style={{ color: priorityConfig[task.priority].color }}
+                      >
+                        <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
+                      </button>
+                    </div>
+                    <div className="flex space-x-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text}`}
+                      >
+                        {priorityConfig[task.priority].label}
+                      </span>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig[task.status].bg} ${statusConfig[task.status].text}`}
+                      >
+                        {statusConfig[task.status].label}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
-                            {task.title}
-                          </h3>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium border ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text} ${priorityConfig[task.priority].border}`}
-                          >
-                            {priorityConfig[task.priority].label}
-                          </span>
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium border ${statusConfig[task.status].bg} ${statusConfig[task.status].text} ${statusConfig[task.status].border}`}
-                          >
-                            {statusConfig[task.status].label}
-                          </span>
-                        </div>
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2" style={{ color: "var(--color-text)" }}>
+                      {task.title}
+                    </h3>
+                    {task.description && (
+                      <p className="text-sm opacity-70 line-clamp-2" style={{ color: "var(--color-text)" }}>
+                        {task.description}
+                      </p>
+                    )}
+                  </div>
 
-                        {task.description && (
-                          <p className="mb-4 text-lg opacity-80" style={{ color: "var(--color-text)" }}>
-                            {task.description}
-                          </p>
-                        )}
-
-                        <div
-                          className="flex items-center space-x-4 text-sm opacity-70"
-                          style={{ color: "var(--color-text)" }}
-                        >
-                          {task.project_name && (
-                            <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
-                              <FolderOpen size={14} />
-                              <span className="ml-2 font-medium">{task.project_name}</span>
-                            </div>
-                          )}
-                          {task.assigned_to && (
-                            <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
-                              <User size={14} />
-                              <span className="ml-2 font-medium">{task.assigned_to}</span>
-                            </div>
-                          )}
-                          {task.due_date && (
-                            <div className="flex items-center bg-[var(--color-background)] px-3 py-2 rounded-xl border border-[var(--color-border)]">
-                              <Calendar size={14} />
-                              <span className="ml-2 font-medium">{new Date(task.due_date).toLocaleDateString()}</span>
-                            </div>
-                          )}
-                        </div>
+                  <div className="grid grid-cols-1 gap-3 mb-4">
+                    {task.project_name && (
+                      <div
+                        className="flex items-center p-2 rounded-lg border"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        <FolderOpen size={14} style={{ color: "var(--color-text)" }} />
+                        <span className="ml-2 text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
+                          {task.project_name}
+                        </span>
                       </div>
-
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setSelectedTask(task)
-                            setShowEditModal(true)
-                          }}
-                          className="p-3 hover:bg-blue-600 hover:text-white rounded-xl transition-all duration-200"
-                          style={{ color: "var(--color-text)" }}
-                          title="Edit Task"
-                        >
-                          <Edit size={18} />
-                        </button>
-
-                        {task.status !== "completed" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              updateTaskStatus(task.id, "completed", task.title)
-                            }}
-                            className="p-3 hover:bg-green-600 hover:text-white rounded-xl transition-all duration-200"
-                            style={{ color: "var(--color-text)" }}
-                            title="Mark Complete"
-                          >
-                            <Check size={18} />
-                          </button>
-                        )}
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            duplicateTask(task)
-                          }}
-                          className="p-3 hover:bg-[var(--color-secondary)] hover:bg-opacity-10 rounded-xl transition-all duration-200"
-                          style={{ color: "var(--color-text)" }}
-                          title="Duplicate Task"
-                        >
-                          <Copy size={18} />
-                        </button>
-
-                        {task.status !== "archived" && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setTaskToArchive(task)
-                              setShowArchiveModal(true)
-                            }}
-                            className="p-3 hover:bg-yellow-600 hover:text-white rounded-xl transition-all duration-200"
-                            style={{ color: "var(--color-text)" }}
-                            title="Archive Task"
-                          >
-                            <Archive size={18} />
-                          </button>
-                        )}
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setTaskToDelete(task)
-                            setShowDeleteModal(true)
-                          }}
-                          className="p-3 hover:bg-red-600 hover:text-white rounded-xl transition-all duration-200"
-                          style={{ color: "var(--color-text)" }}
-                          title="Delete Task"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                    )}
+                    {task.assigned_to && (
+                      <div
+                        className="flex items-center p-2 rounded-lg border"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        <User size={14} style={{ color: "var(--color-text)" }} />
+                        <span className="ml-2 text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
+                          {task.assigned_to}
+                        </span>
                       </div>
-                    </div>
+                    )}
+                    {task.due_date && (
+                      <div
+                        className="flex items-center p-2 rounded-lg border"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        <Calendar size={14} style={{ color: "var(--color-text)" }} />
+                        <span className="ml-2 text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                          {new Date(task.due_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedTask(task)
+                        setShowEditModal(true)
+                      }}
+                      className="px-3 py-2 hover:bg-blue-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 text-sm font-medium"
+                      style={{ color: "var(--color-text)" }}
+                    >
+                      <Edit size={14} className="inline" />
+                    </button>
+
+                    {task.status !== "completed" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          updateTaskStatus(task.id, "completed", task.title)
+                        }}
+                        className="px-3 py-2 hover:bg-green-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 text-sm font-medium"
+                        style={{ color: "var(--color-text)" }}
+                      >
+                        <Check size={14} className="inline" />
+                      </button>
+                    )}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        duplicateTask(task)
+                      }}
+                      className="px-3 py-2 hover:bg-[var(--color-secondary)] hover:bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
+                      style={{ color: "var(--color-text)" }}
+                      title="Duplicate"
+                    >
+                      <Copy size={14} />
+                    </button>
+
+                    {task.status !== "archived" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setTaskToArchive(task)
+                          setShowArchiveModal(true)
+                        }}
+                        className="px-3 py-2 hover:bg-yellow-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Archive"
+                      >
+                        <Archive size={14} />
+                      </button>
+                    )}
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setTaskToDelete(task)
+                        setShowDeleteModal(true)
+                      }}
+                      className="px-3 py-2 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
+                      style={{ color: "var(--color-text)" }}
+                      title="Delete"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 </div>
               </div>
             ))
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                  currentPage === page
+                    ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
+                    : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                }`}
+                style={{ color: "var(--color-text)" }}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
 
         {showArchiveModal && taskToArchive && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

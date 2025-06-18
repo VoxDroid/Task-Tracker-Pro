@@ -4,8 +4,10 @@ import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import type { Task } from "@/lib/types"
-import { Archive, RotateCcw, Trash2, Search, Calendar, FolderOpen, User } from "lucide-react"
+import { Archive, RotateCcw, Trash2, Search, Calendar, FolderOpen, User, ChevronLeft, ChevronRight } from "lucide-react"
 import TaskViewModal from "@/components/task-view-modal"
+
+const ITEMS_PER_PAGE = 6
 
 export default function ArchivePage() {
   const [archivedTasks, setArchivedTasks] = useState<Task[]>([])
@@ -14,6 +16,7 @@ export default function ArchivePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showViewModal, setShowViewModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const { addNotification } = useNotification()
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function ArchivePage() {
     }
 
     setFilteredTasks(filtered)
+    setCurrentPage(1)
   }, [archivedTasks, searchQuery])
 
   const fetchArchivedTasks = async () => {
@@ -100,6 +104,14 @@ export default function ArchivePage() {
     }
   }
 
+  const getCurrentPageTasks = () => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return filteredTasks.slice(startIndex, endIndex)
+  }
+
+  const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE)
+
   const priorityConfig = {
     low: { bg: "bg-green-500", text: "text-white", label: "Low" },
     medium: { bg: "bg-yellow-500", text: "text-white", label: "Medium" },
@@ -125,7 +137,6 @@ export default function ArchivePage() {
   return (
     <Sidebar>
       <div className="p-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
             <Archive className="mr-4" />
@@ -136,7 +147,6 @@ export default function ArchivePage() {
           </p>
         </div>
 
-        {/* Stats */}
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="flex items-center justify-between">
             <div>
@@ -151,7 +161,6 @@ export default function ArchivePage() {
           </div>
         </div>
 
-        {/* Search */}
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="relative">
             <Search
@@ -169,8 +178,7 @@ export default function ArchivePage() {
           </div>
         </div>
 
-        {/* Archived Tasks */}
-        <div className="space-y-6">
+        <div className="space-y-6 mb-8">
           {filteredTasks.length === 0 ? (
             <div className="text-center py-16">
               <div className="w-24 h-24 bg-gray-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
@@ -184,7 +192,7 @@ export default function ArchivePage() {
               </p>
             </div>
           ) : (
-            filteredTasks.map((task) => (
+            getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
                 className="p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg opacity-75 hover:opacity-100 hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-200 cursor-pointer"
@@ -266,6 +274,43 @@ export default function ArchivePage() {
             ))
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                  currentPage === page
+                    ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
+                    : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                }`}
+                style={{ color: "var(--color-text)" }}
+              >
+                {page}
+              </button>
+            ))}
+
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{ color: "var(--color-text)" }}
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
 
         <TaskViewModal
           isOpen={showViewModal}
