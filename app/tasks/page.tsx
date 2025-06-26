@@ -114,6 +114,7 @@ export default function TasksPage() {
   const [favoriteTaskIds, setFavoriteTaskIds] = useState<number[]>([])
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [showSelectionBar, setShowSelectionBar] = useState(false)
 
   useEffect(() => {
     fetchTasks()
@@ -145,6 +146,14 @@ export default function TasksPage() {
     setFilteredTasks(filtered)
     setCurrentPage(1)
   }, [tasks, searchQuery, favoriteTaskIds, showFavoritesOnly])
+
+  useEffect(() => {
+    if (selectedTasks.length > 0 && !showSelectionBar) {
+      setShowSelectionBar(true)
+    } else if (selectedTasks.length === 0 && showSelectionBar) {
+      setTimeout(() => setShowSelectionBar(false), 150)
+    }
+  }, [selectedTasks.length, showSelectionBar])
 
   const fetchTasks = async () => {
     try {
@@ -242,7 +251,10 @@ export default function TasksPage() {
   }
 
   const toggleTaskSelection = (taskId: number) => {
-    setSelectedTasks((prev) => (prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId]))
+    setSelectedTasks((prev) => {
+      const newSelection = prev.includes(taskId) ? prev.filter((id) => id !== taskId) : [...prev, taskId]
+      return newSelection
+    })
   }
 
   const toggleFavorite = (taskId: number) => {
@@ -366,6 +378,17 @@ export default function TasksPage() {
     }
   }
 
+  useEffect(() => {
+    if (selectedTasks.length > 0) {
+      addNotification({
+        type: "info",
+        title: "Task Selected",
+        message: "Task has been added to selection.",
+        duration: 2000,
+      })
+    }
+  }, [selectedTasks])
+
   if (loading) {
     return (
       <Sidebar>
@@ -395,7 +418,7 @@ export default function TasksPage() {
           </div>
           <button
             onClick={() => setShowTaskModal(true)}
-            className="group flex items-center px-6 py-3 bg-[var(--color-primary)] bg-opacity-10 hover:bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
+            className="group flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
             style={{ color: "var(--color-text)" }}
           >
             <Plus size={20} className="group-hover:rotate-90 transition-transform duration-200" />
@@ -414,7 +437,7 @@ export default function TasksPage() {
                   {stats.total}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-10 rounded-2xl flex items-center justify-center">
                 <CheckSquare className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
               </div>
             </div>
@@ -429,7 +452,7 @@ export default function TasksPage() {
                   {stats.completed}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[var(--color-accent)] bg-opacity-10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-accent)] bg-opacity-10 rounded-2xl flex items-center justify-center">
                 <CheckSquare className="w-6 h-6" style={{ color: "var(--color-accent)" }} />
               </div>
             </div>
@@ -444,7 +467,7 @@ export default function TasksPage() {
                   {stats.inProgress}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[var(--color-secondary)] bg-opacity-10 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-secondary)] bg-opacity-10 rounded-2xl flex items-center justify-center">
                 <Clock className="w-6 h-6" style={{ color: "var(--color-secondary)" }} />
               </div>
             </div>
@@ -459,7 +482,7 @@ export default function TasksPage() {
                   {stats.overdue}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-20 rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-20 rounded-2xl flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
               </div>
             </div>
@@ -478,7 +501,7 @@ export default function TasksPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search tasks..."
-                className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
                 style={{
                   backgroundColor: "var(--color-background)",
                   color: "var(--color-text)",
@@ -492,7 +515,7 @@ export default function TasksPage() {
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-2xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
                     filter === status
                       ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg transform scale-105"
                       : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md hover:transform hover:scale-105"
@@ -505,7 +528,7 @@ export default function TasksPage() {
 
               <button
                 onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-2xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
                   showFavoritesOnly
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg transform scale-105"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md hover:transform hover:scale-105"
@@ -519,7 +542,7 @@ export default function TasksPage() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={selectedTasks.length === getCurrentPageTasks().length ? clearSelection : selectAllTasks}
-                className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 hover:shadow-md hover:transform hover:scale-105"
+                className="px-4 py-2 rounded-2xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 hover:shadow-md hover:transform hover:scale-105"
                 style={{ color: "var(--color-text)" }}
               >
                 {selectedTasks.length === getCurrentPageTasks().length ? "Deselect All" : "Select All"}
@@ -528,8 +551,15 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {selectedTasks.length > 0 && (
-          <div className="bg-[var(--color-primary)] bg-opacity-10 p-4 rounded-xl border-2 border-[var(--color-border)] mb-6">
+        {/* Animated Selection Bar */}
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out mb-6 ${
+            showSelectionBar && selectedTasks.length > 0
+              ? "max-h-20 opacity-100 transform translate-y-0"
+              : "max-h-0 opacity-0 transform -translate-y-4"
+          }`}
+        >
+          <div className="bg-[var(--color-surface)] p-4 rounded-2xl border-2 border-[var(--color-border)] backdrop-blur-sm shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <span className="font-medium" style={{ color: "var(--color-text)" }}>
@@ -537,7 +567,7 @@ export default function TasksPage() {
                 </span>
                 <button
                   onClick={clearSelection}
-                  className="text-sm opacity-70 hover:opacity-100 font-medium transition-opacity"
+                  className="text-sm opacity-70 hover:opacity-100 font-medium transition-opacity duration-200"
                   style={{ color: "var(--color-text)" }}
                 >
                   Clear selection
@@ -546,14 +576,14 @@ export default function TasksPage() {
               <div className="flex space-x-2">
                 <button
                   onClick={() => bulkUpdateStatus("completed")}
-                  className="px-4 py-2 hover:bg-green-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-colors font-medium"
+                  className="px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                   style={{ color: "var(--color-text)" }}
                 >
                   Mark Completed
                 </button>
                 <button
                   onClick={() => bulkUpdateStatus("archived")}
-                  className="px-4 py-2 hover:bg-yellow-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-colors font-medium"
+                  className="px-4 py-2 bg-[var(--color-secondary)] bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                   style={{ color: "var(--color-text)" }}
                 >
                   Archive
@@ -561,7 +591,7 @@ export default function TasksPage() {
               </div>
             </div>
           </div>
-        )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {filteredTasks.length === 0 ? (
@@ -585,23 +615,17 @@ export default function TasksPage() {
             getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className="group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300"
+                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 ${
+                  selectedTasks.includes(task.id)
+                    ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-105"
+                    : ""
+                }`}
                 style={{
                   backgroundColor: "var(--color-surface)",
-                  borderColor: "var(--color-border)",
+                  borderColor: selectedTasks.includes(task.id) ? "var(--color-primary)" : "var(--color-border)",
                 }}
               >
-                {/* Gradient Background */}
-                <div
-                  className={`absolute inset-0 bg-gradient-to-br ${priorityConfig[task.priority].gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
-                />
-
-                {/* Priority Accent Bar */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-1"
-                  style={{ backgroundColor: priorityConfig[task.priority].color }}
-                />
-
+                {/* Remove gradient background completely */}
                 <div className="relative z-10 p-6 h-full flex flex-col">
                   {/* Header - Title and Tags on same line */}
                   <div className="flex items-start justify-between mb-4">
@@ -611,13 +635,15 @@ export default function TasksPage() {
                           e.stopPropagation()
                           toggleTaskSelection(task.id)
                         }}
-                        className={`flex-shrink-0 relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                        className={`flex-shrink-0 relative w-6 h-6 rounded-xl border-2 transition-all duration-300 flex items-center justify-center ${
                           selectedTasks.includes(task.id)
-                            ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-110"
+                            ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-110 shadow-lg"
                             : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-110"
                         }`}
                       >
-                        {selectedTasks.includes(task.id) && <Check className="w-4 h-4 text-white" />}
+                        {selectedTasks.includes(task.id) && (
+                          <Check className="w-4 h-4 text-white animate-in fade-in duration-200" />
+                        )}
                       </button>
                       <button
                         onClick={(e) => {
@@ -670,14 +696,14 @@ export default function TasksPage() {
                   <div className="space-y-3 mb-4 flex-1">
                     {task.project_name && (
                       <div
-                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
                         }}
                       >
                         <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
                           style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
                           <FolderOpen size={16} style={{ color: priorityConfig[task.priority].color }} />
@@ -693,14 +719,14 @@ export default function TasksPage() {
                     )}
                     {task.assigned_to && (
                       <div
-                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
                         }}
                       >
                         <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
                           style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
                           <User size={16} style={{ color: priorityConfig[task.priority].color }} />
@@ -716,14 +742,14 @@ export default function TasksPage() {
                     )}
                     {task.due_date && (
                       <div
-                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
                         }}
                       >
                         <div
-                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
                           style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
                           <Calendar size={16} style={{ color: priorityConfig[task.priority].color }} />
@@ -753,7 +779,7 @@ export default function TasksPage() {
                           setSelectedTask(task)
                           setShowEditModal(true)
                         }}
-                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200"
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200"
                         style={{ color: "var(--color-text)" }}
                         title="Edit"
                       >
@@ -766,7 +792,7 @@ export default function TasksPage() {
                             e.stopPropagation()
                             updateTaskStatus(task.id, "completed", task.title)
                           }}
-                          className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-green-500 hover:bg-opacity-10 transition-all duration-200"
+                          className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-green-500 hover:bg-opacity-10 transition-all duration-200"
                           style={{ color: "var(--color-text)" }}
                           title="Complete"
                         >
@@ -779,7 +805,7 @@ export default function TasksPage() {
                           e.stopPropagation()
                           duplicateTask(task)
                         }}
-                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-[var(--color-secondary)] hover:bg-opacity-10 transition-all duration-200"
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-secondary)] hover:bg-opacity-10 transition-all duration-200"
                         style={{ color: "var(--color-text)" }}
                         title="Duplicate"
                       >
@@ -795,7 +821,7 @@ export default function TasksPage() {
                             setTaskToArchive(task)
                             setShowArchiveModal(true)
                           }}
-                          className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-yellow-500 hover:bg-opacity-10 transition-all duration-200"
+                          className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-yellow-500 hover:bg-opacity-10 transition-all duration-200"
                           style={{ color: "var(--color-text)" }}
                           title="Archive"
                         >
@@ -809,7 +835,7 @@ export default function TasksPage() {
                           setTaskToDelete(task)
                           setShowDeleteModal(true)
                         }}
-                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
                         style={{ color: "var(--color-text)" }}
                         title="Delete"
                       >
@@ -828,7 +854,7 @@ export default function TasksPage() {
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               style={{ color: "var(--color-text)" }}
             >
               <ChevronLeft size={20} />
@@ -838,7 +864,7 @@ export default function TasksPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-2xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
                   currentPage === page
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
@@ -852,7 +878,7 @@ export default function TasksPage() {
             <button
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               style={{ color: "var(--color-text)" }}
             >
               <ChevronRight size={20} />
@@ -860,10 +886,11 @@ export default function TasksPage() {
           </div>
         )}
 
+        {/* Animated Modals */}
         {showArchiveModal && taskToArchive && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
             <div
-              className="p-8 rounded-2xl border-2 shadow-2xl max-w-md w-full mx-4"
+              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
@@ -885,14 +912,14 @@ export default function TasksPage() {
                       setShowArchiveModal(false)
                       setTaskToArchive(null)
                     }}
-                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={archiveTask}
-                    className="flex-1 px-4 py-3 hover:bg-yellow-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-yellow-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Archive
@@ -904,9 +931,9 @@ export default function TasksPage() {
         )}
 
         {showDeleteModal && taskToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
             <div
-              className="p-8 rounded-2xl border-2 shadow-2xl max-w-md w-full mx-4"
+              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
@@ -928,14 +955,14 @@ export default function TasksPage() {
                       setShowDeleteModal(false)
                       setTaskToDelete(null)
                     }}
-                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={deleteTask}
-                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Delete
