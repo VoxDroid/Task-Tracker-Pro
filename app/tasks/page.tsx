@@ -35,6 +35,7 @@ const priorityConfig = {
     textDark: "text-green-600",
     label: "Low",
     color: "#10b981",
+    gradient: "from-green-400 to-green-600",
   },
   medium: {
     bg: "bg-yellow-500",
@@ -43,6 +44,7 @@ const priorityConfig = {
     textDark: "text-yellow-600",
     label: "Medium",
     color: "#f59e0b",
+    gradient: "from-yellow-400 to-yellow-600",
   },
   high: {
     bg: "bg-orange-500",
@@ -51,6 +53,7 @@ const priorityConfig = {
     textDark: "text-orange-600",
     label: "High",
     color: "#f97316",
+    gradient: "from-orange-400 to-orange-600",
   },
   urgent: {
     bg: "bg-red-500",
@@ -59,6 +62,7 @@ const priorityConfig = {
     textDark: "text-red-600",
     label: "Urgent",
     color: "#ef4444",
+    gradient: "from-red-400 to-red-600",
   },
 }
 
@@ -336,6 +340,11 @@ export default function TasksPage() {
 
   const stats = getTaskStats()
 
+  const truncateText = (text: string, maxLength: number) => {
+    if (text.length <= maxLength) return text
+    return text.substring(0, maxLength) + "..."
+  }
+
   if (loading) {
     return (
       <Sidebar>
@@ -555,22 +564,25 @@ export default function TasksPage() {
             getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className="relative overflow-hidden p-6 rounded-2xl border-2 shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300 min-h-[320px]"
+                className="group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 min-h-[380px]"
                 style={{
                   backgroundColor: "var(--color-surface)",
                   borderColor: "var(--color-border)",
-                  borderLeftColor: priorityConfig[task.priority].color,
-                  borderLeftWidth: "4px",
                 }}
               >
+                {/* Gradient Background */}
                 <div
-                  className="absolute inset-0 opacity-5"
-                  style={{
-                    background: `radial-gradient(circle at top right, ${priorityConfig[task.priority].color}40 0%, transparent 50%)`,
-                  }}
+                  className={`absolute inset-0 bg-gradient-to-br ${priorityConfig[task.priority].gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
                 />
 
-                <div className="relative z-10">
+                {/* Priority Accent Bar */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-1"
+                  style={{ backgroundColor: priorityConfig[task.priority].color }}
+                />
+
+                <div className="relative z-10 p-6 h-full flex flex-col">
+                  {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       <button
@@ -580,8 +592,8 @@ export default function TasksPage() {
                         }}
                         className={`relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
                           selectedTasks.includes(task.id)
-                            ? "bg-[var(--color-primary)] border-[var(--color-primary)]"
-                            : "border-[var(--color-border)] hover:border-[var(--color-primary)]"
+                            ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-110"
+                            : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-110"
                         }`}
                       >
                         {selectedTasks.includes(task.id) && <Check className="w-4 h-4 text-white" />}
@@ -593,95 +605,128 @@ export default function TasksPage() {
                         }}
                         className={`p-1 rounded-full transition-all duration-200 ${
                           favoriteTaskIds.includes(task.id)
-                            ? "scale-110"
-                            : "opacity-30 hover:opacity-70 hover:scale-110"
+                            ? "scale-110 text-yellow-500"
+                            : "opacity-40 hover:opacity-80 hover:scale-110"
                         }`}
-                        style={{ color: priorityConfig[task.priority].color }}
+                        style={{ color: favoriteTaskIds.includes(task.id) ? "#eab308" : "var(--color-text)" }}
                       >
                         <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
                       </button>
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col space-y-2">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text}`}
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text} shadow-sm`}
                       >
                         {priorityConfig[task.priority].label}
                       </span>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig[task.status].bg} ${statusConfig[task.status].text}`}
+                        className={`px-3 py-1 rounded-full text-xs font-bold ${statusConfig[task.status].bg} ${statusConfig[task.status].text} shadow-sm`}
                       >
                         {statusConfig[task.status].label}
                       </span>
                     </div>
                   </div>
 
-                  <div className="mb-4">
-                    <h3 className="text-lg font-bold mb-2 line-clamp-2" style={{ color: "var(--color-text)" }}>
-                      {task.title}
+                  {/* Content */}
+                  <div className="flex-1 mb-6">
+                    <h3
+                      className="text-xl font-bold mb-3 leading-tight"
+                      style={{ color: "var(--color-text)" }}
+                      title={task.title}
+                    >
+                      {truncateText(task.title, 35)}
                     </h3>
                     {task.description && (
-                      <p className="text-sm opacity-70 line-clamp-2" style={{ color: "var(--color-text)" }}>
-                        {task.description}
+                      <p
+                        className="text-sm opacity-70 leading-relaxed mb-4"
+                        style={{ color: "var(--color-text)" }}
+                        title={task.description}
+                      >
+                        {truncateText(task.description, 80)}
                       </p>
                     )}
+
+                    {/* Task Details */}
+                    <div className="space-y-3">
+                      {task.project_name && (
+                        <div
+                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                          style={{
+                            backgroundColor: "var(--color-background)",
+                            borderColor: "var(--color-border)",
+                          }}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
+                          >
+                            <FolderOpen size={16} style={{ color: priorityConfig[task.priority].color }} />
+                          </div>
+                          <span
+                            className="text-sm font-medium truncate"
+                            style={{ color: "var(--color-text)" }}
+                            title={task.project_name}
+                          >
+                            {truncateText(task.project_name, 18)}
+                          </span>
+                        </div>
+                      )}
+                      {task.assigned_to && (
+                        <div
+                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                          style={{
+                            backgroundColor: "var(--color-background)",
+                            borderColor: "var(--color-border)",
+                          }}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
+                          >
+                            <User size={16} style={{ color: priorityConfig[task.priority].color }} />
+                          </div>
+                          <span
+                            className="text-sm font-medium truncate"
+                            style={{ color: "var(--color-text)" }}
+                            title={task.assigned_to}
+                          >
+                            {truncateText(task.assigned_to, 15)}
+                          </span>
+                        </div>
+                      )}
+                      {task.due_date && (
+                        <div
+                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                          style={{
+                            backgroundColor: "var(--color-background)",
+                            borderColor: "var(--color-border)",
+                          }}
+                        >
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
+                          >
+                            <Calendar size={16} style={{ color: priorityConfig[task.priority].color }} />
+                          </div>
+                          <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                            {new Date(task.due_date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-3 mb-4">
-                    {task.project_name && (
-                      <div
-                        className="flex items-center p-2 rounded-lg border"
-                        style={{
-                          backgroundColor: "var(--color-background)",
-                          borderColor: "var(--color-border)",
-                        }}
-                      >
-                        <FolderOpen size={14} style={{ color: "var(--color-text)" }} />
-                        <span className="ml-2 text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
-                          {task.project_name}
-                        </span>
-                      </div>
-                    )}
-                    {task.assigned_to && (
-                      <div
-                        className="flex items-center p-2 rounded-lg border"
-                        style={{
-                          backgroundColor: "var(--color-background)",
-                          borderColor: "var(--color-border)",
-                        }}
-                      >
-                        <User size={14} style={{ color: "var(--color-text)" }} />
-                        <span className="ml-2 text-sm font-medium truncate" style={{ color: "var(--color-text)" }}>
-                          {task.assigned_to}
-                        </span>
-                      </div>
-                    )}
-                    {task.due_date && (
-                      <div
-                        className="flex items-center p-2 rounded-lg border"
-                        style={{
-                          backgroundColor: "var(--color-background)",
-                          borderColor: "var(--color-border)",
-                        }}
-                      >
-                        <Calendar size={14} style={{ color: "var(--color-text)" }} />
-                        <span className="ml-2 text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                          {new Date(task.due_date).toLocaleDateString()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex space-x-2">
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         setSelectedTask(task)
                         setShowEditModal(true)
                       }}
-                      className="px-3 py-2 hover:bg-blue-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 text-sm font-medium"
-                      style={{ color: "var(--color-text)" }}
+                      className="flex-1 min-w-0 px-3 py-2 bg-blue-500 bg-opacity-10 hover:bg-opacity-20 text-blue-600 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-200 text-sm font-medium flex items-center justify-center"
                     >
-                      <Edit size={14} className="inline" />
+                      <Edit size={14} />
                     </button>
 
                     {task.status !== "completed" && (
@@ -690,10 +735,9 @@ export default function TasksPage() {
                           e.stopPropagation()
                           updateTaskStatus(task.id, "completed", task.title)
                         }}
-                        className="px-3 py-2 hover:bg-green-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 text-sm font-medium"
-                        style={{ color: "var(--color-text)" }}
+                        className="flex-1 min-w-0 px-3 py-2 bg-green-500 bg-opacity-10 hover:bg-opacity-20 text-green-600 rounded-xl border border-green-200 hover:border-green-300 transition-all duration-200 text-sm font-medium flex items-center justify-center"
                       >
-                        <Check size={14} className="inline" />
+                        <Check size={14} />
                       </button>
                     )}
 
@@ -702,8 +746,7 @@ export default function TasksPage() {
                         e.stopPropagation()
                         duplicateTask(task)
                       }}
-                      className="px-3 py-2 hover:bg-[var(--color-secondary)] hover:bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
-                      style={{ color: "var(--color-text)" }}
+                      className="px-3 py-2 bg-gray-500 bg-opacity-10 hover:bg-opacity-20 text-gray-600 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200"
                       title="Duplicate"
                     >
                       <Copy size={14} />
@@ -716,8 +759,7 @@ export default function TasksPage() {
                           setTaskToArchive(task)
                           setShowArchiveModal(true)
                         }}
-                        className="px-3 py-2 hover:bg-yellow-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        className="px-3 py-2 bg-yellow-500 bg-opacity-10 hover:bg-opacity-20 text-yellow-600 rounded-xl border border-yellow-200 hover:border-yellow-300 transition-all duration-200"
                         title="Archive"
                       >
                         <Archive size={14} />
@@ -730,8 +772,7 @@ export default function TasksPage() {
                         setTaskToDelete(task)
                         setShowDeleteModal(true)
                       }}
-                      className="px-3 py-2 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200"
-                      style={{ color: "var(--color-text)" }}
+                      className="px-3 py-2 bg-red-500 bg-opacity-10 hover:bg-opacity-20 text-red-600 rounded-xl border border-red-200 hover:border-red-300 transition-all duration-200"
                       title="Delete"
                     >
                       <Trash2 size={14} />
