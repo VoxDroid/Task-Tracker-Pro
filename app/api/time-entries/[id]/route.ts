@@ -84,3 +84,29 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Failed to update time entry" }, { status: 500 })
   }
 }
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const resolvedParams = await params
+    const entryId = Number.parseInt(resolvedParams.id)
+
+    const db = getDatabase()
+
+    // Check if entry exists
+    const entry = db.prepare("SELECT * FROM time_entries WHERE id = ?").get(entryId) as any
+    if (!entry) {
+      return NextResponse.json({ error: "Time entry not found" }, { status: 404 })
+    }
+
+    // Delete the time entry
+    const stmt = db.prepare("DELETE FROM time_entries WHERE id = ?")
+    stmt.run(entryId)
+
+    logActivity("deleted", "time_entry", entryId, `Deleted time entry`)
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("Error deleting time entry:", error)
+    return NextResponse.json({ error: "Failed to delete time entry" }, { status: 500 })
+  }
+}
