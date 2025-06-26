@@ -67,10 +67,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     db.prepare(query).run(...values)
 
     // Log the activity
-    const changes = Object.entries(body)
-      .map(([key, value]) => `${key}: ${value}`)
-      .join(", ")
-    logActivity("updated", "project", projectId, `Updated project: ${changes}`)
+    logActivity("updated", "project", projectId, `Updated project: ${currentProject.name}`)
 
     // Return updated project
     const updatedProject = db.prepare("SELECT * FROM projects WHERE id = ?").get(projectId)
