@@ -345,6 +345,27 @@ export default function TasksPage() {
     return text.substring(0, maxLength) + "..."
   }
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
+  }
+
+  const getTimeSince = (dateString: string) => {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+
+    if (diffInHours < 24) {
+      return `${diffInHours}h ago`
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24)
+      return `${diffInDays}d ago`
+    }
+  }
+
   if (loading) {
     return (
       <Sidebar>
@@ -564,7 +585,7 @@ export default function TasksPage() {
             getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className="group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 min-h-[380px]"
+                className="group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300"
                 style={{
                   backgroundColor: "var(--color-surface)",
                   borderColor: "var(--color-border)",
@@ -582,15 +603,15 @@ export default function TasksPage() {
                 />
 
                 <div className="relative z-10 p-6 h-full flex flex-col">
-                  {/* Header */}
+                  {/* Header - Title and Tags on same line */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
                           toggleTaskSelection(task.id)
                         }}
-                        className={`relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
+                        className={`flex-shrink-0 relative w-6 h-6 rounded-lg border-2 transition-all duration-200 flex items-center justify-center ${
                           selectedTasks.includes(task.id)
                             ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-110"
                             : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-110"
@@ -603,7 +624,7 @@ export default function TasksPage() {
                           e.stopPropagation()
                           toggleFavorite(task.id)
                         }}
-                        className={`p-1 rounded-full transition-all duration-200 ${
+                        className={`flex-shrink-0 p-1 rounded-full transition-all duration-200 ${
                           favoriteTaskIds.includes(task.id)
                             ? "scale-110 text-yellow-500"
                             : "opacity-40 hover:opacity-80 hover:scale-110"
@@ -612,8 +633,15 @@ export default function TasksPage() {
                       >
                         <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
                       </button>
+                      <h3
+                        className="text-lg font-bold leading-tight min-w-0 flex-1"
+                        style={{ color: "var(--color-text)" }}
+                        title={task.title}
+                      >
+                        {truncateText(task.title, 20)}
+                      </h3>
                     </div>
-                    <div className="flex flex-col space-y-2">
+                    <div className="flex flex-col space-y-2 flex-shrink-0 ml-3">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-bold ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text} shadow-sm`}
                       >
@@ -627,156 +655,167 @@ export default function TasksPage() {
                     </div>
                   </div>
 
-                  {/* Content */}
-                  <div className="flex-1 mb-6">
-                    <h3
-                      className="text-xl font-bold mb-3 leading-tight"
+                  {/* Description */}
+                  {task.description && (
+                    <p
+                      className="text-sm opacity-70 leading-relaxed mb-4"
                       style={{ color: "var(--color-text)" }}
-                      title={task.title}
+                      title={task.description}
                     >
-                      {truncateText(task.title, 35)}
-                    </h3>
-                    {task.description && (
-                      <p
-                        className="text-sm opacity-70 leading-relaxed mb-4"
-                        style={{ color: "var(--color-text)" }}
-                        title={task.description}
-                      >
-                        {truncateText(task.description, 80)}
-                      </p>
-                    )}
+                      {truncateText(task.description, 80)}
+                    </p>
+                  )}
 
-                    {/* Task Details */}
-                    <div className="space-y-3">
-                      {task.project_name && (
+                  {/* Task Details */}
+                  <div className="space-y-3 mb-4 flex-1">
+                    {task.project_name && (
+                      <div
+                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
                         <div
-                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
-                          style={{
-                            backgroundColor: "var(--color-background)",
-                            borderColor: "var(--color-border)",
-                          }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
-                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
-                          >
-                            <FolderOpen size={16} style={{ color: priorityConfig[task.priority].color }} />
-                          </div>
-                          <span
-                            className="text-sm font-medium truncate"
-                            style={{ color: "var(--color-text)" }}
-                            title={task.project_name}
-                          >
-                            {truncateText(task.project_name, 18)}
-                          </span>
+                          <FolderOpen size={16} style={{ color: priorityConfig[task.priority].color }} />
                         </div>
-                      )}
-                      {task.assigned_to && (
+                        <span
+                          className="text-sm font-medium truncate"
+                          style={{ color: "var(--color-text)" }}
+                          title={task.project_name}
+                        >
+                          {truncateText(task.project_name, 18)}
+                        </span>
+                      </div>
+                    )}
+                    {task.assigned_to && (
+                      <div
+                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
                         <div
-                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
-                          style={{
-                            backgroundColor: "var(--color-background)",
-                            borderColor: "var(--color-border)",
-                          }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
-                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
-                          >
-                            <User size={16} style={{ color: priorityConfig[task.priority].color }} />
-                          </div>
-                          <span
-                            className="text-sm font-medium truncate"
-                            style={{ color: "var(--color-text)" }}
-                            title={task.assigned_to}
-                          >
-                            {truncateText(task.assigned_to, 15)}
-                          </span>
+                          <User size={16} style={{ color: priorityConfig[task.priority].color }} />
                         </div>
-                      )}
-                      {task.due_date && (
+                        <span
+                          className="text-sm font-medium truncate"
+                          style={{ color: "var(--color-text)" }}
+                          title={task.assigned_to}
+                        >
+                          {truncateText(task.assigned_to, 15)}
+                        </span>
+                      </div>
+                    )}
+                    {task.due_date && (
+                      <div
+                        className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
                         <div
-                          className="flex items-center p-3 rounded-xl border backdrop-blur-sm"
-                          style={{
-                            backgroundColor: "var(--color-background)",
-                            borderColor: "var(--color-border)",
-                          }}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
+                          style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
                         >
-                          <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center mr-3"
-                            style={{ backgroundColor: priorityConfig[task.priority].color + "20" }}
-                          >
-                            <Calendar size={16} style={{ color: priorityConfig[task.priority].color }} />
-                          </div>
-                          <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                            {new Date(task.due_date).toLocaleDateString()}
-                          </span>
+                          <Calendar size={16} style={{ color: priorityConfig[task.priority].color }} />
                         </div>
-                      )}
-                    </div>
+                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                          {new Date(task.due_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Metadata */}
+                  <div
+                    className="flex items-center justify-between text-xs opacity-60 mb-4"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    <span>Created {formatDate(task.created_at)}</span>
+                    {task.updated_at !== task.created_at && <span>Updated {getTimeSince(task.updated_at)}</span>}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedTask(task)
-                        setShowEditModal(true)
-                      }}
-                      className="flex-1 min-w-0 px-3 py-2 bg-blue-500 bg-opacity-10 hover:bg-opacity-20 text-blue-600 rounded-xl border border-blue-200 hover:border-blue-300 transition-all duration-200 text-sm font-medium flex items-center justify-center"
-                    >
-                      <Edit size={14} />
-                    </button>
-
-                    {task.status !== "completed" && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
-                          updateTaskStatus(task.id, "completed", task.title)
+                          setSelectedTask(task)
+                          setShowEditModal(true)
                         }}
-                        className="flex-1 min-w-0 px-3 py-2 bg-green-500 bg-opacity-10 hover:bg-opacity-20 text-green-600 rounded-xl border border-green-200 hover:border-green-300 transition-all duration-200 text-sm font-medium flex items-center justify-center"
+                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Edit"
                       >
-                        <Check size={14} />
+                        <Edit size={16} />
                       </button>
-                    )}
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        duplicateTask(task)
-                      }}
-                      className="px-3 py-2 bg-gray-500 bg-opacity-10 hover:bg-opacity-20 text-gray-600 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-200"
-                      title="Duplicate"
-                    >
-                      <Copy size={14} />
-                    </button>
+                      {task.status !== "completed" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            updateTaskStatus(task.id, "completed", task.title)
+                          }}
+                          className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-green-500 hover:bg-opacity-10 transition-all duration-200"
+                          style={{ color: "var(--color-text)" }}
+                          title="Complete"
+                        >
+                          <Check size={16} />
+                        </button>
+                      )}
 
-                    {task.status !== "archived" && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation()
-                          setTaskToArchive(task)
-                          setShowArchiveModal(true)
+                          duplicateTask(task)
                         }}
-                        className="px-3 py-2 bg-yellow-500 bg-opacity-10 hover:bg-opacity-20 text-yellow-600 rounded-xl border border-yellow-200 hover:border-yellow-300 transition-all duration-200"
-                        title="Archive"
+                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-[var(--color-secondary)] hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Duplicate"
                       >
-                        <Archive size={14} />
+                        <Copy size={16} />
                       </button>
-                    )}
+                    </div>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setTaskToDelete(task)
-                        setShowDeleteModal(true)
-                      }}
-                      className="px-3 py-2 bg-red-500 bg-opacity-10 hover:bg-opacity-20 text-red-600 rounded-xl border border-red-200 hover:border-red-300 transition-all duration-200"
-                      title="Delete"
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    <div className="flex space-x-2">
+                      {task.status !== "archived" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setTaskToArchive(task)
+                            setShowArchiveModal(true)
+                          }}
+                          className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-yellow-500 hover:bg-opacity-10 transition-all duration-200"
+                          style={{ color: "var(--color-text)" }}
+                          title="Archive"
+                        >
+                          <Archive size={16} />
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setTaskToDelete(task)
+                          setShowDeleteModal(true)
+                        }}
+                        className="p-2 rounded-lg border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
