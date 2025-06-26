@@ -1,11 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getDatabase, logActivity } from "@/lib/database"
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const entryId = Number.parseInt(params.id)
+    const resolvedParams = await params
+    const entryId = Number.parseInt(resolvedParams.id)
     const body = await request.json()
-    const { end_time } = body
+    const { end_time, description } = body
 
     const db = getDatabase()
 
@@ -15,34 +16,69 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
       return NextResponse.json({ error: "Time entry not found" }, { status: 404 })
     }
 
-    // Calculate duration
-    const startTime = new Date(currentEntry.start_time)
-    const endTime = new Date(end_time)
-    const duration = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60)) // in minutes
+    // If updating description only
+    if (description !== undefined && !end_time) {
+      const stmt = db.prepare(`
+        UPDATE time_entries 
+        SET description = ?
+        WHERE id = ?
+      `)
+      stmt.run(description, entryId)
 
-    // Update entry
-    const stmt = db.prepare(`
-      UPDATE time_entries 
-      SET end_time = ?, duration = ?
-      WHERE id = ?
-    `)
+      logActivity("updated", "time_entry", entryId, `Updated time entry description`)
 
-    stmt.run(end_time, duration, entryId)
+      // Return updated entry
+      const updatedEntry = db
+        .prepare(`
+        SELECT te.*, t.title as task_title, p.name as project_name
+        FROM time_entries te
+        JOIN tasks t ON te.task_id = t.id
+        LEFT JOIN projects p ON t.project_id = p.id
+        WHERE te.id = ?
+      `)
+        .get(entryId)
 
-    logActivity("stopped", "time_entry", entryId, `Stopped time tracking (${duration} minutes)`)
+      return NextResponse.json(updatedEntry)
+    }
 
-    // Return updated entry
-    const updatedEntry = db
-      .prepare(`
-      SELECT te.*, t.title as task_title, p.name as project_name
-      FROM time_entries te
-      JOIN tasks t ON te.task_id = t.id
-      LEFT JOIN projects p ON t.project_id = p.id
-      WHERE te.id = ?
-    `)
-      .get(entryId)
+    // If stopping timer (updating end_time)
+    if (end_time) {
+      // Calculate duration in seconds
+      const startTime = new Date(currentEntry.start_time)
+      const endTime = new Date(end_time)
+      const durationSeconds = Math.round((endTime.getTime() - startTime.getTime()) / 1000)
 
-    return NextResponse.json(updatedEntry)
+      // Update entry with end_time and duration in seconds
+      const stmt = db.prepare(`
+        UPDATE time_entries 
+        SET end_time = ?, duration = ?
+        WHERE id = ?
+      `)
+
+      stmt.run(end_time, durationSeconds, entryId)
+
+      logActivity(
+        "stopped",
+        "time_entry",
+        entryId,
+        `Stopped time tracking (${Math.floor(durationSeconds / 60)}m ${durationSeconds % 60}s)`,
+      )
+
+      // Return updated entry
+      const updatedEntry = db
+        .prepare(`
+        SELECT te.*, t.title as task_title, p.name as project_name
+        FROM time_entries te
+        JOIN tasks t ON te.task_id = t.id
+        LEFT JOIN projects p ON t.project_id = p.id
+        WHERE te.id = ?
+      `)
+        .get(entryId)
+
+      return NextResponse.json(updatedEntry)
+    }
+
+    return NextResponse.json({ error: "No valid update data provided" }, { status: 400 })
   } catch (error) {
     console.error("Error updating time entry:", error)
     return NextResponse.json({ error: "Failed to update time entry" }, { status: 500 })
