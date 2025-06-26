@@ -26,10 +26,18 @@ export default function TimeEntryModal({
   const [loading, setLoading] = useState(false)
   const { addNotification } = useNotification()
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`
+  const formatDurationFromSeconds = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+
+    if (hours > 0) {
+      return `${hours}h ${minutes}m ${secs}s`
+    } else if (minutes > 0) {
+      return `${minutes}m ${secs}s`
+    } else {
+      return `${secs}s`
+    }
   }
 
   const formatTime = (seconds: number) => {
@@ -58,6 +66,7 @@ export default function TimeEntryModal({
         })
         setIsEditing(false)
         onSuccess()
+        onClose()
       }
     } catch (error) {
       addNotification({
@@ -112,7 +121,7 @@ export default function TimeEntryModal({
       <div className="space-y-6">
         {/* Task Info */}
         <div
-          className="p-4 rounded-xl border-2"
+          className="p-4 rounded-2xl border-2"
           style={{
             backgroundColor: "var(--color-background)",
             borderColor: "var(--color-border)",
@@ -131,10 +140,9 @@ export default function TimeEntryModal({
         {/* Active Timer Display */}
         {isActive && (
           <div
-            className="p-6 rounded-xl border-2 text-center"
+            className="p-6 rounded-2xl border-2 text-center"
             style={{
-              backgroundColor: "var(--color-primary)",
-              backgroundOpacity: "0.1",
+              backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-border)",
             }}
           >
@@ -147,7 +155,7 @@ export default function TimeEntryModal({
             </div>
             <button
               onClick={handleStop}
-              className="flex items-center px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 hover:bg-opacity-30 transition-all duration-200 font-medium mx-auto"
+              className="flex items-center px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-all duration-200 font-medium mx-auto"
               style={{
                 color: "var(--color-text)",
                 borderColor: "var(--color-border)",
@@ -162,10 +170,9 @@ export default function TimeEntryModal({
         {/* Time Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div
-            className="p-4 rounded-xl border-2"
+            className="p-4 rounded-2xl border-2"
             style={{
-              backgroundColor: "var(--color-accent)",
-              backgroundOpacity: "0.1",
+              backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-border)",
             }}
           >
@@ -177,18 +184,17 @@ export default function TimeEntryModal({
             </div>
             <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
               {!isActive && entry.duration
-                ? formatDuration(entry.duration)
+                ? formatDurationFromSeconds(entry.duration)
                 : isActive && currentTime !== undefined
                   ? formatTime(currentTime)
-                  : "0m"}
+                  : "0s"}
             </p>
           </div>
 
           <div
-            className="p-4 rounded-xl border-2"
+            className="p-4 rounded-2xl border-2"
             style={{
-              backgroundColor: "var(--color-secondary)",
-              backgroundOpacity: "0.1",
+              backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-border)",
             }}
           >
@@ -221,7 +227,7 @@ export default function TimeEntryModal({
                   setIsEditing(!isEditing)
                   setDescription(entry.description || "")
                 }}
-                className="flex items-center px-3 py-1 bg-[var(--color-primary)] bg-opacity-20 rounded-lg border-2 hover:bg-opacity-30 transition-colors text-sm font-medium"
+                className="flex items-center px-3 py-1 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors text-sm font-medium"
                 style={{
                   color: "var(--color-text)",
                   borderColor: "var(--color-border)",
@@ -238,7 +244,7 @@ export default function TimeEntryModal({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-2xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
                   style={{
                     backgroundColor: "var(--color-background)",
                     borderColor: "var(--color-border)",
@@ -249,7 +255,7 @@ export default function TimeEntryModal({
                 <button
                   onClick={handleUpdateDescription}
                   disabled={loading}
-                  className="px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-xl border-2 hover:bg-opacity-30 disabled:opacity-50 transition-colors font-medium"
+                  className="px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] disabled:opacity-50 transition-colors font-medium"
                   style={{
                     color: "var(--color-text)",
                     borderColor: "var(--color-border)",
@@ -260,7 +266,7 @@ export default function TimeEntryModal({
               </div>
             ) : (
               <div
-                className="p-4 rounded-xl border-2 min-h-[80px]"
+                className="p-4 rounded-2xl border-2 min-h-[80px]"
                 style={{
                   backgroundColor: "var(--color-background)",
                   borderColor: "var(--color-border)",
@@ -277,7 +283,7 @@ export default function TimeEntryModal({
           {!isActive && (
             <button
               onClick={handleDelete}
-              className="flex items-center px-4 py-2 bg-red-500 bg-opacity-20 rounded-xl border-2 hover:bg-opacity-30 transition-colors font-medium"
+              className="flex items-center px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors font-medium"
               style={{
                 color: "var(--color-text)",
                 borderColor: "var(--color-border)",
@@ -289,7 +295,7 @@ export default function TimeEntryModal({
           )}
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-[var(--color-surface)] rounded-xl border-2 hover:shadow-md transition-colors font-medium ml-auto"
+            className="px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:shadow-md transition-colors font-medium ml-auto"
             style={{
               color: "var(--color-text)",
               borderColor: "var(--color-border)",
