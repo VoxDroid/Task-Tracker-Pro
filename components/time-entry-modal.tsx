@@ -2,7 +2,7 @@
 import { useState } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
-import { Clock, Edit, Trash2, Play, Square, Timer } from "lucide-react"
+import { Clock, Edit, Trash2, Play, Square, Timer, AlertTriangle } from "lucide-react"
 
 interface TimeEntryModalProps {
   isOpen: boolean
@@ -22,8 +22,10 @@ export default function TimeEntryModal({
   currentTime,
 }: TimeEntryModalProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [description, setDescription] = useState("")
   const [loading, setLoading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const { addNotification } = useNotification()
 
   const formatDurationFromSeconds = (seconds: number) => {
@@ -80,8 +82,9 @@ export default function TimeEntryModal({
   }
 
   const handleDelete = async () => {
-    if (!entry || !confirm("Are you sure you want to delete this time entry?")) return
+    if (!entry) return
 
+    setDeleting(true)
     try {
       const response = await fetch(`/api/time-entries/${entry.id}`, {
         method: "DELETE",
@@ -102,6 +105,9 @@ export default function TimeEntryModal({
         title: "Error",
         message: "Failed to delete time entry. Please try again.",
       })
+    } finally {
+      setDeleting(false)
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -117,194 +123,236 @@ export default function TimeEntryModal({
   const isActive = entry.isActive || (!entry.end_time && currentTime !== undefined)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isActive ? "Active Time Entry" : "Time Entry Details"}>
-      <div className="space-y-6">
-        {/* Task Info */}
-        <div
-          className="p-4 rounded-2xl border-2"
-          style={{
-            backgroundColor: "var(--color-background)",
-            borderColor: "var(--color-border)",
-          }}
-        >
-          <h3 className="font-bold mb-2" style={{ color: "var(--color-text)" }}>
-            {entry.task_title}
-          </h3>
-          {entry.project_name && (
-            <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
-              {entry.project_name}
-            </p>
-          )}
-        </div>
-
-        {/* Active Timer Display */}
-        {isActive && (
-          <div
-            className="p-6 rounded-2xl border-2 text-center"
-            style={{
-              backgroundColor: "var(--color-surface)",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse mr-3"></div>
-              <Timer className="w-6 h-6" style={{ color: "var(--color-text)" }} />
-            </div>
-            <div className="text-4xl font-bold font-mono mb-4" style={{ color: "var(--color-text)" }}>
-              {currentTime !== undefined ? formatTime(currentTime) : "Running..."}
-            </div>
-            <button
-              onClick={handleStop}
-              className="flex items-center px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-all duration-200 font-medium mx-auto"
-              style={{
-                color: "var(--color-text)",
-                borderColor: "var(--color-border)",
-              }}
-            >
-              <Square size={16} />
-              <span className="ml-2">Stop Timer</span>
-            </button>
-          </div>
-        )}
-
-        {/* Time Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <>
+      <Modal isOpen={isOpen} onClose={onClose} title={isActive ? "Active Time Entry" : "Time Entry Details"}>
+        <div className="space-y-6">
+          {/* Task Info */}
           <div
             className="p-4 rounded-2xl border-2"
             style={{
-              backgroundColor: "var(--color-surface)",
+              backgroundColor: "var(--color-background)",
               borderColor: "var(--color-border)",
             }}
           >
-            <div className="flex items-center mb-2">
-              <Clock className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
-              <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                Duration
-              </span>
-            </div>
-            <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
-              {!isActive && entry.duration
-                ? formatDurationFromSeconds(entry.duration)
-                : isActive && currentTime !== undefined
-                  ? formatTime(currentTime)
-                  : "0s"}
-            </p>
-          </div>
-
-          <div
-            className="p-4 rounded-2xl border-2"
-            style={{
-              backgroundColor: "var(--color-surface)",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            <div className="flex items-center mb-2">
-              <Play className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
-              <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                Started
-              </span>
-            </div>
-            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
-              {new Date(entry.start_time).toLocaleString()}
-            </p>
-            {entry.end_time && (
-              <p className="text-sm opacity-60 mt-1" style={{ color: "var(--color-text)" }}>
-                Ended: {new Date(entry.end_time).toLocaleString()}
+            <h3 className="font-bold mb-2" style={{ color: "var(--color-text)" }}>
+              {entry.task_title}
+            </h3>
+            {entry.project_name && (
+              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                {entry.project_name}
               </p>
             )}
           </div>
-        </div>
 
-        {/* Description */}
-        {!isActive && (
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                Description
-              </label>
+          {/* Active Timer Display */}
+          {isActive && (
+            <div
+              className="p-6 rounded-2xl border-2 text-center"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse mr-3"></div>
+                <Timer className="w-6 h-6" style={{ color: "var(--color-text)" }} />
+              </div>
+              <div className="text-4xl font-bold font-mono mb-4" style={{ color: "var(--color-text)" }}>
+                {currentTime !== undefined ? formatTime(currentTime) : "Running..."}
+              </div>
               <button
-                onClick={() => {
-                  setIsEditing(!isEditing)
-                  setDescription(entry.description || "")
-                }}
-                className="flex items-center px-3 py-1 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors text-sm font-medium"
+                onClick={handleStop}
+                className="flex items-center px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-all duration-200 font-medium mx-auto"
                 style={{
                   color: "var(--color-text)",
                   borderColor: "var(--color-border)",
                 }}
               >
-                <Edit size={14} />
-                <span className="ml-1">{isEditing ? "Cancel" : "Edit"}</span>
+                <Square size={16} />
+                <span className="ml-2">Stop Timer</span>
               </button>
             </div>
+          )}
 
-            {isEditing ? (
-              <div className="space-y-3">
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-2xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
-                  style={{
-                    backgroundColor: "var(--color-background)",
-                    borderColor: "var(--color-border)",
-                    color: "var(--color-text)",
-                  }}
-                  placeholder="Add a description for this time entry..."
-                />
+          {/* Time Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div
+              className="p-4 rounded-2xl border-2"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center mb-2">
+                <Clock className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                  Duration
+                </span>
+              </div>
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                {!isActive && entry.duration
+                  ? formatDurationFromSeconds(entry.duration)
+                  : isActive && currentTime !== undefined
+                    ? formatTime(currentTime)
+                    : "0s"}
+              </p>
+            </div>
+
+            <div
+              className="p-4 rounded-2xl border-2"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="flex items-center mb-2">
+                <Play className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                  Started
+                </span>
+              </div>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
+                {new Date(entry.start_time).toLocaleString()}
+              </p>
+              {entry.end_time && (
+                <p className="text-sm opacity-60 mt-1" style={{ color: "var(--color-text)" }}>
+                  Ended: {new Date(entry.end_time).toLocaleString()}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Description */}
+          {!isActive && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                  Description
+                </label>
                 <button
-                  onClick={handleUpdateDescription}
-                  disabled={loading}
-                  className="px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] disabled:opacity-50 transition-colors font-medium"
+                  onClick={() => {
+                    setIsEditing(!isEditing)
+                    setDescription(entry.description || "")
+                  }}
+                  className="flex items-center px-3 py-1 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors text-sm font-medium"
                   style={{
                     color: "var(--color-text)",
                     borderColor: "var(--color-border)",
                   }}
                 >
-                  {loading ? "Saving..." : "Save Description"}
+                  <Edit size={14} />
+                  <span className="ml-1">{isEditing ? "Cancel" : "Edit"}</span>
                 </button>
               </div>
-            ) : (
-              <div
-                className="p-4 rounded-2xl border-2 min-h-[80px]"
+
+              {isEditing ? (
+                <div className="space-y-3">
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-2xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
+                    style={{
+                      backgroundColor: "var(--color-background)",
+                      borderColor: "var(--color-border)",
+                      color: "var(--color-text)",
+                    }}
+                    placeholder="Add a description for this time entry..."
+                  />
+                  <button
+                    onClick={handleUpdateDescription}
+                    disabled={loading}
+                    className="px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] disabled:opacity-50 transition-colors font-medium"
+                    style={{
+                      color: "var(--color-text)",
+                      borderColor: "var(--color-border)",
+                    }}
+                  >
+                    {loading ? "Saving..." : "Save Description"}
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="p-4 rounded-2xl border-2 min-h-[80px]"
+                  style={{
+                    backgroundColor: "var(--color-background)",
+                    borderColor: "var(--color-border)",
+                  }}
+                >
+                  <p style={{ color: "var(--color-text)" }}>{entry.description || "No description added"}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex justify-between pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
+            {!isActive && (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors font-medium"
                 style={{
-                  backgroundColor: "var(--color-background)",
+                  color: "var(--color-text)",
                   borderColor: "var(--color-border)",
                 }}
               >
-                <p style={{ color: "var(--color-text)" }}>{entry.description || "No description added"}</p>
-              </div>
+                <Trash2 size={16} />
+                <span className="ml-2">Delete Entry</span>
+              </button>
             )}
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex justify-between pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
-          {!isActive && (
             <button
-              onClick={handleDelete}
-              className="flex items-center px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors font-medium"
+              onClick={onClose}
+              className="px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:shadow-md transition-colors font-medium ml-auto"
               style={{
                 color: "var(--color-text)",
                 borderColor: "var(--color-border)",
               }}
             >
-              <Trash2 size={16} />
-              <span className="ml-2">Delete Entry</span>
+              Close
             </button>
-          )}
-          <button
-            onClick={onClose}
-            className="px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 hover:shadow-md transition-colors font-medium ml-auto"
-            style={{
-              color: "var(--color-text)",
-              borderColor: "var(--color-border)",
-            }}
-          >
-            Close
-          </button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Delete Time Entry">
+        <div className="space-y-6">
+          <div className="flex items-center space-x-4">
+            <div className="flex-shrink-0">
+              <AlertTriangle className="w-8 h-8 text-red-500" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text)" }}>
+                Are you sure you want to delete this time entry?
+              </h3>
+              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                This action cannot be undone. The time entry for "{entry.task_title}" will be permanently deleted.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={deleting}
+              className="px-4 py-2 bg-[var(--color-surface)] rounded-2xl border-2 hover:bg-[var(--color-background)] transition-colors font-medium"
+              style={{
+                color: "var(--color-text)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="px-4 py-2 bg-red-500 bg-opacity-20 rounded-2xl border-2 border-red-500 border-opacity-30 hover:bg-opacity-30 disabled:opacity-50 transition-colors font-medium text-red-600"
+            >
+              {deleting ? "Deleting..." : "Delete Entry"}
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
   )
 }
