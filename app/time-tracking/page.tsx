@@ -189,6 +189,16 @@ export default function TimeTrackingPage() {
     setShowEntryModal(true)
   }
 
+  const truncateTaskName = (name: string, maxLength = 15) => {
+    if (name.length <= maxLength) return name
+    return name.substring(0, maxLength) + "..."
+  }
+
+  const truncateProjectName = (name: string, maxLength = 12) => {
+    if (name.length <= maxLength) return name
+    return name.substring(0, maxLength) + "..."
+  }
+
   if (loading) {
     return (
       <Sidebar>
@@ -311,29 +321,40 @@ export default function TimeTrackingPage() {
           <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
             Start Timer for Task
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="p-4 bg-[var(--color-background)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-md transition-all duration-200"
+                className="relative overflow-hidden p-4 bg-gradient-to-br from-[var(--color-background)] to-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200"
               >
-                <h4 className="font-semibold mb-2" style={{ color: "var(--color-text)" }}>
-                  {task.title}
-                </h4>
-                {task.project_name && (
-                  <p className="text-sm opacity-70 mb-3" style={{ color: "var(--color-text)" }}>
-                    {task.project_name}
-                  </p>
-                )}
-                <button
-                  onClick={() => startTimer(task.id)}
-                  disabled={!!activeTimer}
-                  className="flex items-center px-4 py-2 bg-green-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center"
-                  style={{ color: "var(--color-text)" }}
-                >
-                  <Play size={16} />
-                  <span className="ml-2">Start</span>
-                </button>
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[var(--color-primary)] opacity-5"></div>
+                <div className="relative z-10">
+                  <h4
+                    className="font-semibold mb-2 text-sm leading-tight"
+                    style={{ color: "var(--color-text)" }}
+                    title={task.title}
+                  >
+                    {truncateTaskName(task.title)}
+                  </h4>
+                  {task.project_name && (
+                    <p
+                      className="text-xs opacity-70 mb-3 leading-tight"
+                      style={{ color: "var(--color-text)" }}
+                      title={task.project_name}
+                    >
+                      {truncateProjectName(task.project_name)}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => startTimer(task.id)}
+                    disabled={!!activeTimer}
+                    className="flex items-center px-3 py-2 bg-green-500 bg-opacity-20 rounded-lg border border-green-300 hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    <Play size={14} />
+                    <span className="ml-1">Start</span>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -380,28 +401,40 @@ export default function TimeTrackingPage() {
                   onClick={() => handleEntryClick(entry)}
                   className="w-full text-left flex items-center justify-between p-6 bg-[var(--color-background)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200"
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0 pr-4">
                     <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="font-semibold" style={{ color: "var(--color-text)" }}>
-                        {entry.task_title}
+                      <h4
+                        className="font-semibold text-sm leading-tight"
+                        style={{ color: "var(--color-text)" }}
+                        title={entry.task_title}
+                      >
+                        {entry.task_title && entry.task_title.length > 25
+                          ? entry.task_title.substring(0, 25) + "..."
+                          : entry.task_title}
                       </h4>
                       {!entry.end_time && entry.id === activeTimer && (
-                        <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">
+                        <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full flex-shrink-0">
                           RUNNING
                         </span>
                       )}
                     </div>
                     {entry.project_name && (
-                      <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
-                        {entry.project_name}
+                      <p
+                        className="text-xs opacity-70 mb-1 leading-tight"
+                        style={{ color: "var(--color-text)" }}
+                        title={entry.project_name}
+                      >
+                        {entry.project_name.length > 20
+                          ? entry.project_name.substring(0, 20) + "..."
+                          : entry.project_name}
                       </p>
                     )}
-                    <p className="text-sm opacity-60 mt-1" style={{ color: "var(--color-text)" }}>
+                    <p className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
                       {new Date(entry.start_time).toLocaleString()}
                       {entry.end_time && ` - ${new Date(entry.end_time).toLocaleString()}`}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex-shrink-0">
                     <div className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
                       {entry.duration ? formatDuration(entry.duration) : formatTime(currentTime)}
                     </div>
