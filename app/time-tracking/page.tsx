@@ -189,12 +189,12 @@ export default function TimeTrackingPage() {
     setShowEntryModal(true)
   }
 
-  const truncateTaskName = (name: string, maxLength = 15) => {
+  const truncateTaskName = (name: string, maxLength = 12) => {
     if (name.length <= maxLength) return name
     return name.substring(0, maxLength) + "..."
   }
 
-  const truncateProjectName = (name: string, maxLength = 12) => {
+  const truncateProjectName = (name: string, maxLength = 10) => {
     if (name.length <= maxLength) return name
     return name.substring(0, maxLength) + "..."
   }
@@ -325,30 +325,32 @@ export default function TimeTrackingPage() {
             {tasks.map((task) => (
               <div
                 key={task.id}
-                className="relative overflow-hidden p-4 bg-gradient-to-br from-[var(--color-background)] to-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200"
+                className="relative overflow-hidden p-4 bg-gradient-to-br from-[var(--color-background)] to-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 flex flex-col h-32"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[var(--color-primary)] opacity-5"></div>
-                <div className="relative z-10">
-                  <h4
-                    className="font-semibold mb-2 text-sm leading-tight"
-                    style={{ color: "var(--color-text)" }}
-                    title={task.title}
-                  >
-                    {truncateTaskName(task.title)}
-                  </h4>
-                  {task.project_name && (
-                    <p
-                      className="text-xs opacity-70 mb-3 leading-tight"
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className="flex-1 mb-3">
+                    <h4
+                      className="font-semibold text-sm leading-tight mb-1"
                       style={{ color: "var(--color-text)" }}
-                      title={task.project_name}
+                      title={task.title}
                     >
-                      {truncateProjectName(task.project_name)}
-                    </p>
-                  )}
+                      {truncateTaskName(task.title)}
+                    </h4>
+                    {task.project_name && (
+                      <p
+                        className="text-xs opacity-70 leading-tight"
+                        style={{ color: "var(--color-text)" }}
+                        title={task.project_name}
+                      >
+                        {truncateProjectName(task.project_name)}
+                      </p>
+                    )}
+                  </div>
                   <button
                     onClick={() => startTimer(task.id)}
                     disabled={!!activeTimer}
-                    className="flex items-center px-3 py-2 bg-green-500 bg-opacity-20 rounded-lg border border-green-300 hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm"
+                    className="flex items-center px-3 py-2 bg-green-500 bg-opacity-20 rounded-lg border border-green-300 hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm mt-auto"
                     style={{ color: "var(--color-text)" }}
                   >
                     <Play size={14} />
