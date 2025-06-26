@@ -90,7 +90,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Task not found" }, { status: 404 })
     }
 
-    logActivity("updated", "task", taskId, `Updated task`)
+    // Get current task name for logging
+    const currentTask = executeQuery("SELECT title FROM tasks WHERE id = ?", [taskId])[0] as any
+    logActivity("updated", "task", taskId, `Updated task: ${currentTask?.title || "Unknown"}`)
 
     const task = executeQuery(
       `
@@ -172,7 +174,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Task not found" }, { status: 404 })
     }
 
-    logActivity("updated", "task", taskId, `Updated task`)
+    // Get current task name for logging
+    const currentTask = executeQuery("SELECT title FROM tasks WHERE id = ?", [taskId])[0] as any
+    logActivity("updated", "task", taskId, `Updated task: ${currentTask?.title || "Unknown"}`)
 
     const task = executeQuery(
       `
