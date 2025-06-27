@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Task Tracker Pro",
   description: "Advanced task tracking and project management application",
-    generator: 'v0.dev'
+    generator: 'VoxDroid'
 }
 
 export default function RootLayout({
