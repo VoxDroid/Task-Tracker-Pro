@@ -5,6 +5,7 @@ import Link from "next/link"
 import Sidebar from "@/components/sidebar"
 import ProjectFormModal from "@/components/project-form-modal"
 import ProjectEditModal from "@/components/project-edit-modal"
+import { useNotification } from "@/components/notification"
 import {
   Plus,
   FolderOpen,
@@ -17,6 +18,7 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Trash2,
 } from "lucide-react"
 
 const ITEMS_PER_PAGE = 6
@@ -30,6 +32,9 @@ export default function ProjectsPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<any>(null)
+  const { addNotification } = useNotification()
 
   useEffect(() => {
     fetchProjects()
@@ -66,6 +71,33 @@ export default function ProjectsPage() {
       setProjects([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const deleteProject = async () => {
+    if (!projectToDelete) return
+
+    try {
+      const response = await fetch(`/api/projects/${projectToDelete.id}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        addNotification({
+          type: "success",
+          title: "Project Deleted",
+          message: `Project "${projectToDelete.name}" has been permanently deleted.`,
+        })
+        fetchProjects()
+        setShowDeleteModal(false)
+        setProjectToDelete(null)
+      }
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to delete project. Please try again.",
+      })
     }
   }
 
@@ -382,6 +414,17 @@ export default function ProjectsPage() {
                   >
                     Edit
                   </button>
+                  <button
+                    onClick={() => {
+                      setProjectToDelete(project)
+                      setShowDeleteModal(true)
+                    }}
+                    className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                    title="Delete Project"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             ))
@@ -422,6 +465,50 @@ export default function ProjectsPage() {
             >
               <ChevronRight size={20} />
             </button>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && projectToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
+            <div
+              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                  Delete Project
+                </h3>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                  Are you sure you want to delete "{projectToDelete.name}"? This action cannot be undone.
+                </p>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(false)
+                      setProjectToDelete(null)
+                    }}
+                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={deleteProject}
+                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
