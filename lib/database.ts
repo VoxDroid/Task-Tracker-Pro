@@ -90,7 +90,9 @@ export function getDatabase(): Database.Database {
       }
 
       setupDatabase(db)
-      initializeTables()
+
+      // Always initialize tables to ensure they exist
+      initializeTables(db)
 
       if (!testDatabaseIntegrity(db)) {
         throw new Error("Database integrity check failed after initialization")
@@ -117,7 +119,7 @@ export function getDatabase(): Database.Database {
         console.error("All database initialization attempts failed, using in-memory database")
         db = new Database(":memory:")
         setupDatabase(db)
-        initializeTables()
+        initializeTables(db)
         dbInitialized = true
         return db
       }
@@ -127,8 +129,8 @@ export function getDatabase(): Database.Database {
   throw new Error("Failed to initialize database")
 }
 
-function initializeTables(): void {
-  if (!db) return
+function initializeTables(database: Database.Database): void {
+  if (!database) return
 
   const tables = [
     `CREATE TABLE IF NOT EXISTS projects (
@@ -206,20 +208,20 @@ function initializeTables(): void {
   ]
 
   try {
-    db.exec("BEGIN TRANSACTION")
+    database.exec("BEGIN TRANSACTION")
 
     for (const tableSQL of tables) {
-      db.exec(tableSQL)
+      database.exec(tableSQL)
     }
 
     for (const indexSQL of indexes) {
-      db.exec(indexSQL)
+      database.exec(indexSQL)
     }
 
-    db.exec("COMMIT")
+    database.exec("COMMIT")
   } catch (error) {
     try {
-      db.exec("ROLLBACK")
+      database.exec("ROLLBACK")
     } catch (rollbackError) {
       console.warn("Rollback failed:", rollbackError)
     }
