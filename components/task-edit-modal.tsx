@@ -90,32 +90,6 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
     }
   }
 
-  const handleDelete = async () => {
-    if (!task || !confirm("Are you sure you want to delete this task?")) return
-
-    try {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: "DELETE",
-      })
-
-      if (response.ok) {
-        addNotification({
-          type: "success",
-          title: "Task Deleted",
-          message: `Task "${task.title}" has been deleted successfully.`,
-        })
-        onSuccess()
-        onClose()
-      }
-    } catch (error) {
-      addNotification({
-        type: "error",
-        title: "Error",
-        message: "Failed to delete task. Please try again.",
-      })
-    }
-  }
-
   if (!task) return null
 
   return (
@@ -213,14 +187,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
         </div>
 
-        <div className="flex justify-between pt-4 border-t-2 border-gray-100">
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="px-6 py-3 text-red-700 bg-red-100 rounded-xl border-2 border-black hover:bg-red-200 transition-colors font-medium"
-          >
-            Delete Task
-          </button>
+        <div className="flex justify-end pt-4 border-t-2 border-gray-100">
           <div className="flex space-x-3">
             <button
               type="button"
