@@ -7,9 +7,18 @@ import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import { useTheme } from "@/components/theme-provider"
 import { Settings, Palette, Database, Download, Upload, Trash2, Monitor, Moon, Sun } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
+  const [showResetModal, setShowResetModal] = useState(false)
   const { addNotification } = useNotification()
   const { currentTheme, setTheme, themes, customTheme, setCustomTheme } = useTheme()
   const [customColors, setCustomColors] = useState({
@@ -23,10 +32,6 @@ export default function SettingsPage() {
   })
 
   const resetDatabase = async () => {
-    if (!confirm("Are you sure you want to reset the database? This will delete ALL data and cannot be undone!")) {
-      return
-    }
-
     setLoading(true)
     try {
       const response = await fetch("/api/database/reset", {
@@ -51,6 +56,7 @@ export default function SettingsPage() {
       })
     } finally {
       setLoading(false)
+      setShowResetModal(false)
     }
   }
 
@@ -327,17 +333,108 @@ export default function SettingsPage() {
                   Delete all data and start fresh
                 </p>
                 <button
-                  onClick={resetDatabase}
-                  disabled={loading}
-                  className="px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setShowResetModal(true)}
+                  className="px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
                   style={{ color: "var(--color-text)" }}
                 >
-                  {loading ? "Resetting..." : "Reset"}
+                  Reset
                 </button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Reset Database Confirmation Modal */}
+        <Dialog open={showResetModal} onOpenChange={setShowResetModal}>
+          <DialogContent
+            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl shadow-2xl max-w-md"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              borderColor: "var(--color-border)",
+              color: "var(--color-text)",
+            }}
+          >
+            <DialogHeader className="space-y-4">
+              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" }}>
+                <div
+                  className="w-12 h-12 bg-red-500 bg-opacity-10 rounded-xl flex items-center justify-center mr-4 border-2"
+                  style={{ borderColor: "var(--color-border)" }}
+                >
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                Reset Database
+              </DialogTitle>
+              <DialogDescription
+                className="text-base leading-relaxed"
+                style={{ color: "var(--color-text)", opacity: 0.8 }}
+              >
+                Are you sure you want to reset the database? This will permanently delete ALL your data including:
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-6 space-y-6">
+              <div
+                className="p-6 rounded-xl border-2"
+                style={{
+                  backgroundColor: "var(--color-background)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <ul className="space-y-3 text-sm" style={{ color: "var(--color-text)", opacity: 0.9 }}>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                    All projects and tasks
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                    Time tracking entries
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                    Activity logs
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                    Tags and custom settings
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-red-500 bg-opacity-10 p-6 rounded-xl border-2 border-red-500 border-opacity-30">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-red-600 text-sm font-bold">!</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-red-600 mb-1">This action cannot be undone</p>
+                    <p className="text-sm text-red-600 opacity-90">Consider exporting your data first as a backup.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="gap-4 pt-2">
+              <button
+                onClick={() => setShowResetModal(false)}
+                className="flex-1 px-6 py-3 rounded-xl border-2 hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200 font-medium"
+                style={{
+                  backgroundColor: "var(--color-background)",
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={resetDatabase}
+                disabled={loading}
+                className="flex-1 px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 border-red-500 border-opacity-40 hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200 font-medium text-red-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {loading ? "Resetting..." : "Reset Database"}
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Sidebar>
   )
