@@ -70,33 +70,6 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
     }
   }
 
-  const handleDelete = async () => {
-    if (!project || !confirm("Are you sure you want to delete this project? All associated tasks will be unassigned."))
-      return
-
-    try {
-      const response = await fetch(`/api/projects/${project.id}`, {
-        method: "DELETE",
-      })
-
-      if (response.ok) {
-        addNotification({
-          type: "success",
-          title: "Project Deleted",
-          message: `Project "${project.name}" has been deleted successfully.`,
-        })
-        onSuccess()
-        onClose()
-      }
-    } catch (error) {
-      addNotification({
-        type: "error",
-        title: "Error",
-        message: "Failed to delete project. Please try again.",
-      })
-    }
-  }
-
   if (!project) return null
 
   return (
@@ -134,7 +107,6 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
           >
             <option value="active">Active</option>
             <option value="completed">Completed</option>
-            <option value="archived">Archived</option>
           </select>
         </div>
 
@@ -155,14 +127,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
           </div>
         </div>
 
-        <div className="flex justify-between pt-4 border-t-2 border-gray-100">
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="px-6 py-3 text-red-700 bg-red-100 rounded-xl border-2 border-black hover:bg-red-200 transition-colors font-medium"
-          >
-            Delete Project
-          </button>
+        <div className="flex justify-end pt-4 border-t-2 border-gray-100">
           <div className="flex space-x-3">
             <button
               type="button"
