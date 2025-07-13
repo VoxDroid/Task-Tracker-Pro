@@ -17,6 +17,8 @@ export default function ArchivePage() {
   const [showViewModal, setShowViewModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const { addNotification } = useNotification()
 
   useEffect(() => {
@@ -77,13 +79,11 @@ export default function ArchivePage() {
     }
   }
 
-  const deleteTask = async (taskId: number, taskTitle: string) => {
-    if (!confirm("Are you sure you want to permanently delete this task?")) {
-      return
-    }
+  const deleteTask = async () => {
+    if (!taskToDelete) return
 
     try {
-      const response = await fetch(`/api/tasks/${taskId}`, {
+      const response = await fetch(`/api/tasks/${taskToDelete.id}`, {
         method: "DELETE",
       })
 
@@ -91,9 +91,11 @@ export default function ArchivePage() {
         addNotification({
           type: "success",
           title: "Task Deleted",
-          message: `Task "${taskTitle}" has been permanently deleted.`,
+          message: `Task "${taskToDelete.title}" has been permanently deleted.`,
         })
         fetchArchivedTasks()
+        setShowDeleteModal(false)
+        setTaskToDelete(null)
       }
     } catch (error) {
       addNotification({
@@ -260,7 +262,8 @@ export default function ArchivePage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        deleteTask(task.id, task.title)
+                        setTaskToDelete(task)
+                        setShowDeleteModal(true)
                       }}
                       className="p-3 hover:bg-red-500 hover:bg-opacity-10 rounded-xl transition-all duration-200"
                       style={{ color: "var(--color-text)" }}
@@ -309,6 +312,50 @@ export default function ArchivePage() {
             >
               <ChevronRight size={20} />
             </button>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && taskToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
+            <div
+              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                  Delete Task
+                </h3>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                  Are you sure you want to delete "{taskToDelete.title}"? This action cannot be undone.
+                </p>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(false)
+                      setTaskToDelete(null)
+                    }}
+                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={deleteTask}
+                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
