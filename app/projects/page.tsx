@@ -123,16 +123,24 @@ export default function ProjectsPage() {
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      active: { bg: "bg-green-500", text: "text-white", label: "Active" },
-      completed: { bg: "bg-blue-500", text: "text-white", label: "Completed" },
-      pending: { bg: "bg-yellow-500", text: "text-white", label: "Pending" },
-      archived: { bg: "bg-gray-500", text: "text-white", label: "Archived" },
+      active: { bg: "var(--color-accent)", text: "#ffffff", label: "Active" },
+      completed: { bg: "var(--color-primary)", text: "var(--color-primary-foreground)", label: "Completed" },
+      pending: { bg: "#fbbf24", text: "#000000", label: "Pending" },
+      archived: { bg: "var(--color-muted)", text: "var(--color-muted-foreground)", label: "Archived" },
     }
 
     const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
 
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>{config.label}</span>
+      <span
+        className="px-3 py-1 rounded-full text-xs font-medium"
+        style={{
+          backgroundColor: config.bg,
+          color: config.text,
+        }}
+      >
+        {config.label}
+      </span>
     )
   }
 
@@ -170,8 +178,17 @@ export default function ProjectsPage() {
           </div>
           <button
             onClick={() => setShowProjectModal(true)}
-            className="flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-            style={{ color: "var(--color-text)" }}
+            className="flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:transform hover:scale-105 transition-all duration-200 font-medium"
+            style={{ 
+              color: "var(--color-secondary-foreground)",
+              boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+            }}
           >
             <Plus size={20} />
             <span className="ml-2">New Project</span>
@@ -179,7 +196,12 @@ export default function ProjectsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+          <div 
+            className="bg-[var(--color-background)] p-6 rounded-2xl border-2 border-[var(--color-border)]"
+            style={{
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
@@ -189,10 +211,15 @@ export default function ProjectsPage() {
                   {stats.total}
                 </p>
               </div>
-              <FolderOpen className="w-8 h-8 text-purple-500" />
+              <FolderOpen className="w-8 h-8" style={{ color: "var(--color-secondary)" }} />
             </div>
           </div>
-          <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+          <div 
+            className="bg-[var(--color-background)] p-6 rounded-2xl border-2 border-[var(--color-border)]"
+            style={{
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
@@ -202,10 +229,15 @@ export default function ProjectsPage() {
                   {stats.active}
                 </p>
               </div>
-              <Target className="w-8 h-8 text-blue-500" />
+              <Target className="w-8 h-8" style={{ color: "var(--color-primary)" }} />
             </div>
           </div>
-          <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+          <div 
+            className="bg-[var(--color-background)] p-6 rounded-2xl border-2 border-[var(--color-border)]"
+            style={{
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
@@ -215,10 +247,15 @@ export default function ProjectsPage() {
                   {stats.completed}
                 </p>
               </div>
-              <CheckCircle className="w-8 h-8 text-green-500" />
+              <CheckCircle className="w-8 h-8" style={{ color: "var(--color-accent)" }} />
             </div>
           </div>
-          <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
+          <div 
+            className="bg-[var(--color-background)] p-6 rounded-2xl border-2 border-[var(--color-border)]"
+            style={{
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+            }}
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
@@ -228,12 +265,17 @@ export default function ProjectsPage() {
                   {stats.totalTasks}
                 </p>
               </div>
-              <TrendingUp className="w-8 h-8 text-cyan-500" />
+              <TrendingUp className="w-8 h-8" style={{ color: "var(--color-secondary)" }} />
             </div>
           </div>
         </div>
 
-        <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
+        <div 
+          className="bg-[var(--color-background)] p-6 rounded-2xl border-2 border-[var(--color-border)] mb-8"
+          style={{
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+          }}
+        >
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
@@ -261,8 +303,17 @@ export default function ProjectsPage() {
               </p>
               <button
                 onClick={() => setShowProjectModal(true)}
-                className="inline-flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                style={{ color: "var(--color-text)" }}
+                className="inline-flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                style={{ 
+                  color: "var(--color-secondary-foreground)",
+                  boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+                }}
               >
                 <Plus size={16} />
                 <span className="ml-2">Create your first project</span>
@@ -272,25 +323,32 @@ export default function ProjectsPage() {
             getCurrentPageProjects().map((project) => (
               <div
                 key={project.id}
-                className="relative p-6 rounded-2xl border-2 shadow-lg hover:shadow-xl hover:transform hover:scale-105 transition-all duration-300 overflow-hidden min-h-[320px]"
+                className="relative p-6 rounded-2xl border-2 hover:transform hover:scale-105 transition-all duration-300 overflow-hidden min-h-[320px] cursor-pointer"
                 style={{
-                  backgroundColor: "var(--color-surface)",
+                  backgroundColor: "var(--color-background)",
                   borderColor: "var(--color-border)",
-                  borderLeftColor: project.color,
+                  borderLeftColor: "var(--color-primary)",
                   borderLeftWidth: "4px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
                 }}
               >
                 <div className="absolute inset-0 opacity-5">
                   <div
                     className="absolute top-0 right-0 w-32 h-32 rounded-full"
-                    style={{ backgroundColor: project.color }}
+                    style={{ backgroundColor: "var(--color-primary)" }}
                   />
                 </div>
 
                 <div className="relative z-10 mb-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: project.color }} />
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: "var(--color-primary)" }} />
                       <h3
                         className="text-lg font-bold truncate"
                         title={project.name}
@@ -320,7 +378,7 @@ export default function ProjectsPage() {
                     }}
                   >
                     <div className="flex items-center space-x-2 mb-1">
-                      <Circle size={14} style={{ color: project.color }} />
+                      <Circle size={14} style={{ color: "var(--color-primary)" }} />
                       <span className="text-xs font-medium opacity-70" style={{ color: "var(--color-text)" }}>
                         Total Tasks
                       </span>
@@ -338,12 +396,12 @@ export default function ProjectsPage() {
                     }}
                   >
                     <div className="flex items-center space-x-2 mb-1">
-                      <CheckCircle size={14} style={{ color: project.color }} />
+                      <CheckCircle size={14} style={{ color: "var(--color-primary)" }} />
                       <span className="text-xs font-medium opacity-70" style={{ color: "var(--color-text)" }}>
                         Completed
                       </span>
                     </div>
-                    <p className="text-2xl font-bold" style={{ color: project.color }}>
+                    <p className="text-2xl font-bold" style={{ color: "var(--color-primary)" }}>
                       {project.completed_tasks || 0}
                     </p>
                   </div>
@@ -368,7 +426,7 @@ export default function ProjectsPage() {
                     <div
                       className="h-2 rounded-full transition-all duration-500"
                       style={{
-                        backgroundColor: project.color,
+                        backgroundColor: "var(--color-primary)",
                         width:
                           project.task_count > 0 ? `${(project.completed_tasks / project.task_count) * 100}%` : "0%",
                       }}
@@ -393,10 +451,17 @@ export default function ProjectsPage() {
                 <div className="relative z-10 flex space-x-2">
                   <Link
                     href={`/projects/${project.id}`}
-                    className="flex-1 text-center px-4 py-2 rounded-xl border-2 border-[var(--color-border)] hover:shadow-md transition-all duration-200 font-medium"
+                    className="flex-1 text-center px-4 py-2 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{
-                      backgroundColor: `${project.color}20`,
-                      color: "var(--color-text)",
+                      backgroundColor: "var(--color-primary)",
+                      color: "var(--color-primary-foreground)",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
                     }}
                   >
                     View
@@ -406,10 +471,17 @@ export default function ProjectsPage() {
                       setSelectedProject(project)
                       setShowEditModal(true)
                     }}
-                    className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] hover:shadow-md transition-all duration-200 font-medium"
+                    className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{
-                      backgroundColor: `${project.color}10`,
-                      color: "var(--color-text)",
+                      backgroundColor: "var(--color-primary)",
+                      color: "var(--color-primary-foreground)",
+                      boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
                     }}
                   >
                     Edit
@@ -419,7 +491,7 @@ export default function ProjectsPage() {
                       setProjectToDelete(project)
                       setShowDeleteModal(true)
                     }}
-                    className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200 font-medium"
+                    className="px-4 py-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-destructive)] hover:bg-opacity-10 transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                     title="Delete Project"
                   >
@@ -446,12 +518,13 @@ export default function ProjectsPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
-                  currentPage === page
-                    ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
-                    : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
-                }`}
-                style={{ color: "var(--color-text)" }}
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 hover-primary`}
+                style={{
+                  color: currentPage === page ? "var(--color-primary-foreground)" : undefined,
+                  backgroundColor: currentPage === page ? "var(--color-primary)" : undefined,
+                  opacity: currentPage === page ? 0.2 : undefined,
+                  boxShadow: currentPage === page ? "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)" : undefined
+                }}
               >
                 {page}
               </button>
@@ -472,15 +545,16 @@ export default function ProjectsPage() {
         {showDeleteModal && projectToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
             <div
-              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
+              className="p-8 rounded-3xl border-2 max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
               style={{
-                backgroundColor: "var(--color-surface)",
+                backgroundColor: "var(--color-background)",
                 borderColor: "var(--color-border)",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
               }}
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-8 h-8 text-red-600" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: "var(--color-destructive)", opacity: 0.1 }}>
+                  <Trash2 className="w-8 h-8" style={{ color: "var(--color-destructive)" }} />
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
                   Delete Project
@@ -494,15 +568,37 @@ export default function ProjectsPage() {
                       setShowDeleteModal(false)
                       setProjectToDelete(null)
                     }}
-                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{
+                      color: "var(--color-text)",
+                      backgroundColor: "var(--color-background)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-secondary)";
+                      e.currentTarget.style.color = "var(--color-secondary-foreground)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-background)";
+                      e.currentTarget.style.color = "var(--color-text)";
+                    }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={deleteProject}
-                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{
+                      color: "var(--color-text)",
+                      backgroundColor: "var(--color-background)",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-destructive)";
+                      e.currentTarget.style.color = "var(--color-destructive-foreground)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--color-background)";
+                      e.currentTarget.style.color = "var(--color-text)";
+                    }}
                   >
                     Delete
                   </button>

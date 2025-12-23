@@ -7,7 +7,9 @@ interface Theme {
   name: string
   colors: {
     primary: string
+    primaryForeground: string
     secondary: string
+    secondaryForeground: string
     accent: string
     background: string
     surface: string
@@ -21,7 +23,9 @@ const themes: Record<string, Theme> = {
     name: "Default",
     colors: {
       primary: "#3b82f6",
+      primaryForeground: "#ffffff",
       secondary: "#8b5cf6",
+      secondaryForeground: "#ffffff",
       accent: "#10b981",
       background: "#f9fafb",
       surface: "#ffffff",
@@ -33,7 +37,9 @@ const themes: Record<string, Theme> = {
     name: "Dark Mode",
     colors: {
       primary: "#60a5fa",
+      primaryForeground: "#ffffff",
       secondary: "#a78bfa",
+      secondaryForeground: "#ffffff",
       accent: "#34d399",
       background: "#111827",
       surface: "#1f2937",
@@ -45,7 +51,9 @@ const themes: Record<string, Theme> = {
     name: "Ocean Blue",
     colors: {
       primary: "#0ea5e9",
+      primaryForeground: "#ffffff",
       secondary: "#06b6d4",
+      secondaryForeground: "#ffffff",
       accent: "#0891b2",
       background: "#f0f9ff",
       surface: "#ffffff",
@@ -57,7 +65,9 @@ const themes: Record<string, Theme> = {
     name: "Forest Green",
     colors: {
       primary: "#059669",
+      primaryForeground: "#ffffff",
       secondary: "#10b981",
+      secondaryForeground: "#ffffff",
       accent: "#34d399",
       background: "#f0fdf4",
       surface: "#ffffff",
@@ -69,7 +79,9 @@ const themes: Record<string, Theme> = {
     name: "Sunset Orange",
     colors: {
       primary: "#ea580c",
+      primaryForeground: "#ffffff",
       secondary: "#f97316",
+      secondaryForeground: "#ffffff",
       accent: "#fb923c",
       background: "#fff7ed",
       surface: "#ffffff",
@@ -81,7 +93,9 @@ const themes: Record<string, Theme> = {
     name: "Soft Dark",
     colors: {
       primary: "#818cf8",
+      primaryForeground: "#ffffff",
       secondary: "#c084fc",
+      secondaryForeground: "#ffffff",
       accent: "#34d399",
       background: "#1e293b",
       surface: "#334155",

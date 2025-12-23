@@ -154,7 +154,7 @@ export default function TimeEntryModal({
               }}
             >
               <div className="flex items-center justify-center mb-4">
-                <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse mr-3"></div>
+                <div className="w-4 h-4 rounded-full animate-pulse mr-3" style={{ backgroundColor: "var(--color-accent)" }}></div>
                 <Timer className="w-6 h-6" style={{ color: "var(--color-text)" }} />
               </div>
               <div className="text-4xl font-bold font-mono mb-4" style={{ color: "var(--color-text)" }}>
@@ -319,7 +319,7 @@ export default function TimeEntryModal({
         <div className="space-y-6">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <AlertTriangle className="w-8 h-8 text-red-500" />
+              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-destructive)" }} />
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text)" }}>
@@ -346,7 +346,13 @@ export default function TimeEntryModal({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="px-4 py-2 bg-red-500 bg-opacity-20 rounded-2xl border-2 border-red-500 border-opacity-30 hover:bg-opacity-30 disabled:opacity-50 transition-colors font-medium text-red-600"
+              className="px-4 py-2 rounded-2xl border-2 border-opacity-30 hover:bg-opacity-30 disabled:opacity-50 transition-colors font-medium"
+              style={{
+                backgroundColor: "var(--color-destructive)",
+                opacity: 0.2,
+                borderColor: "var(--color-destructive)",
+                color: "var(--color-destructive)",
+              }}
             >
               {deleting ? "Deleting..." : "Delete Entry"}
             </button>

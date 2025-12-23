@@ -96,35 +96,49 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Task" size="lg">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Title *</label>
           <input
             type="text"
             required
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+            style={{
+              borderColor: "var(--color-border)",
+              "--tw-ring-color": "var(--color-primary)",
+            } as React.CSSProperties}
             placeholder="Enter task title"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
+            style={{
+              borderColor: "var(--color-border)",
+              "--tw-ring-color": "var(--color-primary)",
+            } as React.CSSProperties}
             placeholder="Enter task description"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Status</label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+              style={{
+                borderColor: "var(--color-border)",
+                "--tw-ring-color": "var(--color-primary)",
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+              } as React.CSSProperties}
             >
               <option value="todo">To Do</option>
               <option value="in_progress">In Progress</option>
@@ -134,11 +148,17 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Project</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Project</label>
             <select
               value={formData.project_id}
               onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+              style={{
+                borderColor: "var(--color-border)",
+                "--tw-ring-color": "var(--color-primary)",
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+              } as React.CSSProperties}
             >
               <option value="">No Project</option>
               {projects.map((project) => (
@@ -150,11 +170,17 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Priority</label>
             <select
               value={formData.priority}
               onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+              style={{
+                borderColor: "var(--color-border)",
+                "--tw-ring-color": "var(--color-primary)",
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+              } as React.CSSProperties}
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -166,40 +192,62 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Assigned To</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Assigned To</label>
             <input
               type="text"
               value={formData.assigned_to}
               onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+              style={{
+                borderColor: "var(--color-border)",
+                "--tw-ring-color": "var(--color-primary)",
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+              } as React.CSSProperties}
               placeholder="Enter assignee name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Due Date</label>
             <input
               type="date"
               value={formData.due_date}
               onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+              style={{
+                borderColor: "var(--color-border)",
+                "--tw-ring-color": "var(--color-primary)",
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+              } as React.CSSProperties}
             />
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t-2 border-gray-100">
+        <div className="flex justify-end pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
           <div className="flex space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl border-2 border-black hover:bg-gray-200 transition-colors font-medium"
+              className="px-6 py-3 rounded-xl border-2 hover:bg-[var(--color-background)] transition-colors font-medium"
+              style={{
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-blue-100 text-blue-800 rounded-xl border-2 border-black hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="px-6 py-3 rounded-xl border-2 hover:bg-opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-primary-foreground)",
+                borderColor: "var(--color-border)",
+              }}
             >
               {loading ? "Updating..." : "Update Task"}
             </button>

@@ -277,7 +277,7 @@ export default function TimeTrackingPage() {
                   {stats.totalHours}h
                 </p>
               </div>
-              <Clock className="w-8 h-8 text-blue-500" />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary)" }} />
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
@@ -290,7 +290,7 @@ export default function TimeTrackingPage() {
                   {stats.entriesCount}
                 </p>
               </div>
-              <Target className="w-8 h-8 text-green-500" />
+              <Target className="w-8 h-8" style={{ color: "var(--color-accent)" }} />
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
@@ -387,7 +387,7 @@ export default function TimeTrackingPage() {
                     onClick={() => startTimer(task.id)}
                     disabled={!!activeTimer}
                     className="flex items-center px-3 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm mt-auto"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "#ffffff" }}
                   >
                     <Play size={14} />
                     <span className="ml-1">Start</span>

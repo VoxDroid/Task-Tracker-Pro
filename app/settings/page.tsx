@@ -194,7 +194,7 @@ export default function SettingsPage() {
                   >
                     <div className="flex items-center space-x-3 mb-4">
                       {getThemeIcon(key)}
-                      <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                      <span className="font-semibold text-lg" style={{ color: currentTheme === key ? "var(--color-primary-foreground)" : "var(--color-text)" }}>
                         {theme.name}
                       </span>
                     </div>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                 <button
                   onClick={saveCustomTheme}
                   className="px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-secondary-foreground)" }}
                 >
                   Apply Custom Theme
                 </button>

@@ -12,13 +12,10 @@ interface ProjectEditModalProps {
   project: any
 }
 
-const projectColors = ["#6366f1", "#8b5cf6", "#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#ec4899", "#84cc16"]
-
 export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }: ProjectEditModalProps) {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    color: "#6366f1",
     status: "active",
   })
   const [loading, setLoading] = useState(false)
@@ -29,7 +26,6 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
       setFormData({
         name: project.name,
         description: project.description || "",
-        color: project.color,
         status: project.status,
       })
     }
@@ -45,7 +41,10 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
       const response = await fetch(`/api/projects/${project.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          color: "var(--color-primary)"
+        }),
       })
 
       if (response.ok) {
@@ -76,70 +75,96 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Project">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Project Name *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Project Name *</label>
           <input
             type="text"
             required
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+            style={{
+              borderColor: "var(--color-border)",
+              color: "var(--color-text)",
+              backgroundColor: "var(--color-background)",
+              "--tw-ring-color": "var(--color-primary)"
+            } as React.CSSProperties}
             placeholder="Enter project name"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
+            style={{
+              borderColor: "var(--color-border)",
+              color: "var(--color-text)",
+              backgroundColor: "var(--color-background)",
+              "--tw-ring-color": "var(--color-primary)"
+            } as React.CSSProperties}
             placeholder="Enter project description"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Status</label>
           <select
             value={formData.status}
             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border-2 border-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
+            style={{
+              borderColor: "var(--color-border)",
+              color: "var(--color-text)",
+              backgroundColor: "var(--color-background)"
+            }}
           >
             <option value="active">Active</option>
             <option value="completed">Completed</option>
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
-          <div className="flex flex-wrap gap-3">
-            {projectColors.map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => setFormData({ ...formData, color })}
-                className={`w-10 h-10 rounded-xl border-2 transition-all ${
-                  formData.color === color ? "border-black scale-110 shadow-lg" : "border-gray-300 hover:scale-105"
-                }`}
-                style={{ backgroundColor: color }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="flex justify-end pt-4 border-t-2 border-gray-100">
+        <div className="flex justify-end pt-4" style={{ borderTop: "2px solid var(--color-border)" }}>
           <div className="flex space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-gray-700 bg-gray-100 rounded-xl border-2 border-black hover:bg-gray-200 transition-colors font-medium"
+              className="px-6 py-3 rounded-xl border-2 transition-colors font-medium"
+              style={{
+                color: "var(--color-text)",
+                backgroundColor: "var(--color-background)",
+                borderColor: "var(--color-border)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-primary)"
+                e.currentTarget.style.color = "var(--color-primary-foreground)"
+                e.currentTarget.style.opacity = "0.1"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-background)"
+                e.currentTarget.style.color = "var(--color-text)"
+                e.currentTarget.style.opacity = "1"
+              }}
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-3 bg-purple-100 text-purple-800 rounded-xl border-2 border-black hover:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="px-6 py-3 rounded-xl border-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                color: "var(--color-secondary-foreground)",
+                backgroundColor: "var(--color-secondary)",
+                borderColor: "var(--color-border)"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.8"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1"
+              }}
             >
               {loading ? "Updating..." : "Update Project"}
             </button>

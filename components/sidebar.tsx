@@ -101,12 +101,12 @@ export default function Sidebar({ children }: SidebarProps) {
                 <li key={item.name}>
                   <Link
                     href={item.href}
-                    className={`flex items-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 ${
+                    className={`flex items-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover-primary ${
                       isActive
                         ? "bg-[var(--color-primary)] bg-opacity-20 shadow-md transform scale-105"
                         : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
                     }`}
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: isActive ? "var(--color-primary-foreground)" : undefined }}
                   >
                     <item.icon size={20} />
                     <span className="ml-3 font-medium">{item.name}</span>

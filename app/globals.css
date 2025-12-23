@@ -4,7 +4,9 @@
 
 :root {
   --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #8b5cf6;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #10b981;
   --color-background: #f9fafb;
   --color-surface: #ffffff;
@@ -15,7 +17,9 @@
 /* Theme classes for better targeting */
 .theme-default {
   --color-primary: #3b82f6;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #8b5cf6;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #10b981;
   --color-background: #f9fafb;
   --color-surface: #ffffff;
@@ -25,7 +29,9 @@
 
 .theme-dark {
   --color-primary: #60a5fa;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #a78bfa;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #34d399;
   --color-background: #111827;
   --color-surface: #1f2937;
@@ -35,7 +41,9 @@
 
 .theme-softDark {
   --color-primary: #818cf8;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #c084fc;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #34d399;
   --color-background: #1e293b;
   --color-surface: #334155;
@@ -45,7 +53,9 @@
 
 .theme-ocean {
   --color-primary: #0ea5e9;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #06b6d4;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #0891b2;
   --color-background: #f0f9ff;
   --color-surface: #ffffff;
@@ -55,7 +65,9 @@
 
 .theme-forest {
   --color-primary: #059669;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #10b981;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #34d399;
   --color-background: #f0fdf4;
   --color-surface: #ffffff;
@@ -65,7 +77,9 @@
 
 .theme-sunset {
   --color-primary: #ea580c;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #f97316;
+  --color-secondary-foreground: #ffffff;
   --color-accent: #fb923c;
   --color-background: #fff7ed;
   --color-surface: #ffffff;
@@ -200,7 +214,7 @@
   .tag-priority-low {
     background-color: var(--color-primary);
     background-opacity: 0.1;
-    color: var(--color-text);
+    color: var(--color-primary-foreground);
     border-color: var(--color-primary);
     border-opacity: 0.2;
   }
@@ -208,7 +222,7 @@
   .tag-priority-medium {
     background-color: var(--color-primary);
     background-opacity: 0.2;
-    color: var(--color-text);
+    color: var(--color-primary-foreground);
     border-color: var(--color-primary);
     border-opacity: 0.3;
   }
@@ -216,7 +230,7 @@
   .tag-priority-high {
     background-color: var(--color-primary);
     background-opacity: 0.3;
-    color: var(--color-text);
+    color: var(--color-primary-foreground);
     border-color: var(--color-primary);
     border-opacity: 0.4;
   }
@@ -224,14 +238,14 @@
   .tag-priority-urgent {
     background-color: var(--color-primary);
     background-opacity: 0.4;
-    color: var(--color-text);
+    color: var(--color-primary-foreground);
     border-color: var(--color-primary);
   }
 
   .tag-status-todo {
     background-color: var(--color-secondary);
     background-opacity: 0.1;
-    color: var(--color-text);
+    color: var(--color-secondary-foreground);
     border-color: var(--color-secondary);
     border-opacity: 0.2;
   }
@@ -239,7 +253,7 @@
   .tag-status-progress {
     background-color: var(--color-secondary);
     background-opacity: 0.2;
-    color: var(--color-text);
+    color: var(--color-secondary-foreground);
     border-color: var(--color-secondary);
     border-opacity: 0.3;
   }
@@ -258,6 +272,23 @@
     color: var(--color-text);
     border-color: var(--color-text);
     border-opacity: 0.2;
+  }
+
+  /* Hover states for elements with primary/secondary backgrounds */
+  .hover-primary {
+    color: var(--color-text);
+  }
+
+  .hover-primary:hover {
+    color: var(--color-primary-foreground) !important;
+  }
+
+  .hover-secondary {
+    color: var(--color-text);
+  }
+
+  .hover-secondary:hover {
+    color: var(--color-secondary-foreground) !important;
   }
 }
 

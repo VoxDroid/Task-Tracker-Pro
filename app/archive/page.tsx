@@ -115,10 +115,10 @@ export default function ArchivePage() {
   const totalPages = Math.ceil(filteredTasks.length / ITEMS_PER_PAGE)
 
   const priorityConfig = {
-    low: { bg: "bg-green-500", text: "text-white", label: "Low" },
-    medium: { bg: "bg-yellow-500", text: "text-white", label: "Medium" },
-    high: { bg: "bg-orange-500", text: "text-white", label: "High" },
-    urgent: { bg: "bg-red-500", text: "text-white", label: "Urgent" },
+    low: { bg: "var(--color-secondary)", text: "#ffffff", label: "Low" },
+    medium: { bg: "var(--color-accent)", text: "#ffffff", label: "Medium" },
+    high: { bg: "var(--color-primary)", text: "#ffffff", label: "High" },
+    urgent: { bg: "#dc2626", text: "#ffffff", label: "Urgent" },
   }
 
   if (loading) {
@@ -211,7 +211,11 @@ export default function ArchivePage() {
                         {task.title}
                       </h3>
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text}`}
+                        className="px-3 py-1 rounded-full text-xs font-medium"
+                        style={{
+                          backgroundColor: priorityConfig[task.priority].bg,
+                          color: priorityConfig[task.priority].text
+                        }}
                       >
                         {priorityConfig[task.priority].label}
                       </span>
@@ -293,12 +297,12 @@ export default function ArchivePage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 hover-primary ${
                   currentPage === page
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
                 }`}
-                style={{ color: "var(--color-text)" }}
+                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined }}
               >
                 {page}
               </button>

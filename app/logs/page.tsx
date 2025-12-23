@@ -82,6 +82,23 @@ export default function LogsPage() {
     }
   }
 
+  const getActionTextColor = (action: string) => {
+    switch (action) {
+      case "created":
+        return "#ffffff" // accent background, use white text
+      case "updated":
+        return "var(--color-primary-foreground)" // primary background, use foreground
+      case "deleted":
+        return "var(--color-primary-foreground)" // primary background, use foreground
+      case "started":
+        return "var(--color-secondary-foreground)" // secondary background, use foreground
+      case "stopped":
+        return "var(--color-secondary-foreground)" // secondary background, use foreground
+      default:
+        return "var(--color-text)" // text background, use text color
+    }
+  }
+
   const getLogStats = () => {
     const safeFilteredLogs = Array.isArray(filteredLogs) ? filteredLogs : []
     const total = safeFilteredLogs.length
@@ -265,7 +282,7 @@ export default function LogsPage() {
               <button
                 onClick={exportLogs}
                 className="flex items-center px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "#ffffff" }}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export Logs
@@ -273,7 +290,7 @@ export default function LogsPage() {
               <button
                 onClick={() => setShowResetModal(true)}
                 className="flex items-center px-4 py-2 bg-[var(--color-primary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-primary-foreground)" }}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Reset Logs
@@ -317,8 +334,8 @@ export default function LogsPage() {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <span
-                        className={`px-3 py-1 rounded-xl text-xs font-medium border-2 ${getActionColor(log.action)}`}
-                        style={{ color: "var(--color-text)" }}
+                        className={`px-3 py-1 rounded-xl text-sm font-medium border-2 ${getActionColor(log.action)}`}
+                        style={{ color: getActionTextColor(log.action) }}
                       >
                         {log.action.toUpperCase()}
                       </span>
@@ -326,7 +343,7 @@ export default function LogsPage() {
                         className="text-sm font-medium bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
                         style={{ color: "var(--color-text)" }}
                       >
-                        {log.entity_type} #{log.entity_id}
+                        {log.entity_type.charAt(0).toUpperCase() + log.entity_type.slice(1)} #{log.entity_id}
                       </span>
                       <span
                         className="text-sm opacity-60 bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
@@ -362,12 +379,12 @@ export default function LogsPage() {
               <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 hover-primary ${
                   currentPage === page
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
                 }`}
-                style={{ color: "var(--color-text)" }}
+                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined }}
               >
                 {page}
               </button>

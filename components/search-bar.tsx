@@ -69,15 +69,15 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
   const getIcon = (type: string) => {
     switch (type) {
       case "task":
-        return <CheckSquare className="w-4 h-4 text-blue-600" />
+        return <CheckSquare className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
       case "project":
-        return <FolderOpen className="w-4 h-4 text-purple-600" />
+        return <FolderOpen className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
       case "time_entry":
-        return <Clock className="w-4 h-4 text-green-600" />
+        return <Clock className="w-4 h-4" style={{ color: "var(--color-accent)" }} />
       case "archived_task":
-        return <Archive className="w-4 h-4 text-gray-600" />
+        return <Archive className="w-4 h-4" style={{ color: "var(--color-muted)" }} />
       default:
-        return <Search className="w-4 h-4 text-gray-600" />
+        return <Search className="w-4 h-4" style={{ color: "var(--color-muted)" }} />
     }
   }
 

@@ -100,7 +100,7 @@ export default function ProjectDetailPage() {
             <Link
               href="/projects"
               className="inline-flex items-center px-4 py-2 bg-[var(--color-primary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 transition-colors font-medium"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-primary-foreground)" }}
             >
               <ArrowLeft size={16} />
               <span className="ml-2">Back to Projects</span>
@@ -134,7 +134,7 @@ export default function ProjectDetailPage() {
             <div className="flex items-center">
               <div
                 className="w-8 h-8 rounded-full border-2 border-[var(--color-border)] mr-4 shadow-md"
-                style={{ backgroundColor: project.color }}
+                style={{ backgroundColor: "var(--color-primary)" }}
               />
               <div>
                 <h1 className="text-4xl font-bold" style={{ color: "var(--color-text)" }}>
@@ -152,8 +152,8 @@ export default function ProjectDetailPage() {
             onClick={() => setShowTaskModal(true)}
             className="flex items-center px-6 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
             style={{
-              backgroundColor: `${project.color}20`,
-              color: "var(--color-text)",
+              backgroundColor: "var(--color-primary)",
+              color: "var(--color-primary-foreground)",
             }}
           >
             <Plus size={20} />
@@ -165,66 +165,66 @@ export default function ProjectDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: `${project.color}20` }}
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
                   To Do
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
                   {todoTasks}
                 </p>
               </div>
-              <Clock className="w-8 h-8" style={{ color: project.color }} />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: `${project.color}30` }}
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
                   In Progress
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
                   {inProgressTasks}
                 </p>
               </div>
-              <Clock className="w-8 h-8" style={{ color: project.color }} />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: `${project.color}40` }}
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
                   Completed
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
                   {completedTasks}
                 </p>
               </div>
-              <CheckCircle className="w-8 h-8" style={{ color: project.color }} />
+              <CheckCircle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: `${project.color}10` }}
+            style={{ backgroundColor: "var(--color-primary)" }}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
                   Overdue
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
                   {overdueTasks}
                 </p>
               </div>
-              <AlertTriangle className="w-8 h-8" style={{ color: project.color }} />
+              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
             </div>
           </div>
         </div>
@@ -239,9 +239,9 @@ export default function ProjectDetailPage() {
               <div className="text-center py-12">
                 <div
                   className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]"
-                  style={{ backgroundColor: `${project.color}10` }}
+                  style={{ backgroundColor: "var(--color-primary)" }}
                 >
-                  <Plus className="w-12 h-12 opacity-50" style={{ color: project.color }} />
+                  <Plus className="w-12 h-12 opacity-50" style={{ color: "var(--color-primary)" }} />
                 </div>
                 <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
                   No tasks in this project
@@ -250,8 +250,8 @@ export default function ProjectDetailPage() {
                   onClick={() => setShowTaskModal(true)}
                   className="inline-flex items-center px-6 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
                   style={{
-                    backgroundColor: `${project.color}20`,
-                    color: "var(--color-text)",
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-primary-foreground)",
                   }}
                 >
                   <Plus size={16} />
@@ -328,8 +328,8 @@ export default function ProjectDetailPage() {
                         }}
                         className="px-3 py-1 rounded-lg border-2 border-[var(--color-border)] hover:shadow-md transition-colors text-sm font-bold"
                         style={{
-                          backgroundColor: `${project.color}20`,
-                          color: "var(--color-text)",
+                          backgroundColor: "var(--color-primary)",
+                          color: "var(--color-primary-foreground)",
                         }}
                       >
                         Edit
@@ -339,8 +339,8 @@ export default function ProjectDetailPage() {
                           onClick={() => updateTaskStatus(task.id, "completed", task.title)}
                           className="px-3 py-1 rounded-lg border-2 border-[var(--color-border)] hover:shadow-md transition-colors text-sm font-bold"
                           style={{
-                            backgroundColor: `${project.color}30`,
-                            color: "var(--color-text)",
+                            backgroundColor: "var(--color-primary)",
+                            color: "var(--color-primary-foreground)",
                           }}
                         >
                           Complete

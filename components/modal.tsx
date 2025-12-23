@@ -55,14 +55,19 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center p-4">
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity" onClick={onClose} />
+        <div 
+          className="fixed inset-0 backdrop-blur-sm transition-opacity" 
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          onClick={onClose} 
+        />
 
         {/* Modal */}
         <div
-          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl shadow-2xl transition-all`}
+          className={`relative w-full ${sizeClasses[size]} transform rounded-2xl transition-all`}
           style={{
             backgroundColor: "var(--color-surface)",
             border: "2px solid var(--color-border)",
+            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
           }}
         >
           {/* Header */}
@@ -75,8 +80,19 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
             </h3>
             <button
               onClick={onClose}
-              className="rounded-xl p-2 hover:bg-opacity-10 hover:bg-gray-500 transition-colors"
-              style={{ color: "var(--color-text)" }}
+              className="rounded-xl p-2 transition-colors"
+              style={{ 
+                color: "var(--color-text)",
+                "--hover-bg": "var(--color-primary)"
+              } as React.CSSProperties}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-primary)"
+                e.currentTarget.style.opacity = "0.1"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent"
+                e.currentTarget.style.opacity = "1"
+              }}
             >
               <X className="w-5 h-5" />
             </button>

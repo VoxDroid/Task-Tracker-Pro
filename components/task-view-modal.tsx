@@ -82,17 +82,17 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
   if (!task) return null
 
   const priorityConfig = {
-    low: { bg: "bg-green-500", text: "text-white", label: "Low Priority" },
-    medium: { bg: "bg-yellow-500", text: "text-white", label: "Medium Priority" },
-    high: { bg: "bg-orange-500", text: "text-white", label: "High Priority" },
-    urgent: { bg: "bg-red-500", text: "text-white", label: "Urgent Priority" },
+    low: { bg: "var(--color-accent)", text: "var(--color-accent-foreground)", label: "Low Priority" },
+    medium: { bg: "var(--color-warning)", text: "var(--color-warning-foreground)", label: "Medium Priority" },
+    high: { bg: "var(--color-secondary)", text: "var(--color-secondary-foreground)", label: "High Priority" },
+    urgent: { bg: "var(--color-destructive)", text: "var(--color-destructive-foreground)", label: "Urgent Priority" },
   }
 
   const statusConfig = {
-    todo: { bg: "bg-gray-500", text: "text-white", label: "To Do" },
-    in_progress: { bg: "bg-blue-500", text: "text-white", label: "In Progress" },
-    completed: { bg: "bg-green-500", text: "text-white", label: "Completed" },
-    archived: { bg: "bg-gray-400", text: "text-white", label: "Archived" },
+    todo: { bg: "var(--color-primary)", text: "var(--color-primary-foreground)", label: "To Do" },
+    in_progress: { bg: "var(--color-secondary)", text: "var(--color-secondary-foreground)", label: "In Progress" },
+    completed: { bg: "var(--color-accent)", text: "var(--color-accent-foreground)", label: "Completed" },
+    archived: { bg: "var(--color-muted)", text: "var(--color-muted-foreground)", label: "Archived" },
   }
 
   const project = projects.find((p) => p.id === task.project_id)
@@ -106,7 +106,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
               <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
                 {task.title}
               </h2>
-              {task.is_favorite === 1 && <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />}
+              {task.is_favorite === 1 && <Star className="w-6 h-6" style={{ fill: "var(--color-accent)", color: "var(--color-accent)" }} />}
             </div>
 
             {task.description && (
@@ -118,12 +118,20 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
 
           <div className="flex items-center space-x-2 ml-4">
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${statusConfig[task.status].bg} ${statusConfig[task.status].text}`}
+              className="px-3 py-1 rounded-full text-sm font-medium"
+              style={{
+                backgroundColor: statusConfig[task.status].bg,
+                color: statusConfig[task.status].text,
+              }}
             >
               {statusConfig[task.status].label}
             </span>
             <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${priorityConfig[task.priority].bg} ${priorityConfig[task.priority].text}`}
+              className="px-3 py-1 rounded-full text-sm font-medium"
+              style={{
+                backgroundColor: priorityConfig[task.priority].bg,
+                color: priorityConfig[task.priority].text,
+              }}
             >
               {priorityConfig[task.priority].label}
             </span>
@@ -135,7 +143,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             <div className="flex items-center space-x-3">
               <div
                 className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                style={{ backgroundColor: project.color }}
+                style={{ backgroundColor: "var(--color-primary)" }}
               />
               <FolderOpen className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
               <span className="font-medium" style={{ color: "var(--color-text)" }}>
@@ -195,7 +203,19 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
           {task.status === "archived" && onRestore ? (
             <button
               onClick={handleRestore}
-              className="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2"
+              className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+              style={{
+                backgroundColor: "var(--color-primary)",
+                color: "var(--color-primary-foreground)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                e.currentTarget.style.opacity = "0.8";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                e.currentTarget.style.opacity = "1";
+              }}
             >
               <RotateCcw className="w-4 h-4" />
               <span>Restore</span>
@@ -204,7 +224,19 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             <>
               <button
                 onClick={handleEdit}
-                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-2"
+                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+                style={{
+                  backgroundColor: "var(--color-primary)",
+                  color: "var(--color-primary-foreground)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                  e.currentTarget.style.opacity = "0.8";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                  e.currentTarget.style.opacity = "1";
+                }}
               >
                 <Edit className="w-4 h-4" />
                 <span>Edit</span>
@@ -212,7 +244,19 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
 
               <button
                 onClick={handleArchive}
-                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 bg-orange-600 hover:bg-orange-700 text-white flex items-center space-x-2"
+                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+                style={{
+                  backgroundColor: "var(--color-secondary)",
+                  color: "var(--color-secondary-foreground)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-secondary)";
+                  e.currentTarget.style.opacity = "0.8";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--color-secondary)";
+                  e.currentTarget.style.opacity = "1";
+                }}
               >
                 <Archive className="w-4 h-4" />
                 <span>Archive</span>
