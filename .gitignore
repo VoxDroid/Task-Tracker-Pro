@@ -28,3 +28,6 @@ next-env.d.ts
 
 # Database
 /data/tasktracker.db
+
+# Electron
+/dist

@@ -368,7 +368,7 @@ export default function LogsPage() {
                 </div>
               )}
 
-              {(searchQuery || actionFilter !== "all" || dateFilter !== "all" || (dateFilter === "custom" && (startDate || endDate))) && (
+              {(searchQuery || actionFilter !== "all" || (dateFilter !== "all" && (dateFilter !== "custom" || (startDate || endDate)))) && (
                 <button
                   onClick={() => {
                     setSearchQuery("")

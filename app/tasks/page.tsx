@@ -797,7 +797,7 @@ export default function TasksPage() {
 
                   {/* Project and Assignee Tags - Always at bottom */}
                   <div className="mt-auto mb-4">
-                    {task.project_name && (
+                    {task.project?.name && (
                       <div
                         className="flex items-center p-3 rounded-2xl border backdrop-blur-sm mb-2"
                         style={{
@@ -814,9 +814,9 @@ export default function TasksPage() {
                         <span
                           className="text-sm font-medium truncate"
                           style={{ color: "var(--color-text)" }}
-                          title={task.project_name}
+                          title={task.project?.name}
                         >
-                          {truncateText(task.project_name, 18)}
+                          {truncateText(task.project?.name, 18)}
                         </span>
                       </div>
                     )}

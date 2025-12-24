@@ -4,7 +4,7 @@ import React, { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
-import type { DashboardStats } from "@/lib/types"
+import type { DashboardStats, ActivityLog, Task } from "@/lib/types"
 import {
   BarChart,
   Bar,
@@ -181,7 +181,7 @@ export default function Dashboard() {
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
             outerRadius={100}
             fill="#8884d8"
             dataKey="count"
@@ -223,7 +223,7 @@ export default function Dashboard() {
             No recent activity
           </p>
         ) : (
-          recentActivity.map((activity) => (
+          recentActivity.map((activity: ActivityLog) => (
             <div
               key={activity.id}
               className="flex items-start space-x-3 p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
@@ -273,7 +273,7 @@ export default function Dashboard() {
             No upcoming tasks
           </p>
         ) : (
-          upcomingTasks.map((task) => (
+          upcomingTasks.map((task: Task) => (
             <div
               key={task.id}
               className="p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
@@ -287,8 +287,8 @@ export default function Dashboard() {
                 className="flex items-center justify-between text-xs opacity-60"
                 style={{ color: "var(--color-text)" }}
               >
-                <span>{task.project_name || "No project"}</span>
-                <span>{new Date(task.due_date).toLocaleDateString()}</span>
+                <span>{task.project?.name || "No project"}</span>
+                <span>{task.due_date ? new Date(task.due_date).toLocaleDateString() : "No due date"}</span>
               </div>
             </div>
           ))

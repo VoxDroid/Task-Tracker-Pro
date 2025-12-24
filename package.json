@@ -1,12 +1,90 @@
 {
   "name": "Task-Tracker-Pro",
-  "version": "1.0.0+",
+  "version": "1.0.0",
   "private": true,
+  "main": "electron/main.js",
+  "homepage": "./",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron .\"",
+    "build-electron": "next build && electron-builder",
+    "build-electron-win": "next build && electron-builder --win",
+    "build-electron-mac": "next build && electron-builder --mac",
+    "build-electron-linux": "next build && electron-builder --linux",
+    "dist": "npm run build-electron",
+    "dist-all": "npm run build-electron -- -mwl"
+  },
+  "build": {
+    "appId": "com.tasktrackerpro.app",
+    "productName": "Task Tracker Pro",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      ".next/**/*",
+      "electron/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "next.config.mjs"
+    ],
+    "asarUnpack": [
+      "node_modules/.bin/next",
+      "node_modules/.bin/next.cmd",
+      "node_modules/better-sqlite3"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "public/favicon.ico"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "public/favicon.ico"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/favicon.ico",
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    }
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -66,12 +144,20 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.0.2",
     "@next/bundle-analyzer": "^16.1.1",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^28.3.3",
+    "electron-builder": "^26.0.12",
+    "electron-rebuild": "^3.2.9",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^9.0.3"
   }
 }

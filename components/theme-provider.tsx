@@ -424,6 +424,12 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null)
 
+function getChartColors(themeName: string): string[] {
+  // Return chart colors based on theme
+  const theme = themes[themeName] || themes.default
+  return [theme.colors.primary, theme.colors.secondary, theme.colors.accent]
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState("default")
   const [customTheme, setCustomTheme] = useState<Theme | null>(null)
