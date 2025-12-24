@@ -709,7 +709,7 @@ export default function TasksPage() {
                 key={task.id}
                 className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 ${
                   selectedTasks.includes(task.id)
-                    ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-105"
+                    ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-[1.02]"
                     : ""
                 }`}
                 style={{
@@ -783,21 +783,23 @@ export default function TasksPage() {
                   </div>
 
                   {/* Description */}
-                  {task.description && (
-                    <p
-                      className="text-sm opacity-70 leading-relaxed mb-4"
-                      style={{ color: "var(--color-text)" }}
-                      title={task.description}
-                    >
-                      {truncateText(task.description, 80)}
-                    </p>
-                  )}
+                  <div className="flex-1">
+                    {task.description && (
+                      <p
+                        className="text-sm opacity-70 leading-relaxed mb-4"
+                        style={{ color: "var(--color-text)" }}
+                        title={task.description}
+                      >
+                        {truncateText(task.description, 80)}
+                      </p>
+                    )}
+                  </div>
 
-                  {/* Task Details */}
-                  <div className="space-y-3 mb-4 flex-1">
+                  {/* Project and Assignee Tags - Always at bottom */}
+                  <div className="mt-auto mb-4">
                     {task.project_name && (
                       <div
-                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm mb-2"
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
@@ -820,7 +822,7 @@ export default function TasksPage() {
                     )}
                     {task.assigned_to && (
                       <div
-                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm mb-2"
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
