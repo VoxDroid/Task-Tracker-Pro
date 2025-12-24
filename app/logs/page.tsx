@@ -17,7 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 
-const ITEMS_PER_PAGE = 10
+const ITEMS_PER_PAGE = 12
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
@@ -25,6 +25,9 @@ export default function LogsPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [actionFilter, setActionFilter] = useState("all")
+  const [dateFilter, setDateFilter] = useState("all")
+  const [startDate, setStartDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [showResetModal, setShowResetModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -48,9 +51,56 @@ export default function LogsPage() {
       filtered = filtered.filter((log) => log.action === actionFilter)
     }
 
+    // Date filtering
+    if (dateFilter !== "all") {
+      const now = new Date()
+      let startDateFilter: Date | null = null
+      let endDateFilter: Date | null = null
+
+      switch (dateFilter) {
+        case "today":
+          startDateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          endDateFilter = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59)
+          break
+        case "yesterday":
+          const yesterday = new Date(now)
+          yesterday.setDate(yesterday.getDate() - 1)
+          startDateFilter = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate())
+          endDateFilter = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate(), 23, 59, 59)
+          break
+        case "last7days":
+          startDateFilter = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+          endDateFilter = now
+          break
+        case "last30days":
+          startDateFilter = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+          endDateFilter = now
+          break
+        case "custom":
+          if (startDate) {
+            startDateFilter = new Date(startDate)
+            startDateFilter.setHours(0, 0, 0, 0)
+          }
+          if (endDate) {
+            endDateFilter = new Date(endDate)
+            endDateFilter.setHours(23, 59, 59, 999)
+          }
+          break
+      }
+
+      if (startDateFilter || endDateFilter) {
+        filtered = filtered.filter((log) => {
+          const logDate = new Date(log.created_at)
+          if (startDateFilter && logDate < startDateFilter) return false
+          if (endDateFilter && logDate > endDateFilter) return false
+          return true
+        })
+      }
+    }
+
     setFilteredLogs(filtered)
     setCurrentPage(1)
-  }, [logs, searchQuery, actionFilter])
+  }, [logs, searchQuery, actionFilter, dateFilter, startDate, endDate])
 
   const fetchLogs = async () => {
     try {
@@ -251,24 +301,89 @@ export default function LogsPage() {
               />
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
-              <select
-                value={actionFilter}
-                onChange={(e) => setActionFilter(e.target.value)}
-                className="px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
-                style={{
-                  backgroundColor: "var(--color-background)",
-                  color: "var(--color-text)",
-                }}
-              >
-                <option value="all">All Actions</option>
-                {uniqueActions.map((action) => (
-                  <option key={action} value={action}>
-                    {action.charAt(0).toUpperCase() + action.slice(1)}
-                  </option>
-                ))}
-              </select>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
+                <select
+                  value={actionFilter}
+                  onChange={(e) => setActionFilter(e.target.value)}
+                  className="px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
+                  style={{
+                    backgroundColor: "var(--color-background)",
+                    color: "var(--color-text)",
+                  }}
+                >
+                  <option value="all">All Actions</option>
+                  {uniqueActions.map((action) => (
+                    <option key={action} value={action}>
+                      {action.charAt(0).toUpperCase() + action.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Clock className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
+                <select
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
+                  style={{
+                    backgroundColor: "var(--color-background)",
+                    color: "var(--color-text)",
+                  }}
+                >
+                  <option value="all">All Dates</option>
+                  <option value="today">Today</option>
+                  <option value="yesterday">Yesterday</option>
+                  <option value="last7days">Last 7 Days</option>
+                  <option value="last30days">Last 30 Days</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+
+              {dateFilter === "custom" && (
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="px-3 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
+                    style={{
+                      backgroundColor: "var(--color-background)",
+                      color: "var(--color-text)",
+                    }}
+                  />
+                  <span className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>to</span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="px-3 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors"
+                    style={{
+                      backgroundColor: "var(--color-background)",
+                      color: "var(--color-text)",
+                    }}
+                  />
+                </div>
+              )}
+
+              {(searchQuery || actionFilter !== "all" || dateFilter !== "all" || (dateFilter === "custom" && (startDate || endDate))) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("")
+                    setActionFilter("all")
+                    setDateFilter("all")
+                    setStartDate("")
+                    setEndDate("")
+                  }}
+                  className="px-4 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-text)" }}
+                  title="Clear filters"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -299,16 +414,19 @@ export default function LogsPage() {
           </div>
         </div>
 
-        <div className="space-y-4 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {filteredLogs.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
                 <Activity className="w-12 h-12 opacity-40" style={{ color: "var(--color-text)" }} />
               </div>
-              <p className="text-xl mb-2 opacity-70" style={{ color: "var(--color-text)" }}>
-                {searchQuery || actionFilter !== "all" ? "No matching activity logs" : "No activity logs"}
+              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+                {searchQuery || actionFilter !== "all" || dateFilter !== "all"
+                  ? "No matching activity logs found"
+                  : "No activity logs"
+                }
               </p>
-              <p className="text-lg opacity-50" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
                 Your activities will appear here
               </p>
             </div>
@@ -331,8 +449,8 @@ export default function LogsPage() {
                   <div className="flex-shrink-0 mt-1">
                     <Clock size={20} className="opacity-40" style={{ color: "var(--color-text)" }} />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span
                         className={`px-3 py-1 rounded-xl text-sm font-medium border-2 ${getActionColor(log.action)}`}
                         style={{ color: getActionTextColor(log.action) }}
@@ -353,7 +471,7 @@ export default function LogsPage() {
                       </span>
                     </div>
                     {log.details && (
-                      <p className="text-lg" style={{ color: "var(--color-text)" }}>
+                      <p className="text-base leading-relaxed" style={{ color: "var(--color-text)" }}>
                         {log.details}
                       </p>
                     )}
@@ -423,14 +541,14 @@ export default function LogsPage() {
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setShowResetModal(false)}
-                    className="flex-1 px-4 py-3 hover:bg-red-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={resetLogs}
-                    className="flex-1 px-4 py-3 hover:bg-gray-600 hover:text-white rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    className="flex-1 px-4 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                     style={{ color: "var(--color-text)" }}
                   >
                     Reset Logs
