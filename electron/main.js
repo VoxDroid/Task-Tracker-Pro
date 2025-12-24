@@ -78,6 +78,7 @@ function createBrowserWindow() {
       : path.join(process.resourcesPath, 'app.asar', 'public', 'favicon.ico'),
     show: false, // Don't show until ready-to-show
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
+    autoHideMenuBar: true, // Hide the menu bar
   })
 
   console.log('Loading URL: http://localhost:3000')
