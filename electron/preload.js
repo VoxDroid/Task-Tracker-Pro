@@ -13,6 +13,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Platform information
   platform: process.platform,
 
+  // Window controls
+  minimizeWindow: () => ipcRenderer.send('window:minimize'),
+  maximizeWindow: () => ipcRenderer.send('window:maximize'),
+  closeWindow: () => ipcRenderer.send('window:close'),
+
+  // Window state listeners
+  onWindowMaximized: (callback) => ipcRenderer.on('window:maximized', callback),
+  onWindowUnmaximized: (callback) => ipcRenderer.on('window:unmaximized', callback),
+
   // Listen for app updates (future implementation)
   onUpdateAvailable: (callback) => ipcRenderer.on('update-available', callback),
   onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', callback),

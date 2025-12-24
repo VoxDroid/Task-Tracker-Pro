@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google"
 import { NotificationProvider } from "@/components/notification"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Providers } from "@/components/providers"
+import { TitleBar } from "@/components/title-bar"
 import "./globals.css"
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] })
@@ -24,7 +25,12 @@ export default function RootLayout({
       <body className={poppins.className}>
         <Providers>
           <ThemeProvider>
-            <NotificationProvider>{children}</NotificationProvider>
+            <div className="h-screen flex flex-col">
+              <TitleBar />
+              <div className="flex-1 overflow-hidden">
+                <NotificationProvider>{children}</NotificationProvider>
+              </div>
+            </div>
           </ThemeProvider>
         </Providers>
       </body>

@@ -65,6 +65,7 @@ function createBrowserWindow() {
     height: 900,
     minWidth: 1000,
     minHeight: 700,
+    frame: false, // Make window frameless
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -113,6 +114,15 @@ function createBrowserWindow() {
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
     return { action: 'deny' }
+  })
+
+  // Listen for window state changes and notify renderer
+  mainWindow.on('maximize', () => {
+    mainWindow.webContents.send('window:maximized')
+  })
+
+  mainWindow.on('unmaximize', () => {
+    mainWindow.webContents.send('window:unmaximized')
   })
 }
 
@@ -169,6 +179,25 @@ ipcMain.handle('dialog:saveFile', async (event, defaultName) => {
     ]
   })
   return result
+})
+
+// IPC handlers for window controls
+ipcMain.on('window:minimize', () => {
+  if (mainWindow) mainWindow.minimize()
+})
+
+ipcMain.on('window:maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize()
+    } else {
+      mainWindow.maximize()
+    }
+  }
+})
+
+ipcMain.on('window:close', () => {
+  if (mainWindow) mainWindow.close()
 })
 
 // Handle app updates in production

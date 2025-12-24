@@ -59,11 +59,11 @@ export default function Sidebar({ children }: SidebarProps) {
   }
 
   return (
-    <div className="flex h-screen bg-[var(--color-background)]">
+    <div className="flex h-full bg-[var(--color-background)]">
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed top-4 z-50 p-3 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl transition-all duration-300 ${
+        className={`fixed top-16 z-50 p-3 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl transition-all duration-300 ${
           isOpen ? "left-[340px]" : "left-4"
         }`}
         style={{ color: "var(--color-text)" }}
@@ -75,7 +75,7 @@ export default function Sidebar({ children }: SidebarProps) {
       <div
         className={`${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed left-0 top-0 h-full w-80 bg-[var(--color-surface)] border-r-2 border-[var(--color-border)] transition-transform duration-300 ease-in-out shadow-2xl z-40 flex flex-col`}
+        } fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-80 bg-[var(--color-surface)] border-r-2 border-[var(--color-border)] transition-transform duration-300 ease-in-out shadow-2xl z-40 flex flex-col`}
       >
         {/* Header */}
         <div className="p-6 border-b-2 border-[var(--color-border)] flex-shrink-0">
@@ -120,12 +120,12 @@ export default function Sidebar({ children }: SidebarProps) {
 
       {/* Backdrop for mobile */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setIsOpen(false)} />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden top-14" onClick={() => setIsOpen(false)} />
       )}
 
       {/* Main Content */}
       <div className={`flex-1 transition-all duration-300 ${isOpen ? "ml-80" : "ml-0"}`}>
-        <div className="pt-16 min-h-screen" style={{ backgroundColor: "var(--color-background)" }}>
+        <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)", paddingTop: '50px' }}>
           {children}
         </div>
       </div>

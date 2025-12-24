@@ -61,3 +61,22 @@ export interface DashboardStats {
   activeProjects: number
   totalTimeLogged: number
 }
+
+// Electron API types
+declare global {
+  interface Window {
+    electronAPI: {
+      openFile: () => Promise<{ canceled: boolean; filePaths: string[] }>
+      saveFile: (defaultName: string) => Promise<{ canceled: boolean; filePath?: string }>
+      getVersion: () => Promise<string>
+      platform: string
+      minimizeWindow: () => void
+      maximizeWindow: () => void
+      closeWindow: () => void
+      onWindowMaximized: (callback: () => void) => void
+      onWindowUnmaximized: (callback: () => void) => void
+      onUpdateAvailable: (callback: (event: any, info: any) => void) => void
+      onUpdateDownloaded: (callback: (event: any, info: any) => void) => void
+    }
+  }
+}
