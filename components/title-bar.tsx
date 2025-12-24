@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Minus, Square, Copy } from 'lucide-react'
+import { X, Minus, Square, Copy, Maximize } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 
@@ -16,15 +16,20 @@ declare module 'react' {
 export function TitleBar() {
   const { theme } = useTheme()
   const [isMaximized, setIsMaximized] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   useEffect(() => {
     // Check if window is maximized on mount and when it changes
     const handleMaximized = () => setIsMaximized(true)
     const handleUnmaximized = () => setIsMaximized(false)
+    const handleEnteredFullscreen = () => setIsFullscreen(true)
+    const handleLeftFullscreen = () => setIsFullscreen(false)
 
     if (typeof window !== 'undefined' && window.electronAPI) {
       window.electronAPI.onWindowMaximized(handleMaximized)
       window.electronAPI.onWindowUnmaximized(handleUnmaximized)
+      window.electronAPI.onWindowEnteredFullscreen(handleEnteredFullscreen)
+      window.electronAPI.onWindowLeftFullscreen(handleLeftFullscreen)
     }
 
     return () => {
@@ -50,6 +55,12 @@ export function TitleBar() {
   const handleClose = () => {
     if (typeof window !== 'undefined' && window.electronAPI) {
       window.electronAPI.closeWindow()
+    }
+  }
+
+  const handleToggleFullscreen = () => {
+    if (typeof window !== 'undefined' && window.electronAPI) {
+      window.electronAPI.toggleFullscreen()
     }
   }
 
@@ -122,6 +133,29 @@ export function TitleBar() {
           ) : (
             <Square className="h-3 w-3" />
           )}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleToggleFullscreen}
+          className="h-8 w-8 p-0"
+          style={{
+            WebkitAppRegion: 'no-drag',
+            color: 'var(--color-text)',
+            '--hover-bg': 'rgba(168, 85, 247, 0.2)', // violet-500 with opacity
+            '--hover-color': '#c084fc' // violet-400
+          } as any}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--hover-bg)'
+            e.currentTarget.style.color = 'var(--hover-color)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent'
+            e.currentTarget.style.color = 'var(--color-text)'
+          }}
+        >
+          <Maximize className="h-3 w-3" />
         </Button>
 
         <Button

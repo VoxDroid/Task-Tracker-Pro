@@ -17,10 +17,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   minimizeWindow: () => ipcRenderer.send('window:minimize'),
   maximizeWindow: () => ipcRenderer.send('window:maximize'),
   closeWindow: () => ipcRenderer.send('window:close'),
+  toggleFullscreen: () => ipcRenderer.send('window:toggle-fullscreen'),
+  isFullscreen: () => ipcRenderer.invoke('window:is-fullscreen'),
 
   // Window state listeners
   onWindowMaximized: (callback) => ipcRenderer.on('window:maximized', callback),
   onWindowUnmaximized: (callback) => ipcRenderer.on('window:unmaximized', callback),
+  onWindowEnteredFullscreen: (callback) => ipcRenderer.on('window:entered-fullscreen', callback),
+  onWindowLeftFullscreen: (callback) => ipcRenderer.on('window:left-fullscreen', callback),
 
   // Listen for app updates (future implementation)
   onUpdateAvailable: (callback) => ipcRenderer.on('update-available', callback),

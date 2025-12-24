@@ -77,8 +77,8 @@ function createBrowserWindow() {
         : path.join(process.resourcesPath, 'app.asar', 'electron', 'preload.js')
     },
     icon: isDev
-      ? path.join(__dirname, '../public/favicon.ico')
-      : path.join(process.resourcesPath, 'app.asar', 'public', 'favicon.ico'),
+      ? path.join(__dirname, '../public/placeholder-logo.png')
+      : path.join(process.resourcesPath, 'app.asar', 'public', 'placeholder-logo.png'),
     show: false, // Don't show until ready-to-show
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     autoHideMenuBar: true, // Hide the menu bar
@@ -107,15 +107,17 @@ function createBrowserWindow() {
     }
   })
 
-  // Security: Disable DevTools and browser shortcuts in production
-  if (!isDev) {
-    // Disable DevTools completely in production
-    mainWindow.webContents.on('devtools-opened', () => {
-      mainWindow.webContents.closeDevTools()
-    })
+  // Handle keyboard shortcuts - works in both dev and production
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    // Handle F11 (Toggle Full Screen) - always allowed
+    if (input.key === 'F11') {
+      mainWindow.setFullScreen(!mainWindow.isFullScreen())
+      event.preventDefault()
+      return
+    }
 
-    // Override keyboard shortcuts that could open DevTools or break the app
-    mainWindow.webContents.on('before-input-event', (event, input) => {
+    // Security: Disable DevTools and browser shortcuts in production only
+    if (!isDev) {
       // Prevent Ctrl+Shift+I (DevTools)
       if (input.control && input.shift && input.key.toLowerCase() === 'i') {
         event.preventDefault()
@@ -136,6 +138,14 @@ function createBrowserWindow() {
       if (input.control && input.shift && input.key.toLowerCase() === 'j') {
         event.preventDefault()
       }
+    }
+  })
+
+  // Security: Disable DevTools and context menu in production
+  if (!isDev) {
+    // Disable DevTools completely in production
+    mainWindow.webContents.on('devtools-opened', () => {
+      mainWindow.webContents.closeDevTools()
     })
 
     // Disable context menu (right-click) in production
@@ -182,6 +192,14 @@ function createBrowserWindow() {
 
   mainWindow.on('unmaximize', () => {
     mainWindow.webContents.send('window:unmaximized')
+  })
+
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow.webContents.send('window:entered-fullscreen')
+  })
+
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow.webContents.send('window:left-fullscreen')
   })
 }
 
@@ -324,6 +342,16 @@ ipcMain.on('window:maximize', () => {
 
 ipcMain.on('window:close', () => {
   if (mainWindow) mainWindow.close()
+})
+
+ipcMain.on('window:toggle-fullscreen', () => {
+  if (mainWindow) {
+    mainWindow.setFullScreen(!mainWindow.isFullScreen())
+  }
+})
+
+ipcMain.handle('window:is-fullscreen', () => {
+  return mainWindow ? mainWindow.isFullScreen() : false
 })
 
 // Handle app updates in production

@@ -12,7 +12,11 @@ const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600
 export const metadata: Metadata = {
   title: "Task Tracker Pro",
   description: "Advanced task tracking and project management application",
-    generator: 'VoxDroid'
+  icons: {
+    icon: '/placeholder-logo.png',
+    apple: '/placeholder-logo.png',
+  },
+  generator: 'VoxDroid'
 }
 
 export default function RootLayout({

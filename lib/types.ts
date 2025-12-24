@@ -73,8 +73,12 @@ declare global {
       minimizeWindow: () => void
       maximizeWindow: () => void
       closeWindow: () => void
+      toggleFullscreen: () => void
+      isFullscreen: () => Promise<boolean>
       onWindowMaximized: (callback: () => void) => void
       onWindowUnmaximized: (callback: () => void) => void
+      onWindowEnteredFullscreen: (callback: () => void) => void
+      onWindowLeftFullscreen: (callback: () => void) => void
       onUpdateAvailable: (callback: (event: any, info: any) => void) => void
       onUpdateDownloaded: (callback: (event: any, info: any) => void) => void
     }

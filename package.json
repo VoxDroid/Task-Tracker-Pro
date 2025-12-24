@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "main": "electron/main.js",
-  "homepage": "./",
+  "homepage": "https://github.com/VoxDroid",
+  "author": "VoxDroid",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -21,6 +22,7 @@
   "build": {
     "appId": "com.tasktrackerpro.app",
     "productName": "Task Tracker Pro",
+    "copyright": "Copyright © 2025 VoxDroid",
     "directories": {
       "output": "dist"
     },
@@ -47,7 +49,7 @@
           ]
         }
       ],
-      "icon": "public/favicon.ico"
+      "icon": "public/placeholder-logo.png"
     },
     "win": {
       "target": [
@@ -59,7 +61,7 @@
           ]
         }
       ],
-      "icon": "public/favicon.ico"
+      "icon": "public/placeholder-logo.png"
     },
     "linux": {
       "target": [
@@ -76,7 +78,7 @@
           ]
         }
       ],
-      "icon": "public/favicon.ico",
+      "icon": "public/placeholder-logo.png",
       "category": "Office"
     },
     "nsis": {
