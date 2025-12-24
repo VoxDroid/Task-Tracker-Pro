@@ -62,7 +62,15 @@ export default function Sidebar({ children }: SidebarProps) {
     <div className="flex h-full bg-[var(--color-background)]">
       {/* Toggle Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          // Emit event before state change
+          window.dispatchEvent(new CustomEvent('sidebar-toggle-start'))
+          setIsOpen(!isOpen)
+          // Emit event after animation completes (slightly longer than transition duration for safety)
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('sidebar-toggle-end'))
+          }, 350) // 300ms transition + 50ms buffer
+        }}
         className={`fixed top-16 z-50 p-3 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl transition-all duration-300 ${
           isOpen ? "left-[340px]" : "left-4"
         }`}

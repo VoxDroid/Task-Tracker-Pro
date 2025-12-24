@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
@@ -25,7 +25,21 @@ import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 
 const COLORS = ["var(--color-primary)", "var(--color-secondary)", "var(--color-accent)"]
 
+// Loading skeleton component for individual charts
+const ChartSkeleton = () => (
+  <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg animate-pulse relative overflow-hidden">
+    {/* Shimmer effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--color-border)]/10 to-transparent animate-shimmer"></div>
+    <div className="flex items-center mb-6 relative z-10">
+      <div className="w-6 h-6 bg-[var(--color-border)] rounded mr-3 opacity-50"></div>
+      <div className="h-8 bg-[var(--color-border)] rounded w-48 opacity-50"></div>
+    </div>
+    <div className="h-[300px] bg-[var(--color-border)] rounded-lg opacity-20 relative z-10"></div>
+  </div>
+)
+
 export default function Dashboard() {
+  const [isSidebarAnimating, setIsSidebarAnimating] = useState(false)
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
@@ -43,6 +57,24 @@ export default function Dashboard() {
   const charts = dashboardData?.charts
   const recentActivity = dashboardData?.recentActivity || []
   const upcomingTasks = dashboardData?.upcomingTasks || []
+
+  // Listen for sidebar animation events
+  useEffect(() => {
+    const handleSidebarToggleStart = () => setIsSidebarAnimating(true)
+    const handleSidebarToggleEnd = () => {
+      // Small delay to ensure animation is complete
+      setTimeout(() => setIsSidebarAnimating(false), 50)
+    }
+
+    // Listen for custom events from sidebar component
+    window.addEventListener('sidebar-toggle-start', handleSidebarToggleStart)
+    window.addEventListener('sidebar-toggle-end', handleSidebarToggleEnd)
+
+    return () => {
+      window.removeEventListener('sidebar-toggle-start', handleSidebarToggleStart)
+      window.removeEventListener('sidebar-toggle-end', handleSidebarToggleEnd)
+    }
+  }, [])
 
   const statCards = useMemo(() => [
     {
@@ -436,14 +468,26 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          <CompletionTrendChart />
-          <TasksByStatusChart />
-          <RecentActivity />
-          <UpcomingTasks />
-          <ProjectProgressChart />
+          {isSidebarAnimating ? (
+            <>
+              <ChartSkeleton />
+              <ChartSkeleton />
+              <RecentActivity />
+              <UpcomingTasks />
+              <ChartSkeleton />
+            </>
+          ) : (
+            <>
+              <CompletionTrendChart />
+              <TasksByStatusChart />
+              <RecentActivity />
+              <UpcomingTasks />
+              <ProjectProgressChart />
+            </>
+          )}
         </div>
 
-        <ActivityTrendChart />
+        {isSidebarAnimating ? <ChartSkeleton /> : <ActivityTrendChart />}
       </div>
     </Sidebar>
   )
