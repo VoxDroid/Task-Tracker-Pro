@@ -572,37 +572,15 @@ export default function ProjectsPage() {
                       setShowDeleteModal(false)
                       setProjectToDelete(null)
                     }}
-                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{
-                      color: "var(--color-text)",
-                      backgroundColor: "var(--color-background)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-secondary)";
-                      e.currentTarget.style.color = "var(--color-secondary-foreground)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-background)";
-                      e.currentTarget.style.color = "var(--color-text)";
-                    }}
+                    className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={deleteProject}
-                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{
-                      color: "var(--color-text)",
-                      backgroundColor: "var(--color-background)",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-destructive)";
-                      e.currentTarget.style.color = "var(--color-destructive-foreground)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--color-background)";
-                      e.currentTarget.style.color = "var(--color-text)";
-                    }}
+                    className="flex-1 px-4 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
                   >
                     Delete
                   </button>

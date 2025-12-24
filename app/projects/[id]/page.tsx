@@ -1063,14 +1063,15 @@ export default function ProjectDetailPage() {
                     setShowDeleteModal(false)
                     setTaskToDelete(null)
                   }}
-                  className="flex-1 px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
+                  className="flex-1 px-6 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
                   style={{ color: "var(--color-text)" }}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteTask}
-                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-2xl font-medium hover:bg-red-600 transition-all duration-200"
+                  className="flex-1 px-6 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-text)" }}
                 >
                   Delete
                 </button>

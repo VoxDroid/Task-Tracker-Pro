@@ -21,14 +21,29 @@ export default function TimeTrackingPage() {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([])
   const [filteredEntries, setFilteredEntries] = useState<TimeEntry[]>([])
   const [tasks, setTasks] = useState<any[]>([])
+  const [filteredTasks, setFilteredTasks] = useState<any[]>([])
   const [activeTimer, setActiveTimer] = useState<number | null>(null)
   const [currentTime, setCurrentTime] = useState(0)
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [taskSearchQuery, setTaskSearchQuery] = useState("")
+  const [taskStatusFilter, setTaskStatusFilter] = useState<string>("all")
   const { addNotification } = useNotification()
 
   const [showEntryModal, setShowEntryModal] = useState(false)
   const [selectedEntry, setSelectedEntry] = useState<any>(null)
+
+  // Task modal state
+  const [showTaskModal, setShowTaskModal] = useState(false)
+  const [selectedTask, setSelectedTask] = useState<any>(null)
+
+  // Pagination for tasks
+  const [currentTaskPage, setCurrentTaskPage] = useState(1)
+  const tasksPerPage = 8
+
+  // Pagination for time entries
+  const [currentEntryPage, setCurrentEntryPage] = useState(1)
+  const entriesPerPage = 10
 
   useEffect(() => {
     fetchTimeEntries()
@@ -58,7 +73,28 @@ export default function TimeTrackingPage() {
     }
 
     setFilteredEntries(filtered)
+    setCurrentEntryPage(1) // Reset to first page when filtering changes
   }, [timeEntries, searchQuery])
+
+  useEffect(() => {
+    let filtered = Array.isArray(tasks) ? [...tasks] : []
+
+    if (taskSearchQuery.trim()) {
+      filtered = filtered.filter(
+        (task) =>
+          task.title?.toLowerCase().includes(taskSearchQuery.toLowerCase()) ||
+          task.project_name?.toLowerCase().includes(taskSearchQuery.toLowerCase()) ||
+          task.description?.toLowerCase().includes(taskSearchQuery.toLowerCase()),
+      )
+    }
+
+    if (taskStatusFilter !== "all") {
+      filtered = filtered.filter((task) => task.status === taskStatusFilter)
+    }
+
+    setFilteredTasks(filtered)
+    setCurrentTaskPage(1) // Reset to first page when filtering changes
+  }, [tasks, taskSearchQuery, taskStatusFilter])
 
   const fetchTimeEntries = async () => {
     try {
@@ -221,6 +257,11 @@ export default function TimeTrackingPage() {
     setShowEntryModal(true)
   }
 
+  const handleTaskClick = (task: any) => {
+    setSelectedTask(task)
+    setShowTaskModal(true)
+  }
+
   const truncateTaskName = (name: string, maxLength = 12) => {
     if (name.length <= maxLength) return name
     return name.substring(0, maxLength) + "..."
@@ -235,6 +276,24 @@ export default function TimeTrackingPage() {
     if (description.length <= maxLength) return description
     return description.substring(0, maxLength) + "..."
   }
+
+  // Pagination functions for tasks
+  const getCurrentPageTasks = () => {
+    const startIndex = (currentTaskPage - 1) * tasksPerPage
+    const endIndex = startIndex + tasksPerPage
+    return filteredTasks.slice(startIndex, endIndex)
+  }
+
+  const totalTaskPages = Math.ceil(filteredTasks.length / tasksPerPage)
+
+  // Pagination functions for time entries
+  const getCurrentPageEntries = () => {
+    const startIndex = (currentEntryPage - 1) * entriesPerPage
+    const endIndex = startIndex + entriesPerPage
+    return filteredEntries.slice(startIndex, endIndex)
+  }
+
+  const totalEntryPages = Math.ceil(filteredEntries.length / entriesPerPage)
 
   if (loading) {
     return (
@@ -355,14 +414,77 @@ export default function TimeTrackingPage() {
 
         {/* Start Timer Section */}
         <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
-          <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
-            Start Timer for Task
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {tasks.map((task) => (
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+              Start Timer for Task
+            </h3>
+            {totalTaskPages > 1 && (
+              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                Page {currentTaskPage} of {totalTaskPages}
+              </div>
+            )}
+          </div>
+
+          {/* Task Search and Filter */}
+          <div className="bg-[var(--color-background)] p-4 rounded-2xl border-2 border-[var(--color-border)] shadow-sm mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
+                  style={{ color: "var(--color-text)" }}
+                />
+                <input
+                  type="text"
+                  value={taskSearchQuery}
+                  onChange={(e) => setTaskSearchQuery(e.target.value)}
+                  placeholder="Search tasks..."
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-surface)]"
+                  style={{ color: "var(--color-text)" }}
+                />
+              </div>
+              <div className="flex gap-2">
+                <div className="relative">
+                  <select
+                    value={taskStatusFilter}
+                    onChange={(e) => setTaskStatusFilter(e.target.value)}
+                    className="px-4 py-3 pr-8 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-surface)] appearance-none cursor-pointer"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    <option value="all">All Status</option>
+                    <option value="todo">To Do</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                    <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+                {(taskSearchQuery || taskStatusFilter !== "all") && (
+                  <button
+                    onClick={() => {
+                      setTaskSearchQuery("")
+                      setTaskStatusFilter("all")
+                    }}
+                    className="px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
+                    style={{ color: "var(--color-text)" }}
+                    title="Clear filters"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
+            {getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className="p-4 bg-[var(--color-background)] rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 flex flex-col h-32"
+                onClick={() => handleTaskClick(task)}
+                className="p-4 bg-[var(--color-background)] rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 flex flex-col h-32 cursor-pointer"
               >
                 <div className="flex flex-col h-full">
                   <div className="flex-1 mb-3">
@@ -384,7 +506,10 @@ export default function TimeTrackingPage() {
                     )}
                   </div>
                   <button
-                    onClick={() => startTimer(task.id)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      startTimer(task.id)
+                    }}
                     disabled={!!activeTimer}
                     className="flex items-center px-3 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm mt-auto"
                     style={{ color: "#ffffff" }}
@@ -396,6 +521,50 @@ export default function TimeTrackingPage() {
               </div>
             ))}
           </div>
+
+          {/* Task Pagination */}
+          {totalTaskPages > 1 && (
+            <div className="flex items-center justify-center space-x-2">
+              <button
+                onClick={() => setCurrentTaskPage(Math.max(1, currentTaskPage - 1))}
+                disabled={currentTaskPage === 1}
+                className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                style={{ color: "var(--color-text)" }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              {Array.from({ length: totalTaskPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentTaskPage(page)}
+                  className={`px-4 py-2 rounded-2xl border-2 transition-all duration-200 font-medium ${
+                    currentTaskPage === page
+                      ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white"
+                      : "border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                  }`}
+                  style={{
+                    color: currentTaskPage === page ? "#ffffff" : "var(--color-text)"
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentTaskPage(Math.min(totalTaskPages, currentTaskPage + 1))}
+                disabled={currentTaskPage === totalTaskPages}
+                className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                style={{ color: "var(--color-text)" }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Search */}
@@ -418,12 +587,19 @@ export default function TimeTrackingPage() {
 
         {/* Time Entries History */}
         <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-          <h3 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
-            Time Entries
-          </h3>
-          <div className="space-y-4">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+              Time Entries
+            </h3>
+            {totalEntryPages > 1 && (
+              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                Page {currentEntryPage} of {totalEntryPages}
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             {filteredEntries.length === 0 ? (
-              <div className="text-center py-12">
+              <div className="col-span-full text-center py-12">
                 <Timer size={48} className="mx-auto mb-4 opacity-40" style={{ color: "var(--color-text)" }} />
                 <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
                   {searchQuery ? `No time entries found for "${searchQuery}"` : "No time entries yet"}
@@ -433,7 +609,7 @@ export default function TimeTrackingPage() {
                 </p>
               </div>
             ) : (
-              filteredEntries.map((entry) => (
+              getCurrentPageEntries().map((entry) => (
                 <button
                   key={entry.id}
                   onClick={() => handleEntryClick(entry)}
@@ -490,7 +666,121 @@ export default function TimeTrackingPage() {
               ))
             )}
           </div>
+
+          {/* Time Entries Pagination */}
+          {totalEntryPages > 1 && (
+            <div className="flex items-center justify-center space-x-2">
+              <button
+                onClick={() => setCurrentEntryPage(Math.max(1, currentEntryPage - 1))}
+                disabled={currentEntryPage === 1}
+                className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                style={{ color: "var(--color-text)" }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              {Array.from({ length: totalEntryPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentEntryPage(page)}
+                  className={`px-4 py-2 rounded-2xl border-2 transition-all duration-200 font-medium ${
+                    currentEntryPage === page
+                      ? "bg-[var(--color-primary)] border-[var(--color-primary)] text-white"
+                      : "border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10"
+                  }`}
+                  style={{
+                    color: currentEntryPage === page ? "#ffffff" : "var(--color-text)"
+                  }}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentEntryPage(Math.min(totalEntryPages, currentEntryPage + 1))}
+                disabled={currentEntryPage === totalEntryPages}
+                className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                style={{ color: "var(--color-text)" }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Task Description Modal */}
+        {showTaskModal && selectedTask && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-[var(--color-surface)] rounded-2xl border-2 border-[var(--color-border)] shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+                    Task Details
+                  </h3>
+                  <button
+                    onClick={() => setShowTaskModal(false)}
+                    className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                      {selectedTask.title}
+                    </h4>
+                    {selectedTask.project_name && (
+                      <p className="text-sm opacity-70 mb-3" style={{ color: "var(--color-text)" }}>
+                        Project: {selectedTask.project_name}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <h5 className="font-medium mb-2" style={{ color: "var(--color-text)" }}>
+                      Description
+                    </h5>
+                    <div className="bg-[var(--color-background)] rounded-2xl p-4 border-2 border-[var(--color-border)]">
+                      {selectedTask.description ? (
+                        <p className="text-sm leading-relaxed" style={{ color: "var(--color-text)" }}>
+                          {selectedTask.description}
+                        </p>
+                      ) : (
+                        <p className="text-sm opacity-60 italic" style={{ color: "var(--color-text)" }}>
+                          No description provided
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t-2 border-[var(--color-border)]">
+                    <div className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
+                      Status: {selectedTask.status?.replace("_", " ") || "Unknown"}
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowTaskModal(false)
+                        startTimer(selectedTask.id)
+                      }}
+                      disabled={!!activeTimer}
+                      className="flex items-center px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                      style={{ color: "#ffffff" }}
+                    >
+                      <Play size={16} />
+                      <span className="ml-2">Start Timer</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <TimeEntryModal
           isOpen={showEntryModal}
