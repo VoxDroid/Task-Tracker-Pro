@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Sidebar from "@/components/sidebar"
 import TaskFormModal from "@/components/task-form-modal"
 import { useNotification } from "@/components/notification"
@@ -100,9 +101,6 @@ const statusConfig = {
 const ITEMS_PER_PAGE = 6
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
-  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [showTaskModal, setShowTaskModal] = useState(false)
@@ -119,10 +117,114 @@ export default function TasksPage() {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [showSelectionBar, setShowSelectionBar] = useState(false)
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    fetchTasks()
-  }, [filter])
+  const queryClient = useQueryClient()
+
+  // Fetch tasks with React Query
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ["tasks", filter],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      if (filter !== "all") params.append("status", filter)
+      if (filter === "archived") params.append("archived", "true")
+
+      const response = await fetch(`/api/tasks?${params}`)
+      if (!response.ok) throw new Error("Failed to fetch tasks")
+      return response.json()
+    },
+    staleTime: 30 * 1000, // 30 seconds
+  })
+
+  // Delete task mutation with optimistic updates
+  const deleteTaskMutation = useMutation({
+    mutationFn: async (taskId: number) => {
+      const response = await fetch(`/api/tasks/${taskId}`, { method: "DELETE" })
+      if (!response.ok) throw new Error("Failed to delete task")
+      return taskId
+    },
+    onMutate: async (taskId) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["tasks", filter] })
+
+      // Snapshot previous value
+      const previousTasks = queryClient.getQueryData(["tasks", filter])
+
+      // Optimistically remove task
+      queryClient.setQueryData(["tasks", filter], (old: Task[] = []) =>
+        old.filter(task => task.id !== taskId)
+      )
+
+      return { previousTasks }
+    },
+    onError: (err, taskId, context) => {
+      // Revert on error
+      if (context?.previousTasks) {
+        queryClient.setQueryData(["tasks", filter], context.previousTasks)
+      }
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to delete task. Please try again.",
+      })
+    },
+    onSuccess: () => {
+      addNotification({
+        type: "success",
+        title: "Task Deleted",
+        message: "Task has been deleted successfully.",
+      })
+    },
+  })
+
+  // Archive task mutation
+  const archiveTaskMutation = useMutation({
+    mutationFn: async (taskId: number) => {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "archived" }),
+      })
+      if (!response.ok) throw new Error("Failed to archive task")
+      return taskId
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] })
+      addNotification({
+        type: "success",
+        title: "Task Archived",
+        message: "Task has been archived successfully.",
+      })
+    },
+    onError: () => {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to archive task. Please try again.",
+      })
+    },
+  })
+
+  // Toggle favorite mutation
+  const toggleFavoriteMutation = useMutation({
+    mutationFn: async ({ taskId, isFavorite }: { taskId: number; isFavorite: boolean }) => {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_favorite: isFavorite }),
+      })
+      if (!response.ok) throw new Error("Failed to update favorite status")
+      return { taskId, isFavorite }
+    },
+    onSuccess: ({ taskId, isFavorite }) => {
+      // Update local state
+      setFavoriteTaskIds(prev =>
+        isFavorite ? [...prev, taskId] : prev.filter(id => id !== taskId)
+      )
+      queryClient.invalidateQueries({ queryKey: ["tasks"] })
+    },
+  })
 
   useEffect(() => {
     const handleOpenTaskModal = () => setShowTaskModal(true)
@@ -159,20 +261,6 @@ export default function TasksPage() {
     }
   }, [selectedTasks.length, showSelectionBar])
 
-  const fetchTasks = async () => {
-    try {
-      const url = filter === "all" ? "/api/tasks" : `/api/tasks?status=${filter}`
-      const response = await fetch(url)
-      const data = await response.json()
-      setTasks(Array.isArray(data) ? data : [])
-    } catch (error) {
-      console.error("Error fetching tasks:", error)
-      setTasks([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const updateTaskStatus = async (taskId: number, newStatus: string, taskTitle: string) => {
     try {
       const response = await fetch(`/api/tasks/${taskId}`, {
@@ -187,7 +275,7 @@ export default function TasksPage() {
           title: "Task Updated",
           message: `Task "${taskTitle}" has been ${newStatus === "completed" ? "completed" : "archived"}.`,
         })
-        fetchTasks()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
       }
     } catch (error) {
       addNotification({
@@ -212,7 +300,7 @@ export default function TasksPage() {
           title: "Task Deleted",
           message: `Task "${taskToDelete.title}" has been permanently deleted.`,
         })
-        fetchTasks()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
         setShowDeleteModal(false)
         setTaskToDelete(null)
       }
@@ -241,7 +329,7 @@ export default function TasksPage() {
           title: "Task Archived",
           message: `Task "${taskToArchive.title}" has been archived.`,
         })
-        fetchTasks()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
         setShowArchiveModal(false)
         setTaskToArchive(null)
       }
@@ -293,7 +381,7 @@ export default function TasksPage() {
       })
 
       clearSelection()
-      fetchTasks()
+      queryClient.invalidateQueries({ queryKey: ["tasks"] })
     } catch (error) {
       addNotification({
         type: "error",
@@ -323,7 +411,7 @@ export default function TasksPage() {
           title: "Task Duplicated",
           message: `Task "${task.title}" has been duplicated.`,
         })
-        fetchTasks()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
       }
     } catch (error) {
       addNotification({
@@ -1013,11 +1101,11 @@ export default function TasksPage() {
           </div>
         )}
 
-        <TaskFormModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} onSuccess={fetchTasks} />
+        <TaskFormModal isOpen={showTaskModal} onClose={() => setShowTaskModal(false)} onSuccess={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })} />
         <TaskEditModal
           isOpen={showEditModal}
           onClose={() => setShowEditModal(false)}
-          onSuccess={fetchTasks}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })}
           task={selectedTask}
         />
       </div>

@@ -63,53 +63,82 @@ function NotificationContainer() {
   const getIcon = (type: string) => {
     switch (type) {
       case "success":
-        return <CheckCircle className="w-5 h-5 text-green-600" />
+        return <CheckCircle className="w-5 h-5" style={{ color: "var(--color-accent)" }} />
       case "error":
-        return <AlertCircle className="w-5 h-5 text-red-600" />
+        return <AlertCircle className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
       case "warning":
-        return <AlertTriangle className="w-5 h-5 text-yellow-600" />
+        return <AlertTriangle className="w-5 h-5" style={{ color: "var(--color-secondary)" }} />
       default:
-        return <Info className="w-5 h-5 text-blue-600" />
+        return <Info className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
     }
   }
 
   const getColors = (type: string) => {
     switch (type) {
       case "success":
-        return "bg-green-50 border-green-200 text-green-800"
+        return {
+          backgroundColor: "var(--color-accent)",
+          borderColor: "var(--color-accent)",
+          color: "var(--color-text)",
+          opacity: 0.1
+        }
       case "error":
-        return "bg-red-50 border-red-200 text-red-800"
+        return {
+          backgroundColor: "var(--color-primary)",
+          borderColor: "var(--color-primary)",
+          color: "var(--color-text)",
+          opacity: 0.1
+        }
       case "warning":
-        return "bg-yellow-50 border-yellow-200 text-yellow-800"
+        return {
+          backgroundColor: "var(--color-secondary)",
+          borderColor: "var(--color-secondary)",
+          color: "var(--color-text)",
+          opacity: 0.1
+        }
       default:
-        return "bg-blue-50 border-blue-200 text-blue-800"
+        return {
+          backgroundColor: "var(--color-primary)",
+          borderColor: "var(--color-primary)",
+          color: "var(--color-text)",
+          opacity: 0.1
+        }
     }
   }
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => (
-        <div
-          key={notification.id}
-          className={`max-w-sm w-full rounded-xl border-2 border-black p-4 shadow-lg transform transition-all duration-300 ease-in-out ${getColors(
-            notification.type,
-          )}`}
-        >
-          <div className="flex items-start">
-            <div className="flex-shrink-0">{getIcon(notification.type)}</div>
-            <div className="ml-3 flex-1">
-              <p className="text-sm font-semibold">{notification.title}</p>
-              {notification.message && <p className="text-sm mt-1 opacity-90">{notification.message}</p>}
+      {notifications.map((notification) => {
+        const colors = getColors(notification.type)
+        return (
+          <div
+            key={notification.id}
+            className="max-w-sm w-full rounded-xl border-2 p-4 shadow-lg transform transition-all duration-300 ease-in-out"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              borderColor: colors.borderColor,
+              color: "var(--color-text)",
+            }}
+          >
+            <div className="flex items-start">
+              <div className="flex-shrink-0" style={{ backgroundColor: colors.backgroundColor, opacity: colors.opacity, padding: '4px', borderRadius: '6px' }}>
+                {getIcon(notification.type)}
+              </div>
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{notification.title}</p>
+                {notification.message && <p className="text-sm mt-1 opacity-90" style={{ color: "var(--color-text)" }}>{notification.message}</p>}
+              </div>
+              <button
+                onClick={() => removeNotification(notification.id)}
+                className="ml-4 flex-shrink-0 rounded-lg p-1 hover:bg-black hover:bg-opacity-10 transition-colors"
+                style={{ color: "var(--color-text)" }}
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={() => removeNotification(notification.id)}
-              className="ml-4 flex-shrink-0 rounded-lg p-1 hover:bg-black hover:bg-opacity-10 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

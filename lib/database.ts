@@ -35,7 +35,7 @@ function setupDatabase(database: Database.Database): void {
   try {
     database.pragma("foreign_keys = ON")
     database.pragma("journal_mode = DELETE")
-    database.pragma("synchronous = FULL")
+    database.pragma("synchronous = NORMAL")  // Changed from FULL for better performance
     database.pragma("cache_size = 1000")
     database.pragma("temp_store = memory")
     database.pragma("page_size = 4096")
@@ -276,7 +276,7 @@ export function executeUpdate(query: string, params: any[] = []): { changes: num
   }
 }
 
-function closeDatabase(): void {
+export function closeDatabaseConnection(): void {
   if (db) {
     try {
       db.close()
@@ -288,9 +288,9 @@ function closeDatabase(): void {
   }
 }
 
-process.on("exit", closeDatabase)
+process.on("exit", closeDatabaseConnection)
 process.on("SIGINT", () => {
-  closeDatabase()
+  closeDatabaseConnection()
   process.exit(0)
 })
-process.on("SIGTERM", closeDatabase)
+process.on("SIGTERM", closeDatabaseConnection)

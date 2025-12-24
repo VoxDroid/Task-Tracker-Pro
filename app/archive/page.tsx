@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import type { Task } from "@/lib/types"
@@ -20,6 +21,7 @@ export default function ArchivePage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const { addNotification } = useNotification()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     fetchArchivedTasks()
@@ -69,6 +71,8 @@ export default function ArchivePage() {
           message: `Task "${taskTitle}" has been restored successfully.`,
         })
         fetchArchivedTasks()
+        // Invalidate the tasks query cache to update the main tasks page immediately
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
       }
     } catch (error) {
       addNotification({

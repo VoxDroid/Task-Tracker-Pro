@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useEffect, useState, useMemo } from "react"
+import React, { useMemo } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
 import type { DashboardStats } from "@/lib/types"
 import {
@@ -19,81 +21,30 @@ import {
   Area,
   AreaChart,
 } from "recharts"
-import {
-  TrendingUp,
-  CheckCircle,
-  Clock,
-  AlertTriangle,
-  FolderOpen,
-  Activity,
-  Calendar,
-  Target,
-  Zap,
-  BarChart3,
-  PieChartIcon,
-  LineChartIcon,
-} from "lucide-react"
+import { DashboardSkeleton } from "@/components/dashboard-skeleton"
 
 const COLORS = ["var(--color-primary)", "var(--color-secondary)", "var(--color-accent)"]
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [charts, setCharts] = useState<any>(null)
-  const [recentActivity, setRecentActivity] = useState<any[]>([])
-  const [upcomingTasks, setUpcomingTasks] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: async () => {
+      const response = await fetch("/api/dashboard/combined")
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data")
+      }
+      return response.json()
+    },
+    staleTime: 30 * 1000, // 30 seconds
+    refetchInterval: 60 * 1000, // Refetch every minute
+  })
 
-  useEffect(() => {
-    fetchDashboardData()
-  }, [])
+  const stats = dashboardData?.stats
+  const charts = dashboardData?.charts
+  const recentActivity = dashboardData?.recentActivity || []
+  const upcomingTasks = dashboardData?.upcomingTasks || []
 
-  const fetchDashboardData = async () => {
-    try {
-      const [statsRes, chartsRes, activityRes, tasksRes] = await Promise.all([
-        fetch("/api/dashboard/stats"),
-        fetch("/api/dashboard/charts"),
-        fetch("/api/logs?limit=5"),
-        fetch("/api/tasks?limit=5"),
-      ])
-
-      const statsData = await statsRes.json()
-      const chartsData = await chartsRes.json()
-      const activityData = await activityRes.json()
-      const tasksData = await tasksRes.json()
-
-      setStats(statsData)
-      setCharts(chartsData)
-      setRecentActivity(Array.isArray(activityData.logs) ? activityData.logs : [])
-      setUpcomingTasks(
-        Array.isArray(tasksData)
-          ? tasksData.filter((task: any) => task.due_date && task.status !== "completed").slice(0, 5)
-          : [],
-      )
-    } catch (error) {
-      console.error("Error fetching dashboard data:", error)
-      setRecentActivity([])
-      setUpcomingTasks([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <Sidebar>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
-              Loading dashboard...
-            </div>
-          </div>
-        </div>
-      </Sidebar>
-    )
-  }
-
-  const statCards = [
+  const statCards = useMemo(() => [
     {
       title: "Total Tasks",
       value: stats?.totalTasks || 0,
@@ -136,7 +87,39 @@ export default function Dashboard() {
       colorVar: "--color-accent",
       bgIcon: Zap,
     },
-  ]
+  ], [stats])
+
+  if (isLoading) {
+    return (
+      <Sidebar>
+        <div className="p-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+              Dashboard
+            </h1>
+            <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+              Overview of your tasks and productivity
+            </p>
+          </div>
+          <DashboardSkeleton />
+        </div>
+      </Sidebar>
+    )
+  }
+
+  if (error) {
+    return (
+      <Sidebar>
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="text-red-500">
+              Error loading dashboard data. Please try again.
+            </div>
+          </div>
+        </div>
+      </Sidebar>
+    )
+  }
 
   // Memoized chart components to prevent re-renders during sidebar animations
   const CompletionTrendChart = React.memo(() => (

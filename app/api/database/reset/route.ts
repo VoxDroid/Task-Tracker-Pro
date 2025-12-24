@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { executeUpdate } from "@/lib/database"
+import { executeUpdate, closeDatabaseConnection } from "@/lib/database"
 import fs from "fs"
 import path from "path"
 
@@ -19,12 +19,25 @@ export async function POST() {
       executeUpdate(query)
     }
 
+    // Close the database connection before deleting the file
+    closeDatabaseConnection()
+
     // Remove database file and let it recreate
     const dataDir = path.join(process.cwd(), "data")
     const dbPath = path.join(dataDir, "tasktracker.db")
 
+    // Also remove WAL and SHM files if they exist
+    const walPath = dbPath + "-wal"
+    const shmPath = dbPath + "-shm"
+
     if (fs.existsSync(dbPath)) {
       fs.unlinkSync(dbPath)
+    }
+    if (fs.existsSync(walPath)) {
+      fs.unlinkSync(walPath)
+    }
+    if (fs.existsSync(shmPath)) {
+      fs.unlinkSync(shmPath)
     }
 
     return NextResponse.json({ success: true, message: "Database reset successfully" })

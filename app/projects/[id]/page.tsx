@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import Sidebar from "@/components/sidebar"
 import TaskFormModal from "@/components/task-form-modal"
 import TaskEditModal from "@/components/task-edit-modal"
 import { useNotification } from "@/components/notification"
-import { ArrowLeft, Plus, Calendar, User, CheckCircle, Clock, AlertTriangle } from "lucide-react"
+import { truncateText } from "@/lib/utils"
+import { ArrowLeft, Plus, Calendar, User, CheckCircle, Clock, AlertTriangle, Edit, Check, Copy, Archive, Trash2, FolderOpen } from "lucide-react"
 
 export default function ProjectDetailPage() {
   const params = useParams()
@@ -18,7 +20,16 @@ export default function ProjectDetailPage() {
   const [showTaskModal, setShowTaskModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<any>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [taskToDelete, setTaskToDelete] = useState<any>(null)
+  const [showArchiveModal, setShowArchiveModal] = useState(false)
+  const [taskToArchive, setTaskToArchive] = useState<any>(null)
+  const [showSelectTaskModal, setShowSelectTaskModal] = useState(false)
+  const [availableTasks, setAvailableTasks] = useState<any[]>([])
+  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([])
+  const [loadingAvailableTasks, setLoadingAvailableTasks] = useState(false)
   const { addNotification } = useNotification()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     fetchProject()
@@ -64,6 +75,7 @@ export default function ProjectDetailPage() {
         })
         fetchTasks()
         fetchProject()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
       }
     } catch (error) {
       addNotification({
@@ -72,6 +84,167 @@ export default function ProjectDetailPage() {
         message: "Failed to update task. Please try again.",
       })
     }
+  }
+
+  const duplicateTask = async (task: any) => {
+    try {
+      const { id, created_at, updated_at, ...taskData } = task
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...taskData,
+          title: `${task.title} (Copy)`,
+        }),
+      })
+
+      if (response.ok) {
+        addNotification({
+          type: "success",
+          title: "Task Duplicated",
+          message: `Task "${task.title}" has been duplicated successfully.`,
+        })
+        fetchTasks()
+        fetchProject()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
+      }
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to duplicate task. Please try again.",
+      })
+    }
+  }
+
+  const archiveTask = async () => {
+    if (!taskToArchive) return
+
+    try {
+      const response = await fetch(`/api/tasks/${taskToArchive.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "archived" }),
+      })
+
+      if (response.ok) {
+        addNotification({
+          type: "success",
+          title: "Task Archived",
+          message: `Task "${taskToArchive.title}" has been archived successfully.`,
+        })
+        fetchTasks()
+        fetchProject()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
+        setShowArchiveModal(false)
+        setTaskToArchive(null)
+      }
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to archive task. Please try again.",
+      })
+    }
+  }
+
+  const deleteTask = async () => {
+    if (!taskToDelete) return
+
+    try {
+      const response = await fetch(`/api/tasks/${taskToDelete.id}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        addNotification({
+          type: "success",
+          title: "Task Deleted",
+          message: `Task "${taskToDelete.title}" has been permanently deleted.`,
+        })
+        fetchTasks()
+        fetchProject()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
+        setShowDeleteModal(false)
+        setTaskToDelete(null)
+      }
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to delete task. Please try again.",
+      })
+    }
+  }
+
+  const fetchAvailableTasks = async () => {
+    setLoadingAvailableTasks(true)
+    try {
+      // Fetch all non-archived tasks
+      const response = await fetch("/api/tasks")
+      const data = await response.json()
+      // Filter out tasks that are already in this project
+      const availableTasks = Array.isArray(data)
+        ? data.filter((task: any) => task.project_id !== parseInt(projectId))
+        : []
+      setAvailableTasks(availableTasks)
+    } catch (error) {
+      console.error("Error fetching available tasks:", error)
+      setAvailableTasks([])
+    } finally {
+      setLoadingAvailableTasks(false)
+    }
+  }
+
+  const assignTasksToProject = async () => {
+    if (selectedTaskIds.length === 0) return
+
+    try {
+      const promises = selectedTaskIds.map(taskId =>
+        fetch(`/api/tasks/${taskId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ project_id: parseInt(projectId) }),
+        })
+      )
+
+      const results = await Promise.all(promises)
+      const successCount = results.filter(response => response.ok).length
+
+      if (successCount > 0) {
+        addNotification({
+          type: "success",
+          title: "Tasks Assigned",
+          message: `${successCount} task${successCount > 1 ? 's' : ''} ${successCount > 1 ? 'have' : 'has'} been assigned to this project.`,
+        })
+        fetchTasks()
+        fetchProject()
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
+        setShowSelectTaskModal(false)
+        setSelectedTaskIds([])
+        setAvailableTasks([])
+      } else {
+        addNotification({
+          type: "error",
+          title: "Error",
+          message: "Failed to assign tasks to project.",
+        })
+      }
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Error",
+        message: "Failed to assign tasks to project. Please try again.",
+      })
+    }
+  }
+
+  const handleSelectTask = (taskId: number) => {
+    setSelectedTaskIds(prev =>
+      prev.includes(taskId)
+        ? prev.filter(id => id !== taskId)
+        : [...prev, taskId]
+    )
   }
 
   if (loading) {
@@ -148,6 +321,7 @@ export default function ProjectDetailPage() {
               </div>
             </div>
           </div>
+        <div className="flex items-center space-x-4">
           <button
             onClick={() => setShowTaskModal(true)}
             className="flex items-center px-6 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
@@ -159,6 +333,22 @@ export default function ProjectDetailPage() {
             <Plus size={20} />
             <span className="ml-2">Add Task</span>
           </button>
+
+          <button
+            onClick={() => {
+              setShowSelectTaskModal(true)
+              fetchAvailableTasks()
+            }}
+            className="flex items-center px-6 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
+            style={{
+              backgroundColor: "var(--color-secondary)",
+              color: "var(--color-secondary-foreground)",
+            }}
+          >
+            <FolderOpen size={20} />
+            <span className="ml-2">Select Existing Task</span>
+          </button>
+        </div>
         </div>
 
         {/* Stats */}
@@ -230,128 +420,238 @@ export default function ProjectDetailPage() {
         </div>
 
         {/* Tasks */}
-        <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: "var(--color-text)" }}>
-            Project Tasks
-          </h2>
-          <div className="space-y-4">
-            {tasks.length === 0 ? (
-              <div className="text-center py-12">
-                <div
-                  className="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]"
-                  style={{ backgroundColor: "var(--color-primary)" }}
-                >
-                  <Plus className="w-12 h-12 opacity-50" style={{ color: "var(--color-primary)" }} />
-                </div>
-                <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
-                  No tasks in this project
-                </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+          {tasks.length === 0 ? (
+            <div className="col-span-full text-center py-16">
+              <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
+                <Plus className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+              </div>
+              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+                No tasks in this project
+              </p>
+              <div className="flex items-center justify-center space-x-4">
                 <button
                   onClick={() => setShowTaskModal(true)}
-                  className="inline-flex items-center px-6 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{
-                    backgroundColor: "var(--color-primary)",
-                    color: "var(--color-primary-foreground)",
-                  }}
+                  className="inline-flex items-center px-6 py-3 bg-[var(--color-primary)] bg-opacity-10 hover:bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-primary-foreground)" }}
                 >
                   <Plus size={16} />
                   <span className="ml-2">Add first task</span>
                 </button>
-              </div>
-            ) : (
-              tasks.map((task) => (
-                <div
-                  key={task.id}
-                  className="p-6 bg-[var(--color-background)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-md hover:transform hover:scale-[1.01] transition-all duration-200"
+
+                <button
+                  onClick={() => {
+                    setShowSelectTaskModal(true)
+                    fetchAvailableTasks()
+                  }}
+                  className="inline-flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
+                  style={{ color: "var(--color-secondary-foreground)" }}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
-                          {task.title}
-                        </h3>
-                        <span
-                          className={`px-2 py-1 rounded-lg text-xs font-bold border ${
-                            task.priority === "urgent"
-                              ? "bg-red-100 text-red-800 border-red-300"
-                              : task.priority === "high"
-                                ? "bg-orange-100 text-orange-800 border-orange-300"
-                                : task.priority === "medium"
-                                  ? "bg-yellow-100 text-yellow-800 border-yellow-300"
-                                  : "bg-green-100 text-green-800 border-green-300"
-                          }`}
-                        >
-                          {task.priority.toUpperCase()}
-                        </span>
-                        <span
-                          className={`px-2 py-1 rounded-lg text-xs font-bold border ${
-                            task.status === "completed"
-                              ? "bg-green-100 text-green-800 border-green-300"
-                              : task.status === "in_progress"
-                                ? "bg-blue-100 text-blue-800 border-blue-300"
-                                : task.status === "archived"
-                                  ? "bg-purple-100 text-purple-800 border-purple-300"
-                                  : "bg-gray-100 text-gray-800 border-gray-300"
-                          }`}
-                        >
-                          {task.status.replace("_", " ").toUpperCase()}
-                        </span>
-                      </div>
-                      {task.description && (
-                        <p className="opacity-70 mb-3" style={{ color: "var(--color-text)" }}>
-                          {task.description}
-                        </p>
-                      )}
-                      <div
-                        className="flex items-center space-x-4 text-sm opacity-70"
+                  <FolderOpen size={16} />
+                  <span className="ml-2">Select Existing Task</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            tasks.map((task) => (
+              <div
+                key={task.id}
+                className="group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300"
+                style={{
+                  backgroundColor: "var(--color-surface)",
+                  borderColor: "var(--color-border)",
+                }}
+              >
+                <div className="relative z-10 p-6 h-full flex flex-col">
+                  {/* Header - Title and Tags on same line */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-3 min-w-0 flex-1">
+                      <h3
+                        className="text-lg font-bold leading-tight min-w-0 flex-1"
                         style={{ color: "var(--color-text)" }}
+                        title={task.title}
                       >
-                        {task.assigned_to && (
-                          <div className="flex items-center bg-[var(--color-surface)] px-3 py-1 rounded-lg border border-[var(--color-border)]">
-                            <User size={14} />
-                            <span className="ml-1 font-medium">{task.assigned_to}</span>
-                          </div>
-                        )}
-                        {task.due_date && (
-                          <div className="flex items-center bg-[var(--color-surface)] px-3 py-1 rounded-lg border border-[var(--color-border)]">
-                            <Calendar size={14} />
-                            <span className="ml-1 font-medium">{new Date(task.due_date).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                      </div>
+                        {truncateText(task.title, 20)}
+                      </h3>
                     </div>
+                    <div className="flex flex-col space-y-2 flex-shrink-0 ml-3">
+                      <span
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm border-2"
+                        style={{
+                          backgroundColor: task.priority === "urgent" ? "var(--color-primary)" :
+                                         task.priority === "high" ? "var(--color-secondary)" :
+                                         task.priority === "medium" ? "var(--color-accent)" :
+                                         "var(--color-surface)",
+                          color: task.priority === "urgent" ? "var(--color-primary-foreground)" :
+                                task.priority === "high" ? "var(--color-secondary-foreground)" :
+                                task.priority === "medium" ? "var(--color-text)" :
+                                "var(--color-text)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        {task.priority}
+                      </span>
+                      <span
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm"
+                        style={{
+                          backgroundColor: task.status === "completed" ? "var(--color-accent)" :
+                                         task.status === "in_progress" ? "var(--color-primary)" :
+                                         task.status === "archived" ? "var(--color-secondary)" :
+                                         "var(--color-surface)",
+                          color: task.status === "completed" ? "var(--color-text)" :
+                                task.status === "in_progress" ? "var(--color-primary-foreground)" :
+                                task.status === "archived" ? "var(--color-secondary-foreground)" :
+                                "var(--color-text)",
+                        }}
+                      >
+                        {task.status.replace("_", " ")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  {task.description && (
+                    <p
+                      className="text-sm opacity-70 leading-relaxed mb-4"
+                      style={{ color: "var(--color-text)" }}
+                      title={task.description}
+                    >
+                      {truncateText(task.description, 80)}
+                    </p>
+                  )}
+
+                  {/* Task Details */}
+                  <div className="space-y-3 mb-4 flex-1">
+                    {task.assigned_to && (
+                      <div
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
+                          style={{ backgroundColor: "var(--color-primary)", opacity: 0.1 }}
+                        >
+                          <User size={16} style={{ color: "var(--color-primary)" }} />
+                        </div>
+                        <span
+                          className="text-sm font-medium truncate"
+                          style={{ color: "var(--color-text)" }}
+                          title={task.assigned_to}
+                        >
+                          {truncateText(task.assigned_to, 15)}
+                        </span>
+                      </div>
+                    )}
+                    {task.due_date && (
+                      <div
+                        className="flex items-center p-3 rounded-2xl border backdrop-blur-sm"
+                        style={{
+                          backgroundColor: "var(--color-background)",
+                          borderColor: "var(--color-border)",
+                        }}
+                      >
+                        <div
+                          className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
+                          style={{ backgroundColor: "var(--color-secondary)", opacity: 0.1 }}
+                        >
+                          <Calendar size={16} style={{ color: "var(--color-secondary)" }} />
+                        </div>
+                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                          {new Date(task.due_date).toLocaleDateString()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Metadata */}
+                  <div
+                    className="flex items-center justify-between text-xs opacity-60 mb-4"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
+                    {task.updated_at !== task.created_at && <span>Updated {new Date(task.updated_at).toLocaleDateString()}</span>}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between">
                     <div className="flex space-x-2">
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation()
                           setSelectedTask(task)
                           setShowEditModal(true)
                         }}
-                        className="px-3 py-1 rounded-lg border-2 border-[var(--color-border)] hover:shadow-md transition-colors text-sm font-bold"
-                        style={{
-                          backgroundColor: "var(--color-primary)",
-                          color: "var(--color-primary-foreground)",
-                        }}
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Edit"
                       >
-                        Edit
+                        <Edit size={16} />
                       </button>
+
                       {task.status !== "completed" && (
                         <button
-                          onClick={() => updateTaskStatus(task.id, "completed", task.title)}
-                          className="px-3 py-1 rounded-lg border-2 border-[var(--color-border)] hover:shadow-md transition-colors text-sm font-bold"
-                          style={{
-                            backgroundColor: "var(--color-primary)",
-                            color: "var(--color-primary-foreground)",
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            updateTaskStatus(task.id, "completed", task.title)
                           }}
+                          className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-green-500 hover:bg-opacity-10 transition-all duration-200"
+                          style={{ color: "var(--color-text)" }}
+                          title="Complete"
                         >
-                          Complete
+                          <Check size={16} />
                         </button>
                       )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          duplicateTask(task)
+                        }}
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-secondary)] hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Duplicate"
+                      >
+                        <Copy size={16} />
+                      </button>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      {task.status !== "archived" && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setTaskToArchive(task)
+                            setShowArchiveModal(true)
+                          }}
+                          className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-yellow-500 hover:bg-opacity-10 transition-all duration-200"
+                          style={{ color: "var(--color-text)" }}
+                          title="Archive"
+                        >
+                          <Archive size={16} />
+                        </button>
+                      )}
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setTaskToDelete(task)
+                          setShowDeleteModal(true)
+                        }}
+                        className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
+                        style={{ color: "var(--color-text)" }}
+                        title="Delete"
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </div>
 
         <TaskFormModal
@@ -360,7 +660,9 @@ export default function ProjectDetailPage() {
           onSuccess={() => {
             fetchTasks()
             fetchProject()
+            queryClient.invalidateQueries({ queryKey: ["tasks"] })
           }}
+          projectId={parseInt(projectId)}
         />
         <TaskEditModal
           isOpen={showEditModal}
@@ -368,9 +670,234 @@ export default function ProjectDetailPage() {
           onSuccess={() => {
             fetchTasks()
             fetchProject()
+            queryClient.invalidateQueries({ queryKey: ["tasks"] })
           }}
           task={selectedTask}
         />
+
+        {/* Archive Confirmation Modal */}
+        {showArchiveModal && taskToArchive && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div
+              className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] p-8 max-w-md w-full shadow-2xl"
+              style={{ backgroundColor: "var(--color-surface)" }}
+            >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Archive size={32} className="text-yellow-500" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                  Archive Task
+                </h3>
+                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+                  Are you sure you want to archive "{taskToArchive.title}"? You can restore it later from the archive.
+                </p>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => {
+                    setShowArchiveModal(false)
+                    setTaskToArchive(null)
+                  }}
+                  className="flex-1 px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={archiveTask}
+                  className="flex-1 px-6 py-3 bg-yellow-500 text-white rounded-2xl font-medium hover:bg-yellow-600 transition-all duration-200"
+                >
+                  Archive
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && taskToDelete && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div
+              className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] p-8 max-w-md w-full shadow-2xl"
+              style={{ backgroundColor: "var(--color-surface)" }}
+            >
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trash2 size={32} className="text-red-500" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                  Delete Task
+                </h3>
+                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+                  Are you sure you want to delete "{taskToDelete.title}"? This action cannot be undone.
+                </p>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false)
+                    setTaskToDelete(null)
+                  }}
+                  className="flex-1 px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteTask}
+                  className="flex-1 px-6 py-3 bg-red-500 text-white rounded-2xl font-medium hover:bg-red-600 transition-all duration-200"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Select Existing Task Modal */}
+        {showSelectTaskModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div
+              className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
+              style={{ backgroundColor: "var(--color-surface)" }}
+            >
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                      Select Existing Tasks
+                    </h3>
+                    <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" }}>
+                      Choose tasks to assign to "{project?.name}"
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setShowSelectTaskModal(false)
+                      setSelectedTaskIds([])
+                      setAvailableTasks([])
+                    }}
+                    className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
+                    style={{ color: "var(--color-text)" }}
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {loadingAvailableTasks ? (
+                  <div className="flex items-center justify-center py-16">
+                    <div className="text-center">
+                      <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
+                      <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+                        Loading available tasks...
+                      </div>
+                    </div>
+                  </div>
+                ) : availableTasks.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
+                      <FolderOpen className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+                    </div>
+                    <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+                      No available tasks found
+                    </p>
+                    <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
+                      All tasks are already assigned to projects or archived.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="max-h-96 overflow-y-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      {availableTasks.map((task) => {
+                        const isSelected = selectedTaskIds.includes(task.id)
+                        return (
+                        <div
+                          key={task.id}
+                          className={`p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 hover:text-white ${
+                            isSelected
+                              ? 'border-[var(--color-primary)] bg-[var(--color-primary)] text-white'
+                              : 'border-[var(--color-border)] hover:border-[var(--color-primary)] hover:bg-[var(--color-primary)] hover:bg-opacity-10'
+                          }`}
+                          onClick={() => handleSelectTask(task.id)}
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-semibold text-lg min-w-0 flex-1">
+                              {truncateText(task.title, 30)}
+                            </h4>
+                            <div className="relative ml-2">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleSelectTask(task.id)}
+                                className="sr-only"
+                              />
+                              <div
+                                className={`w-5 h-5 rounded-full border-2 cursor-pointer transition-all duration-200 flex items-center justify-center ${
+                                  isSelected
+                                    ? 'bg-white border-white'
+                                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]'
+                                }`}
+                                onClick={() => handleSelectTask(task.id)}
+                              >
+                                {isSelected && (
+                                  <div className="w-3 h-3 rounded-full bg-[var(--color-primary)]"></div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm mb-3 opacity-70 hover:text-opacity-90">
+                              {truncateText(task.description, 60)}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between text-xs opacity-60 hover:text-opacity-80">
+                            <span>
+                              Status: {task.status.replace("_", " ")}
+                            </span>
+                            <span>
+                              Priority: {task.priority}
+                            </span>
+                          </div>
+                        </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-6 border-t-2 border-[var(--color-border)]">
+                  <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                    {selectedTaskIds.length} task{selectedTaskIds.length !== 1 ? 's' : ''} selected
+                  </div>
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={() => {
+                        setShowSelectTaskModal(false)
+                        setSelectedTaskIds([])
+                        setAvailableTasks([])
+                      }}
+                      className="px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
+                      style={{ color: "var(--color-text)" }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={assignTasksToProject}
+                      disabled={selectedTaskIds.length === 0}
+                      className="px-6 py-3 bg-[var(--color-secondary)] text-white rounded-2xl font-medium hover:bg-[var(--color-secondary)] hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      style={{ backgroundColor: selectedTaskIds.length > 0 ? "var(--color-secondary)" : undefined }}
+                    >
+                      Assign to Project
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Sidebar>
   )

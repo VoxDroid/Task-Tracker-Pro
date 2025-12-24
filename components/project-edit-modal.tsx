@@ -140,12 +140,10 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--color-primary)"
                 e.currentTarget.style.color = "var(--color-primary-foreground)"
-                e.currentTarget.style.opacity = "0.1"
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--color-background)"
                 e.currentTarget.style.color = "var(--color-text)"
-                e.currentTarget.style.opacity = "1"
               }}
             >
               Cancel

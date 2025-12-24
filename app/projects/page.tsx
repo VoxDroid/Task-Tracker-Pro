@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import Sidebar from "@/components/sidebar"
 import ProjectFormModal from "@/components/project-form-modal"
@@ -35,6 +36,7 @@ export default function ProjectsPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
   const { addNotification } = useNotification()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     fetchProjects()
@@ -91,6 +93,8 @@ export default function ProjectsPage() {
         fetchProjects()
         setShowDeleteModal(false)
         setProjectToDelete(null)
+        // Invalidate the tasks query cache to update the tasks page immediately
+        queryClient.invalidateQueries({ queryKey: ["tasks"] })
       }
     } catch (error) {
       addNotification({

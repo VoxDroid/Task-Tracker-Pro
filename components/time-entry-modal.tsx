@@ -157,7 +157,7 @@ export default function TimeEntryModal({
                 <div className="w-4 h-4 rounded-full animate-pulse mr-3" style={{ backgroundColor: "var(--color-accent)" }}></div>
                 <Timer className="w-6 h-6" style={{ color: "var(--color-text)" }} />
               </div>
-              <div className="text-4xl font-bold font-mono mb-4" style={{ color: "var(--color-text)" }}>
+              <div className="text-4xl font-bold mb-4" style={{ color: "var(--color-text)" }}>
                 {currentTime !== undefined ? formatTime(currentTime) : "Running..."}
               </div>
               <button
@@ -346,10 +346,8 @@ export default function TimeEntryModal({
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="px-4 py-2 rounded-2xl border-2 border-opacity-30 hover:bg-opacity-30 disabled:opacity-50 transition-colors font-medium"
+              className="px-4 py-2 rounded-2xl border-2 border-opacity-30 bg-[var(--color-destructive)] hover:bg-red-50 disabled:opacity-50 transition-colors font-medium"
               style={{
-                backgroundColor: "var(--color-destructive)",
-                opacity: 0.2,
                 borderColor: "var(--color-destructive)",
                 color: "var(--color-destructive)",
               }}

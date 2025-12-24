@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Settings, Palette, Moon, Sun, Database, Download, Upload, Trash2 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
 import { useTheme } from "@/components/theme-provider"
-import { Settings, Palette, Database, Download, Upload, Trash2, Monitor, Moon, Sun } from "lucide-react"
+import { HexColorPicker } from "react-colorful"
 import {
   Dialog,
   DialogContent,
@@ -15,21 +16,38 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [showResetModal, setShowResetModal] = useState(false)
+  const [showCustomThemeModal, setShowCustomThemeModal] = useState(false)
   const { addNotification } = useNotification()
   const { currentTheme, setTheme, themes, customTheme, setCustomTheme } = useTheme()
   const [customColors, setCustomColors] = useState({
-    primary: "#3b82f6",
-    secondary: "#8b5cf6",
-    accent: "#10b981",
-    background: "#f9fafb",
-    surface: "#ffffff",
-    text: "#000000",
-    border: "#000000",
+    primary: customTheme?.colors.primary || "#3b82f6",
+    primaryForeground: customTheme?.colors.primaryForeground || "#ffffff",
+    secondary: customTheme?.colors.secondary || "#8b5cf6",
+    secondaryForeground: customTheme?.colors.secondaryForeground || "#ffffff",
+    accent: customTheme?.colors.accent || "#10b981",
+    background: customTheme?.colors.background || "#f9fafb",
+    surface: customTheme?.colors.surface || "#ffffff",
+    text: customTheme?.colors.text || "#000000",
+    border: customTheme?.colors.border || "#000000",
   })
+
+  // Update customColors when customTheme changes
+  useEffect(() => {
+    if (customTheme) {
+      setCustomColors(customTheme.colors)
+    }
+  }, [customTheme])
 
   const resetDatabase = async () => {
     setLoading(true)
@@ -129,6 +147,7 @@ export default function SettingsPage() {
     }
     setCustomTheme(theme)
     setTheme("custom")
+    setShowCustomThemeModal(false)
     addNotification({
       type: "success",
       title: "Theme Applied",
@@ -140,11 +159,34 @@ export default function SettingsPage() {
     switch (themeKey) {
       case "dark":
       case "softDark":
+      case "midnight":
+      case "volcano":
+      case "twilight":
+      case "storm":
         return <Moon className="w-5 h-5" />
       case "default":
+      case "ocean":
+      case "forest":
+      case "sunset":
+      case "lavender":
+      case "rose":
+      case "minimal":
+      case "autumn":
+      case "emerald":
+      case "sapphire":
+      case "ruby":
+      case "amethyst":
+      case "coral":
+      case "mint":
+      case "slate":
+      case "gold":
+      case "indigo":
+      case "cherry":
+      case "desert":
+      case "arctic":
+      case "meadow":
+      case "sunrise":
         return <Sun className="w-5 h-5" />
-      default:
-        return <Monitor className="w-5 h-5" />
     }
   }
 
@@ -173,100 +215,168 @@ export default function SettingsPage() {
             </div>
 
             {/* Preset Themes */}
-            <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
-                Preset Themes
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(themes).map(([key, theme]) => (
-                  <button
-                    key={key}
-                    onClick={() => setTheme(key)}
-                    className={`relative p-6 rounded-xl border-2 transition-all duration-200 ${
-                      currentTheme === key
-                        ? "border-[var(--color-primary)] bg-[var(--color-primary)] bg-opacity-10 shadow-lg"
-                        : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:shadow-md hover:transform hover:scale-[1.02]"
-                    }`}
-                    style={{
-                      transform: currentTheme === key ? "scale(1)" : undefined,
-                      zIndex: currentTheme === key ? 10 : 1,
-                    }}
-                  >
-                    <div className="flex items-center space-x-3 mb-4">
-                      {getThemeIcon(key)}
-                      <span className="font-semibold text-lg" style={{ color: currentTheme === key ? "var(--color-primary-foreground)" : "var(--color-text)" }}>
-                        {theme.name}
-                      </span>
-                    </div>
-                    <div className="flex space-x-2 mb-3">
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: theme.colors.primary }}
-                      />
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: theme.colors.secondary }}
-                      />
-                      <div
-                        className="w-6 h-6 rounded-full border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: theme.colors.accent }}
-                      />
-                    </div>
-                    <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
-                      {key === "default" && "Clean and professional"}
-                      {key === "dark" && "Easy on the eyes"}
-                      {key === "softDark" && "Gentle dark theme"}
-                      {key === "ocean" && "Cool and refreshing"}
-                      {key === "forest" && "Natural and calming"}
-                      {key === "sunset" && "Warm and energetic"}
-                    </div>
-                    {currentTheme === key && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-[var(--color-primary)] rounded-full flex items-center justify-center">
-                        <div className="w-3 h-3 bg-white rounded-full"></div>
+            <div className="space-y-8">
+              {/* All Themes */}
+              <div>
+                <h3 className="text-xl font-semibold mb-6 flex items-center" style={{ color: "var(--color-text)" }}>
+                  <Palette className="w-5 h-5 mr-2" />
+                  Themes
+                </h3>
+                <div className="max-w-md">
+                  <Select value={currentTheme} onValueChange={setTheme}>
+                    <SelectTrigger className="w-full" style={{ backgroundColor: "var(--color-background)", borderColor: "var(--color-border)", color: "var(--color-text)" }}>
+                      <SelectValue placeholder="Select a theme">
+                        {currentTheme && themes[currentTheme] && (
+                          <div className="flex items-center space-x-3">
+                            {getThemeIcon(currentTheme)}
+                            <span>{themes[currentTheme].name}</span>
+                          </div>
+                        )}
+                        {currentTheme === "custom" && customTheme && (
+                          <div className="flex items-center space-x-3">
+                            <Palette className="w-5 h-5" />
+                            <span>{customTheme.name}</span>
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }} className="max-w-md">
+                      {/* Light Themes */}
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Light Themes
                       </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
+                      {Object.entries(themes)
+                        .filter(([key]) => !['dark', 'softDark', 'midnight', 'volcano', 'twilight', 'storm'].includes(key))
+                        .map(([key, theme]) => (
+                          <SelectItem key={key} value={key} className="p-4 cursor-pointer rounded-xl">
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                {getThemeIcon(key)}
+                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                                  {theme.name}
+                                </span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.primary }}
+                                />
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.secondary }}
+                                />
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.accent }}
+                                />
+                              </div>
+                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                                {key === "default" && "Clean and professional"}
+                                {key === "ocean" && "Cool and refreshing"}
+                                {key === "forest" && "Natural and calming"}
+                                {key === "sunset" && "Warm and energetic"}
+                                {key === "lavender" && "Dreamy and elegant"}
+                                {key === "rose" && "Soft and romantic"}
+                                {key === "minimal" && "Simple and clean"}
+                                {key === "autumn" && "Cozy and warm"}
+                                {key === "emerald" && "Fresh and vibrant"}
+                                {key === "sapphire" && "Deep and serene"}
+                                {key === "ruby" && "Bold and passionate"}
+                                {key === "amethyst" && "Mystical and elegant"}
+                                {key === "coral" && "Warm and tropical"}
+                                {key === "mint" && "Clean and fresh"}
+                                {key === "slate" && "Modern and sleek"}
+                                {key === "gold" && "Luxurious and warm"}
+                                {key === "indigo" && "Deep and mysterious"}
+                                {key === "cherry" && "Delicate and feminine"}
+                                {key === "desert" && "Warm and sandy"}
+                                {key === "arctic" && "Cool and crisp"}
+                                {key === "meadow" && "Fresh and natural"}
+                                {key === "sunrise" && "Bright and hopeful"}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
 
-            {/* Custom Theme */}
-            <div>
-              <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
-                Custom Theme
-              </h3>
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {Object.entries(customColors).map(([key, value]) => (
-                    <div key={key} className="space-y-3">
-                      <label className="block text-sm font-medium capitalize" style={{ color: "var(--color-text)" }}>
-                        {key.replace(/([A-Z])/g, " $1")}
-                      </label>
-                      <div className="space-y-2">
-                        <input
-                          type="color"
-                          value={value}
-                          onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
-                          className="w-full h-12 rounded-xl border-2 border-[var(--color-border)] cursor-pointer"
-                        />
-                        <input
-                          type="text"
-                          value={value}
-                          onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
-                          className="w-full px-3 py-2 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-background)]"
-                          style={{ color: "var(--color-text)" }}
-                        />
+                      {/* Dark Themes */}
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider border-t border-[var(--color-border)] mt-2 pt-2">
+                        Dark Themes
                       </div>
-                    </div>
-                  ))}
+                      {Object.entries(themes)
+                        .filter(([key]) => ['dark', 'softDark', 'midnight', 'volcano', 'twilight', 'storm'].includes(key))
+                        .map(([key, theme]) => (
+                          <SelectItem key={key} value={key} className="p-4 cursor-pointer rounded-xl">
+                            <div className="space-y-3">
+                              <div className="flex items-center space-x-3">
+                                {getThemeIcon(key)}
+                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                                  {theme.name}
+                                </span>
+                              </div>
+                              <div className="flex space-x-2">
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.primary }}
+                                />
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.secondary }}
+                                />
+                                <div
+                                  className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                                  style={{ backgroundColor: theme.colors.accent }}
+                                />
+                              </div>
+                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                                {key === "dark" && "Easy on the eyes"}
+                                {key === "softDark" && "Gentle dark theme"}
+                                {key === "midnight" && "Deep and immersive"}
+                                {key === "volcano" && "Bold and intense"}
+                                {key === "twilight" && "Mysterious and calm"}
+                                {key === "storm" && "Dramatic and moody"}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <button
-                  onClick={saveCustomTheme}
-                  className="px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-secondary-foreground)" }}
-                >
-                  Apply Custom Theme
-                </button>
+              </div>
+
+              {/* Custom Theme */}
+              <div>
+                <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
+                  Custom Theme
+                </h3>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => setShowCustomThemeModal(true)}
+                    className="px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium flex items-center space-x-3"
+                    style={{ color: "var(--color-secondary-foreground)" }}
+                  >
+                    <Palette className="w-5 h-5" />
+                    <span>Customize Theme</span>
+                  </button>
+                  {customTheme && (
+                    <div className="flex space-x-2">
+                      <div
+                        className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: customTheme.colors.primary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: customTheme.colors.secondary }}
+                      />
+                      <div
+                        className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
+                        style={{ backgroundColor: customTheme.colors.accent }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm opacity-70 mt-3" style={{ color: "var(--color-text)" }}>
+                  Create and customize your own color scheme
+                </p>
               </div>
             </div>
           </div>
@@ -343,6 +453,95 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
+
+        {/* Custom Theme Modal */}
+        <Dialog open={showCustomThemeModal} onOpenChange={setShowCustomThemeModal}>
+          <DialogContent
+            className="bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-2xl shadow-2xl max-w-7xl max-h-[90vh] overflow-y-auto"
+            style={{
+              backgroundColor: "var(--color-surface)",
+              borderColor: "var(--color-border)",
+              color: "var(--color-text)",
+            }}
+          >
+            <DialogHeader className="space-y-4">
+              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" }}>
+                <div
+                  className="w-12 h-12 bg-purple-500 bg-opacity-10 rounded-xl flex items-center justify-center mr-4 border-2"
+                  style={{ borderColor: "var(--color-border)" }}
+                >
+                  <Palette className="w-6 h-6 text-purple-600" />
+                </div>
+                Custom Theme
+              </DialogTitle>
+              <DialogDescription
+                className="text-base leading-relaxed"
+                style={{ color: "var(--color-text)", opacity: 0.8 }}
+              >
+                Customize your theme colors. Changes will be applied immediately when you save.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="py-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {Object.entries(customColors).map(([key, value]) => (
+                  <div key={key} className="space-y-4">
+                    <label className="block text-sm font-medium capitalize" style={{ color: "var(--color-text)" }}>
+                      {key.replace(/([A-Z])/g, " $1")}
+                    </label>
+                    <div className="space-y-3">
+                      <div className="relative">
+                        <HexColorPicker
+                          color={value}
+                          onChange={(newColor) => setCustomColors({ ...customColors, [key]: newColor })}
+                          className="!w-full !h-32 rounded-xl border-2 border-[var(--color-border)]"
+                        />
+                        <div
+                          className="absolute top-2 right-2 w-6 h-6 rounded-full border-2 border-white shadow-md"
+                          style={{ backgroundColor: value }}
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={(e) => setCustomColors({ ...customColors, [key]: e.target.value })}
+                          className="flex-1 px-3 py-2 border-2 border-[var(--color-border)] rounded-lg bg-[var(--color-background)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                          placeholder="#000000"
+                        />
+                        <div
+                          className="w-10 h-10 rounded-lg border-2 border-[var(--color-border)]"
+                          style={{ backgroundColor: value }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <DialogFooter className="gap-4 pt-2">
+              <button
+                onClick={() => setShowCustomThemeModal(false)}
+                className="flex-1 px-6 py-3 rounded-xl border-2 hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200 font-medium"
+                style={{
+                  backgroundColor: "var(--color-background)",
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveCustomTheme}
+                className="flex-1 px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200 font-medium"
+                style={{ color: "var(--color-secondary-foreground)" }}
+              >
+                Apply Custom Theme
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Reset Database Confirmation Modal */}
         <Dialog open={showResetModal} onOpenChange={setShowResetModal}>

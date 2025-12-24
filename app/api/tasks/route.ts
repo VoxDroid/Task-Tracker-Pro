@@ -8,6 +8,8 @@ export async function GET(request: NextRequest) {
     const projectId = searchParams.get("project_id")
     const archived = searchParams.get("archived") === "true"
     const favorites = searchParams.get("favorites") === "true"
+    const limit = searchParams.get("limit")
+    const offset = searchParams.get("offset")
 
     let query = `
       SELECT t.*, p.name as project_name, p.color as project_color
@@ -40,6 +42,17 @@ export async function GET(request: NextRequest) {
     }
 
     query += " ORDER BY t.created_at DESC"
+
+    // Add pagination
+    if (limit) {
+      query += " LIMIT ?"
+      params.push(Number.parseInt(limit))
+    }
+
+    if (offset) {
+      query += " OFFSET ?"
+      params.push(Number.parseInt(offset))
+    }
 
     const tasks = executeQuery(query, params)
     return NextResponse.json(tasks)
