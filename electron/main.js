@@ -70,6 +70,8 @@ function createBrowserWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
+      webSecurity: true, // Enable web security
+      devTools: isDev, // Only allow dev tools in development
       preload: isDev
         ? path.join(__dirname, 'preload.js')
         : path.join(process.resourcesPath, 'app.asar', 'electron', 'preload.js')
@@ -105,6 +107,43 @@ function createBrowserWindow() {
     }
   })
 
+  // Security: Disable DevTools and browser shortcuts in production
+  if (!isDev) {
+    // Disable DevTools completely in production
+    mainWindow.webContents.on('devtools-opened', () => {
+      mainWindow.webContents.closeDevTools()
+    })
+
+    // Override keyboard shortcuts that could open DevTools or break the app
+    mainWindow.webContents.on('before-input-event', (event, input) => {
+      // Prevent Ctrl+Shift+I (DevTools)
+      if (input.control && input.shift && input.key.toLowerCase() === 'i') {
+        event.preventDefault()
+      }
+      // Prevent F12 (DevTools)
+      if (input.key === 'F12') {
+        event.preventDefault()
+      }
+      // Prevent Ctrl+Shift+C (Inspect element)
+      if (input.control && input.shift && input.key.toLowerCase() === 'c') {
+        event.preventDefault()
+      }
+      // Prevent Ctrl+U (View source)
+      if (input.control && input.key.toLowerCase() === 'u') {
+        event.preventDefault()
+      }
+      // Prevent Ctrl+Shift+J (Console)
+      if (input.control && input.shift && input.key.toLowerCase() === 'j') {
+        event.preventDefault()
+      }
+    })
+
+    // Disable context menu (right-click) in production
+    mainWindow.webContents.on('context-menu', (event) => {
+      event.preventDefault()
+    })
+  }
+
   // Emitted when the window is closed
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -115,6 +154,26 @@ function createBrowserWindow() {
     shell.openExternal(url)
     return { action: 'deny' }
   })
+
+  // Security: Prevent navigation to external URLs in production
+  if (!isDev) {
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+      // Only allow navigation to localhost/127.0.0.1 in production
+      const parsedUrl = new URL(url)
+      if (!parsedUrl.hostname.includes('localhost') && parsedUrl.hostname !== '127.0.0.1') {
+        event.preventDefault()
+      }
+    })
+
+    // Prevent new window creation from links
+    mainWindow.webContents.on('new-window', (event, url) => {
+      event.preventDefault()
+      // Optionally open external URLs in default browser
+      if (!url.includes('localhost') && !url.includes('127.0.0.1')) {
+        shell.openExternal(url)
+      }
+    })
+  }
 
   // Listen for window state changes and notify renderer
   mainWindow.on('maximize', () => {
@@ -128,6 +187,73 @@ function createBrowserWindow() {
 
 // This method will be called when Electron has finished initialization
 app.whenReady().then(() => {
+  // Set up application menu
+  if (!isDev) {
+    // In production, create a minimal menu without developer tools
+    const template = [
+      {
+        label: 'File',
+        submenu: [
+          {
+            label: 'Quit',
+            accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Ctrl+Q',
+            click: () => app.quit()
+          }
+        ]
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' }
+        ]
+      },
+      {
+        label: 'View',
+        submenu: [
+          { role: 'reload' },
+          { role: 'forceReload' },
+          { role: 'toggleDevTools', visible: false } // Hide dev tools menu item
+        ]
+      },
+      {
+        label: 'Window',
+        submenu: [
+          { role: 'minimize' },
+          { role: 'close' }
+        ]
+      }
+    ]
+
+    // On macOS, add the app menu
+    if (process.platform === 'darwin') {
+      template.unshift({
+        label: app.getName(),
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { role: 'services' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      })
+    }
+
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
+  } else {
+    // In development, use default menu
+    Menu.setApplicationMenu(null)
+  }
+
   createWindow()
 
   // On macOS, re-create window when dock icon is clicked
