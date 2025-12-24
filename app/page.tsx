@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
@@ -40,6 +40,8 @@ const ChartSkeleton = () => (
 
 export default function Dashboard() {
   const [isSidebarAnimating, setIsSidebarAnimating] = useState(false)
+  const [isResizing, setIsResizing] = useState(false)
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
@@ -58,7 +60,10 @@ export default function Dashboard() {
   const recentActivity = dashboardData?.recentActivity || []
   const upcomingTasks = dashboardData?.upcomingTasks || []
 
-  // Listen for sidebar animation events
+  // Memoize the loading state to prevent unnecessary re-renders
+  const isLoadingCharts = useMemo(() => isSidebarAnimating || isResizing, [isSidebarAnimating, isResizing])
+
+  // Listen for sidebar animation events and window resize events
   useEffect(() => {
     const handleSidebarToggleStart = () => setIsSidebarAnimating(true)
     const handleSidebarToggleEnd = () => {
@@ -66,13 +71,40 @@ export default function Dashboard() {
       setTimeout(() => setIsSidebarAnimating(false), 50)
     }
 
+    const handleResizeStart = () => {
+      setIsResizing(true)
+      // Clear existing timeout
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
+    }
+
+    const handleResizeEnd = () => {
+      // Debounce resize end event
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
+      resizeTimeoutRef.current = setTimeout(() => {
+        setIsResizing(false)
+      }, 100) // Wait 100ms after resize stops for better responsiveness
+    }
+
     // Listen for custom events from sidebar component
     window.addEventListener('sidebar-toggle-start', handleSidebarToggleStart)
     window.addEventListener('sidebar-toggle-end', handleSidebarToggleEnd)
 
+    // Listen for window resize events
+    window.addEventListener('resize', handleResizeStart)
+    window.addEventListener('resize', handleResizeEnd)
+
     return () => {
       window.removeEventListener('sidebar-toggle-start', handleSidebarToggleStart)
       window.removeEventListener('sidebar-toggle-end', handleSidebarToggleEnd)
+      window.removeEventListener('resize', handleResizeStart)
+      window.removeEventListener('resize', handleResizeEnd)
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current)
+      }
     }
   }, [])
 
@@ -468,7 +500,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-          {isSidebarAnimating ? (
+          {isLoadingCharts ? (
             <>
               <ChartSkeleton />
               <ChartSkeleton />
@@ -487,7 +519,7 @@ export default function Dashboard() {
           )}
         </div>
 
-        {isSidebarAnimating ? <ChartSkeleton /> : <ActivityTrendChart />}
+        {isLoadingCharts ? <ChartSkeleton /> : <ActivityTrendChart />}
       </div>
     </Sidebar>
   )
