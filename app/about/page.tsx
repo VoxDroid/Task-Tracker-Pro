@@ -23,7 +23,7 @@ export default function AboutPage() {
                 Task Tracker Pro
               </h1>
               <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
-                Task tracking and activity management application
+                A task tracking and activity management application.
               </p>
             </div>
 

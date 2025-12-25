@@ -1,6 +1,11 @@
-const { app, BrowserWindow, Menu, ipcMain, dialog, shell, spawn } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron')
+const { spawn } = require('child_process')
 const path = require('path')
+const fs = require('fs')
 const isDev = process.env.NODE_ENV === 'development'
+
+// Configuration
+const PORT = 3456
 
 // Keep a global reference of the window object
 let mainWindow
@@ -12,47 +17,93 @@ function createWindow() {
     console.log('Starting Next.js server in production mode...')
     // In packaged app, use resourcesPath
     const resourcesPath = process.resourcesPath
-    const appPath = path.join(resourcesPath, '..')
-    const nextBinPath = path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', '.bin', 'next')
-
+    
+    // Path to the standalone server.js (in extraResources as 'standalone')
+    const standaloneDir = path.join(resourcesPath, 'standalone')
+    const serverPath = path.join(standaloneDir, 'server.js')
+    
     console.log('Resources path:', resourcesPath)
-    console.log('App path:', appPath)
-    console.log('Next.js binary path:', nextBinPath)
+    console.log('Standalone dir:', standaloneDir)
+    console.log('Server path:', serverPath)
 
-    try {
-      nextServer = spawn(nextBinPath, ['start'], {
-        cwd: appPath,
-        stdio: 'pipe',
-        env: { ...process.env, PORT: '3000' }
-      })
-
-      nextServer.stdout.on('data', (data) => {
-        console.log('Next.js stdout:', data.toString())
-      })
-
-      nextServer.stderr.on('data', (data) => {
-        console.error('Next.js stderr:', data.toString())
-      })
-
-      nextServer.on('error', (error) => {
-        console.error('Failed to start Next.js server:', error)
-      })
-
-      nextServer.on('close', (code) => {
-        console.log('Next.js server exited with code:', code)
-      })
-
-      // Wait for server to start
-      setTimeout(() => {
-        console.log('Timeout reached, attempting to create browser window...')
-        createBrowserWindow()
-      }, 5000)
-    } catch (error) {
-      console.error('Error spawning Next.js server:', error)
-      // Fallback: try to create window anyway
+    // Check if server.js exists
+    if (!fs.existsSync(serverPath)) {
+      console.error('Server.js not found at:', serverPath)
+      // Try alternative paths
+      try {
+        console.log('Available in resources:', fs.readdirSync(resourcesPath))
+        if (fs.existsSync(standaloneDir)) {
+          console.log('Available in standalone:', fs.readdirSync(standaloneDir))
+        }
+      } catch (e) {
+        console.error('Error listing directories:', e)
+      }
       createBrowserWindow()
+      return
     }
+
+    startNextServer(standaloneDir, serverPath)
   } else {
+    createBrowserWindow()
+  }
+}
+
+function startNextServer(standaloneDir, serverPath) {
+  try {
+    // Spawn the Next.js standalone server using node
+    nextServer = spawn('node', [serverPath], {
+      cwd: standaloneDir,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { 
+        ...process.env, 
+        PORT: String(PORT),
+        NODE_ENV: 'production',
+        HOSTNAME: 'localhost'
+      },
+      shell: true,
+      windowsHide: true
+    })
+
+    let serverStarted = false
+
+    nextServer.stdout.on('data', (data) => {
+      const output = data.toString()
+      console.log('Next.js stdout:', output)
+      // When server is ready, create the window
+      if (!serverStarted && (output.includes('Ready') || output.includes('started') || output.includes('listening') || output.includes(String(PORT)))) {
+        console.log('Next.js server is ready!')
+        serverStarted = true
+        setTimeout(() => createBrowserWindow(), 500)
+      }
+    })
+
+    nextServer.stderr.on('data', (data) => {
+      console.error('Next.js stderr:', data.toString())
+    })
+
+    nextServer.on('error', (error) => {
+      console.error('Failed to start Next.js server:', error)
+      if (!serverStarted) {
+        serverStarted = true
+        createBrowserWindow()
+      }
+    })
+
+    nextServer.on('close', (code) => {
+      console.log('Next.js server exited with code:', code)
+    })
+
+    // Fallback: Wait for server to start (in case we miss the ready message)
+    setTimeout(() => {
+      if (!serverStarted && !mainWindow) {
+        console.log('Timeout reached, attempting to create browser window...')
+        serverStarted = true
+        createBrowserWindow()
+      }
+    }, 10000)
+  } catch (error) {
+    console.error('Error spawning Next.js server:', error)
+    // Fallback: try to create window anyway
     createBrowserWindow()
   }
 }
@@ -78,15 +129,15 @@ function createBrowserWindow() {
     },
     icon: isDev
       ? path.join(__dirname, '../public/TaskTrackerPro.png')
-      : path.join(process.resourcesPath, 'app.asar', 'public', 'TaskTrackerPro.png'),
+      : path.join(process.resourcesPath, 'standalone', 'public', 'TaskTrackerPro.png'),
     show: false, // Don't show until ready-to-show
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     autoHideMenuBar: true, // Hide the menu bar
   })
 
-  console.log('Loading URL: http://localhost:3000')
+  console.log(`Loading URL: http://localhost:${PORT}`)
   // Load the app - always localhost since we start the server
-  mainWindow.loadURL('http://localhost:3000')
+  mainWindow.loadURL(`http://localhost:${PORT}`)
 
   // Add error handling for page load
   mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {

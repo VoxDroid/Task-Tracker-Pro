@@ -1,21 +1,23 @@
 {
   "name": "Task-Tracker-Pro",
   "version": "1.0.0",
+  "description": "A task tracking and activity management application",
   "private": true,
   "main": "electron/main.js",
   "homepage": "https://github.com/VoxDroid",
   "author": "VoxDroid",
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
+    "dev": "next dev -p 3456",
     "lint": "next lint",
-    "start": "next start",
+    "start": "next start -p 3456",
     "electron": "electron .",
-    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron .\"",
-    "build-electron": "next build && electron-builder",
-    "build-electron-win": "next build && electron-builder --win",
-    "build-electron-mac": "next build && electron-builder --mac",
-    "build-electron-linux": "next build && electron-builder --linux",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3456 && cross-env NODE_ENV=development electron .\"",
+    "copy-static": "node -e \"const fs=require('fs');const path=require('path');function copyDir(s,d){fs.mkdirSync(d,{recursive:true});fs.readdirSync(s).forEach(f=>{const sp=path.join(s,f),dp=path.join(d,f);fs.statSync(sp).isDirectory()?copyDir(sp,dp):fs.copyFileSync(sp,dp)})};copyDir('.next/static','.next/standalone/.next/static');copyDir('public','.next/standalone/public')\"",
+    "build-electron": "next build && npm run copy-static && electron-builder",
+    "build-electron-win": "next build && npm run copy-static && electron-builder --win",
+    "build-electron-mac": "next build && npm run copy-static && electron-builder --mac",
+    "build-electron-linux": "next build && npm run copy-static && electron-builder --linux",
     "dist": "npm run build-electron",
     "dist-all": "npm run build-electron -- -mwl"
   },
@@ -27,18 +29,18 @@
       "output": "dist"
     },
     "files": [
-      ".next/**/*",
       "electron/**/*",
-      "node_modules/**/*",
-      "package.json",
-      "next.config.mjs",
-      "public/**/*"
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": ".next/standalone",
+        "to": "standalone",
+        "filter": ["**/*"]
+      }
     ],
     "asarUnpack": [
-      "node_modules/.bin/next",
-      "node_modules/.bin/next.cmd",
-      "node_modules/better-sqlite3",
-      "public"
+      "node_modules/better-sqlite3/**/*"
     ],
     "mac": {
       "category": "public.app-category.productivity",
@@ -58,8 +60,7 @@
         {
           "target": "nsis",
           "arch": [
-            "x64",
-            "ia32"
+            "x64"
           ]
         }
       ],
