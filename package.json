@@ -37,7 +37,8 @@
     "asarUnpack": [
       "node_modules/.bin/next",
       "node_modules/.bin/next.cmd",
-      "node_modules/better-sqlite3"
+      "node_modules/better-sqlite3",
+      "public"
     ],
     "mac": {
       "category": "public.app-category.productivity",
