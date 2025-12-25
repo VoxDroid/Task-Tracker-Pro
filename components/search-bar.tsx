@@ -18,14 +18,23 @@ interface SearchBarProps {
   onResultClick?: (result: SearchResult) => void
   placeholder?: string
   className?: string
+  focusTrigger?: number
 }
 
-export default function SearchBar({ onResultClick, placeholder = "Search...", className = "" }: SearchBarProps) {
+export default function SearchBar({ onResultClick, placeholder = "Search...", className = "", focusTrigger }: SearchBarProps) {
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<SearchResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Handle focus trigger from parent
+  useEffect(() => {
+    if (focusTrigger && focusTrigger > 0) {
+      inputRef.current?.focus()
+    }
+  }, [focusTrigger])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -107,6 +116,7 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

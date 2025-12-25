@@ -29,11 +29,26 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ children }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(true)
+  // Load initial state from localStorage synchronously
+  const getInitialSidebarState = () => {
+    if (typeof window !== 'undefined') {
+      const savedState = localStorage.getItem("sidebar-open")
+      return savedState !== null ? JSON.parse(savedState) : true
+    }
+    return true
+  }
+
+  const [isOpen, setIsOpen] = useState(getInitialSidebarState)
   const pathname = usePathname()
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
   const [contentVisible, setContentVisible] = useState(false)
+  const [focusSearchBar, setFocusSearchBar] = useState(0)
+
+  // Save sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("sidebar-open", JSON.stringify(isOpen))
+  }, [isOpen])
 
   // Save and restore scroll position
   useEffect(() => {
@@ -85,64 +100,112 @@ export default function Sidebar({ children }: SidebarProps) {
 
   return (
     <div className="flex h-full bg-[var(--color-background)]">
-      {/* Toggle Button */}
-      <button
-        onClick={() => {
-          // Emit event before state change
-          window.dispatchEvent(new CustomEvent('sidebar-toggle-start'))
-          setIsOpen(!isOpen)
-          // Emit event after animation completes (slightly longer than transition duration for safety)
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('sidebar-toggle-end'))
-          }, 350) // 300ms transition + 50ms buffer
-        }}
-        className={`fixed top-16 z-50 p-3 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl transition-all duration-300 ${
-          isOpen ? "left-[340px]" : "left-4"
-        }`}
-        style={{ color: "var(--color-text)" }}
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
       {/* Sidebar */}
       <div
         className={`${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-80 bg-[var(--color-surface)] border-r-2 border-[var(--color-border)] transition-transform duration-300 ease-in-out shadow-2xl z-40 flex flex-col`}
+          isOpen ? "translate-x-0 w-80" : "translate-x-0 w-16"
+        } fixed left-0 top-14 h-[calc(100vh-3.5rem)] bg-[var(--color-surface)] border-r-2 border-[var(--color-border)] transition-all duration-300 ease-in-out shadow-2xl z-40 flex flex-col overflow-hidden`}
       >
         {/* Header */}
-        <div className="p-6 border-b-2 border-[var(--color-border)] flex-shrink-0">
-          <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
-            Task Tracker Pro
-          </h1>
-          <p className="text-sm opacity-70 mt-1" style={{ color: "var(--color-text)" }}>
-            Manage your productivity
-          </p>
+        <div className={`border-b-2 border-[var(--color-border)] flex-shrink-0 transition-all duration-300 ${isOpen ? 'p-4 flex items-center justify-between' : 'p-2 flex justify-center'}`}>
+          {isOpen ? (
+            <>
+              <div className="min-w-0 flex-1 transition-opacity duration-200 delay-100">
+                <h1 className="text-xl font-bold truncate" style={{ color: "var(--color-text)" }}>
+                  Task Tracker Pro
+                </h1>
+                <p className="text-xs opacity-70 mt-1 truncate" style={{ color: "var(--color-text)" }}>
+                  Manage your productivity
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  // Emit event before state change
+                  window.dispatchEvent(new CustomEvent('sidebar-toggle-start'))
+                  setIsOpen(!isOpen)
+                  // Emit event after animation completes (slightly longer than transition duration for safety)
+                  setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('sidebar-toggle-end'))
+                  }, 350) // 300ms transition + 50ms buffer
+                }}
+                className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200 ml-2 flex-shrink-0`}
+                style={{ color: "var(--color-text)" }}
+                title="Collapse sidebar"
+              >
+                <X size={16} />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => {
+                // Emit event before state change
+                window.dispatchEvent(new CustomEvent('sidebar-toggle-start'))
+                setIsOpen(!isOpen)
+                // Emit event after animation completes (slightly longer than transition duration for safety)
+                setTimeout(() => {
+                  window.dispatchEvent(new CustomEvent('sidebar-toggle-end'))
+                }, 350) // 300ms transition + 50ms buffer
+              }}
+              className="flex items-center justify-center px-3 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200"
+              style={{ color: "var(--color-text)" }}
+              title="Expand sidebar"
+            >
+              <Menu size={16} />
+            </button>
+          )}
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b-2 border-[var(--color-border)] flex-shrink-0">
-          <SearchBar onResultClick={handleSearchResult} placeholder="Search tasks, projects..." className="w-full" />
+        <div className={`border-b-2 border-[var(--color-border)] flex-shrink-0 transition-all duration-300 ${isOpen ? 'p-4 block' : 'p-2 hidden'}`}>
+          <SearchBar onResultClick={handleSearchResult} placeholder="Search tasks, projects..." className="w-full" focusTrigger={focusSearchBar} />
         </div>
 
+        {/* Search Button (when collapsed) */}
+        {!isOpen && (
+          <div className="p-2 border-b-2 border-[var(--color-border)] flex-shrink-0 flex justify-center transition-all duration-300">
+            <button
+              onClick={() => {
+                // Emit event before state change
+                window.dispatchEvent(new CustomEvent('sidebar-toggle-start'))
+                setIsOpen(true)
+                // Emit event after animation completes (slightly longer than transition duration for safety)
+                setTimeout(() => {
+                  window.dispatchEvent(new CustomEvent('sidebar-toggle-end'))
+                  // Focus the search bar after sidebar opens
+                  setFocusSearchBar(prev => prev + 1)
+                }, 350) // 300ms transition + 50ms buffer
+              }}
+              className="flex items-center justify-center px-3 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200"
+              style={{ color: "var(--color-text)" }}
+              title="Search (opens sidebar)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+          </div>
+        )}
+
         {/* Navigation - Scrollable */}
-        <nav className="flex-1 p-4 overflow-y-auto" ref={scrollRef} onScroll={handleScroll}>
-          <ul className="space-y-2">
+        <nav className={`flex-1 overflow-y-auto transition-all duration-300 ${isOpen ? 'p-4' : 'p-2'}`} ref={scrollRef} onScroll={handleScroll}>
+          <ul className="space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
-                <li key={item.name}>
+                <li key={item.name} className="transition-all duration-200">
                   <Link
                     href={item.href}
-                    className={`flex items-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover-primary ${
+                    className={`flex items-center ${isOpen ? 'px-4 py-3' : 'px-3 py-3 justify-center'} rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover-primary ${
                       isActive
                         ? "bg-[var(--color-primary)] bg-opacity-20 shadow-md transform scale-105"
                         : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
                     }`}
                     style={{ color: isActive ? "var(--color-primary-foreground)" : undefined }}
+                    title={!isOpen ? item.name : undefined}
                   >
-                    <item.icon size={20} />
-                    <span className="ml-3 font-medium">{item.name}</span>
+                    <item.icon size={20} className="flex-shrink-0" />
+                    {isOpen && <span className="ml-3 font-medium truncate transition-opacity duration-200 delay-75">{item.name}</span>}
                   </Link>
                 </li>
               )
@@ -150,14 +213,16 @@ export default function Sidebar({ children }: SidebarProps) {
           </ul>
         </nav>
 
-        {/* Info Icon - Bottom Left */}
-        <div className="p-4 border-t-2 border-[var(--color-border)] flex-shrink-0">
+        {/* Info Icon - Bottom */}
+        <div className={`border-t-2 border-[var(--color-border)] flex-shrink-0 ${isOpen ? 'p-4' : 'p-2 flex justify-center'}`}>
           <Link
             href="/about"
-            className="flex items-center justify-center w-12 h-12 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
+            className={`flex items-center justify-center rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md ${
+              isOpen ? 'w-12 h-12' : 'w-10 h-10'
+            }`}
             title="About Task Tracker Pro"
           >
-            <Info size={20} />
+            <Info size={isOpen ? 20 : 16} />
           </Link>
         </div>
       </div>
@@ -170,13 +235,13 @@ export default function Sidebar({ children }: SidebarProps) {
       {/* Main Content */}
       <div
         id="main-content"
-        className={`flex-1 ${isOpen ? "ml-80" : "ml-0"}`}
+        className={`flex-1 ${isOpen ? "ml-80" : "ml-16"}`}
         style={{
           opacity: contentVisible ? 1 : 0,
           transition: 'margin-left 300ms ease-in-out, opacity 300ms ease-in-out'
         }}
       >
-        <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)", paddingTop: '50px' }}>
+        <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)"}}>
           {children}
         </div>
       </div>
