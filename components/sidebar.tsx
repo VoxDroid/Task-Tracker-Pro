@@ -7,6 +7,13 @@ import { usePathname, useRouter } from "next/navigation"
 import { LayoutDashboard, CheckSquare, FolderOpen, Archive, Activity, Clock, Menu, X, Settings, Info } from "lucide-react"
 import SearchBar from "./search-bar"
 
+// Extend window interface for page content visibility
+declare global {
+  interface Window {
+    pageContentVisible?: boolean
+  }
+}
+
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Tasks", href: "/tasks", icon: CheckSquare },
@@ -26,6 +33,7 @@ export default function Sidebar({ children }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [contentVisible, setContentVisible] = useState(false)
 
   // Save and restore scroll position
   useEffect(() => {
@@ -33,6 +41,23 @@ export default function Sidebar({ children }: SidebarProps) {
     if (savedScrollPosition && scrollRef.current) {
       scrollRef.current.scrollTop = Number.parseInt(savedScrollPosition, 10)
     }
+  }, [])
+
+  // Listen for page content visibility changes
+  useEffect(() => {
+    const checkVisibility = () => {
+      if (typeof window !== 'undefined' && window.pageContentVisible !== undefined) {
+        setContentVisible(window.pageContentVisible)
+      }
+    }
+
+    // Check immediately
+    checkVisibility()
+
+    // Set up interval to check for changes (since we can't listen to window property changes)
+    const interval = setInterval(checkVisibility, 50)
+
+    return () => clearInterval(interval)
   }, [])
 
   const handleScroll = () => {
@@ -143,7 +168,14 @@ export default function Sidebar({ children }: SidebarProps) {
       )}
 
       {/* Main Content */}
-      <div className={`flex-1 transition-all duration-300 ${isOpen ? "ml-80" : "ml-0"}`}>
+      <div
+        id="main-content"
+        className={`flex-1 ${isOpen ? "ml-80" : "ml-0"}`}
+        style={{
+          opacity: contentVisible ? 1 : 0,
+          transition: 'margin-left 300ms ease-in-out, opacity 300ms ease-in-out'
+        }}
+      >
         <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)", paddingTop: '50px' }}>
           {children}
         </div>
