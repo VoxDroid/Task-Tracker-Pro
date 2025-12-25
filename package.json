@@ -31,7 +31,8 @@
       "electron/**/*",
       "node_modules/**/*",
       "package.json",
-      "next.config.mjs"
+      "next.config.mjs",
+      "public/**/*"
     ],
     "asarUnpack": [
       "node_modules/.bin/next",
