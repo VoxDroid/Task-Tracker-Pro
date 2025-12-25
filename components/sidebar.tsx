@@ -4,7 +4,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { LayoutDashboard, CheckSquare, FolderOpen, Archive, Activity, Clock, Menu, X, Settings } from "lucide-react"
+import { LayoutDashboard, CheckSquare, FolderOpen, Archive, Activity, Clock, Menu, X, Settings, Info } from "lucide-react"
 import SearchBar from "./search-bar"
 
 const navigation = [
@@ -124,6 +124,17 @@ export default function Sidebar({ children }: SidebarProps) {
             })}
           </ul>
         </nav>
+
+        {/* Info Icon - Bottom Left */}
+        <div className="p-4 border-t-2 border-[var(--color-border)] flex-shrink-0">
+          <Link
+            href="/about"
+            className="flex items-center justify-center w-12 h-12 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
+            title="About Task Tracker Pro"
+          >
+            <Info size={20} />
+          </Link>
+        </div>
       </div>
 
       {/* Backdrop for mobile */}
