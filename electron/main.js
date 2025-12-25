@@ -77,8 +77,8 @@ function createBrowserWindow() {
         : path.join(process.resourcesPath, 'app.asar', 'electron', 'preload.js')
     },
     icon: isDev
-      ? path.join(__dirname, '../public/placeholder-logo.png')
-      : path.join(process.resourcesPath, 'app.asar', 'public', 'placeholder-logo.png'),
+      ? path.join(__dirname, '../public/TaskTrackerPro.png')
+      : path.join(process.resourcesPath, 'app.asar', 'public', 'TaskTrackerPro.png'),
     show: false, // Don't show until ready-to-show
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     autoHideMenuBar: true, // Hide the menu bar

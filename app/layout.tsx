@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   title: "Task Tracker Pro",
   description: "Advanced task tracking and project management application",
   icons: {
-    icon: '/placeholder-logo.png',
-    apple: '/placeholder-logo.png',
+    icon: '/TaskTrackerPro.png',
+    apple: '/TaskTrackerPro.png',
   },
   generator: 'VoxDroid'
 }

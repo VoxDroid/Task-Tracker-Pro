@@ -49,7 +49,7 @@
           ]
         }
       ],
-      "icon": "public/placeholder-logo.png"
+      "icon": "public/TaskTrackerPro.png"
     },
     "win": {
       "target": [
@@ -61,7 +61,7 @@
           ]
         }
       ],
-      "icon": "public/placeholder-logo.png"
+      "icon": "public/TaskTrackerPro.png"
     },
     "linux": {
       "target": [
@@ -78,7 +78,7 @@
           ]
         }
       ],
-      "icon": "public/placeholder-logo.png",
+      "icon": "public/TaskTrackerPro.png",
       "category": "Office"
     },
     "nsis": {

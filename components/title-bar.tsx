@@ -79,9 +79,12 @@ export function TitleBar() {
       }}
     >
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
-          Task Tracker Pro
-        </h1>
+        <img 
+          src="/TaskTrackerPro.png" 
+          alt="Task Tracker Pro" 
+          className="h-8 w-auto"
+          style={{ WebkitAppRegion: 'drag' }}
+        />
       </div>
 
       <div className="flex items-center space-x-1">
