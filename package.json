@@ -14,17 +14,19 @@
     "electron": "electron .",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3456 && cross-env NODE_ENV=development electron .\"",
     "copy-static": "node -e \"const fs=require('fs');const path=require('path');function copyDir(s,d){fs.mkdirSync(d,{recursive:true});fs.readdirSync(s).forEach(f=>{const sp=path.join(s,f),dp=path.join(d,f);fs.statSync(sp).isDirectory()?copyDir(sp,dp):fs.copyFileSync(sp,dp)})};copyDir('.next/static','.next/standalone/.next/static');copyDir('public','.next/standalone/public')\"",
-    "build-electron": "next build && npm run copy-static && electron-builder",
-    "build-electron-win": "next build && npm run copy-static && electron-builder --win",
-    "build-electron-mac": "next build && npm run copy-static && electron-builder --mac",
-    "build-electron-linux": "next build && npm run copy-static && electron-builder --linux",
+    "rename-modules": "node -e \"const fs=require('fs');const p='.next/standalone/node_modules';if(fs.existsSync(p))fs.renameSync(p,'.next/standalone/_modules')\"",
+    "build-electron": "next build && npm run copy-static && npm run rename-modules && electron-builder",
+    "build-electron-win": "next build && npm run copy-static && npm run rename-modules && electron-builder --win",
+    "build-electron-mac": "next build && npm run copy-static && npm run rename-modules && electron-builder --mac",
+    "build-electron-linux": "next build && npm run copy-static && npm run rename-modules && electron-builder --linux",
     "dist": "npm run build-electron",
     "dist-all": "npm run build-electron -- -mwl"
   },
   "build": {
     "appId": "com.tasktrackerpro.app",
-    "productName": "Task Tracker Pro",
+    "productName": "Task-Tracker-Pro",
     "copyright": "Copyright © 2025 VoxDroid",
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -36,7 +38,7 @@
       {
         "from": ".next/standalone",
         "to": "standalone",
-        "filter": ["**/*"]
+        "filter": ["**/*", "!**/.git/**"]
       }
     ],
     "asarUnpack": [

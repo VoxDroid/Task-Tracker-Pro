@@ -189,6 +189,21 @@ function createWindow() {
     const standaloneDir = path.join(resourcesPath, 'standalone')
     const serverPath = path.join(standaloneDir, 'server.js')
     
+    // Handle renamed node_modules (_modules -> node_modules)
+    // electron-builder excludes node_modules by default, so we rename it during build
+    const modulesPath = path.join(standaloneDir, '_modules')
+    const nodeModulesPath = path.join(standaloneDir, 'node_modules')
+    
+    if (fs.existsSync(modulesPath) && !fs.existsSync(nodeModulesPath)) {
+      console.log('Renaming _modules to node_modules...')
+      try {
+        fs.renameSync(modulesPath, nodeModulesPath)
+        console.log('Successfully renamed _modules to node_modules')
+      } catch (e) {
+        console.error('Failed to rename _modules:', e)
+      }
+    }
+    
     console.log('Resources path:', resourcesPath)
     console.log('Standalone dir:', standaloneDir)
     console.log('Server path:', serverPath)
