@@ -1,5 +1,5 @@
 const { app, BrowserWindow, Menu, ipcMain, dialog, shell } = require('electron')
-const { spawn } = require('child_process')
+const { spawn, exec, execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')
 const isDev = process.env.NODE_ENV === 'development'
@@ -10,6 +10,173 @@ const PORT = 3456
 // Keep a global reference of the window object
 let mainWindow
 let nextServer = null
+let isQuitting = false
+
+/**
+ * Force kill any process using the specified port
+ * Works on Windows, macOS, and Linux
+ */
+function killProcessOnPort(port) {
+  return new Promise((resolve) => {
+    const isWindows = process.platform === 'win32'
+    
+    try {
+      if (isWindows) {
+        // Windows: Find and kill process using netstat and taskkill
+        exec(`netstat -ano | findstr :${port} | findstr LISTENING`, (error, stdout) => {
+          if (stdout) {
+            const lines = stdout.trim().split('\n')
+            const pids = new Set()
+            
+            lines.forEach(line => {
+              const parts = line.trim().split(/\s+/)
+              const pid = parts[parts.length - 1]
+              if (pid && !isNaN(parseInt(pid))) {
+                pids.add(pid)
+              }
+            })
+            
+            pids.forEach(pid => {
+              try {
+                execSync(`taskkill /F /PID ${pid}`, { stdio: 'ignore' })
+                console.log(`Killed process with PID ${pid} on port ${port}`)
+              } catch (e) {
+                // Process might already be dead
+              }
+            })
+          }
+          resolve()
+        })
+      } else {
+        // macOS/Linux: Use lsof to find and kill process
+        exec(`lsof -ti :${port}`, (error, stdout) => {
+          if (stdout) {
+            const pids = stdout.trim().split('\n').filter(pid => pid)
+            pids.forEach(pid => {
+              try {
+                // First try SIGTERM, then SIGKILL
+                execSync(`kill -9 ${pid}`, { stdio: 'ignore' })
+                console.log(`Killed process with PID ${pid} on port ${port}`)
+              } catch (e) {
+                // Process might already be dead
+              }
+            })
+          }
+          resolve()
+        })
+      }
+    } catch (error) {
+      console.error('Error killing process on port:', error)
+      resolve()
+    }
+  })
+}
+
+/**
+ * Kill all child processes spawned by the app
+ */
+function killAllChildProcesses() {
+  return new Promise((resolve) => {
+    if (!nextServer) {
+      resolve()
+      return
+    }
+
+    const pid = nextServer.pid
+    const isWindows = process.platform === 'win32'
+
+    try {
+      if (isWindows) {
+        // Windows: Kill process tree using taskkill
+        try {
+          execSync(`taskkill /F /T /PID ${pid}`, { stdio: 'ignore' })
+          console.log(`Killed process tree for PID ${pid}`)
+        } catch (e) {
+          // Process might already be dead
+        }
+      } else {
+        // macOS/Linux: Kill process group
+        try {
+          // Try to kill the process group
+          process.kill(-pid, 'SIGKILL')
+        } catch (e) {
+          try {
+            // Fallback: kill individual process
+            process.kill(pid, 'SIGKILL')
+          } catch (e2) {
+            // Process might already be dead
+          }
+        }
+        console.log(`Killed process group for PID ${pid}`)
+      }
+    } catch (error) {
+      console.error('Error killing child processes:', error)
+    }
+
+    nextServer = null
+    resolve()
+  })
+}
+
+/**
+ * Comprehensive cleanup function
+ * Ensures all resources are freed before app exits
+ */
+async function performCleanup() {
+  console.log('Performing cleanup...')
+  
+  // Kill the Next.js server process tree
+  await killAllChildProcesses()
+  
+  // Force kill any remaining process on the port
+  await killProcessOnPort(PORT)
+  
+  // Small delay to ensure port is fully released
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  console.log('Cleanup completed')
+}
+
+/**
+ * Check if port is available before starting
+ */
+function waitForPortAvailable(port, maxAttempts = 10) {
+  return new Promise((resolve, reject) => {
+    const net = require('net')
+    let attempts = 0
+
+    function checkPort() {
+      attempts++
+      const server = net.createServer()
+      
+      server.once('error', async (err) => {
+        if (err.code === 'EADDRINUSE') {
+          console.log(`Port ${port} is busy, attempting to free it (attempt ${attempts}/${maxAttempts})...`)
+          await killProcessOnPort(port)
+          
+          if (attempts < maxAttempts) {
+            setTimeout(checkPort, 500)
+          } else {
+            reject(new Error(`Port ${port} is still in use after ${maxAttempts} attempts`))
+          }
+        } else {
+          reject(err)
+        }
+      })
+
+      server.once('listening', () => {
+        server.close(() => {
+          console.log(`Port ${port} is available`)
+          resolve()
+        })
+      })
+
+      server.listen(port, '127.0.0.1')
+    }
+
+    checkPort()
+  })
+}
 
 function createWindow() {
   // Start Next.js server in production
@@ -42,7 +209,16 @@ function createWindow() {
       return
     }
 
-    startNextServer(standaloneDir, serverPath)
+    // Ensure port is available before starting server
+    waitForPortAvailable(PORT)
+      .then(() => {
+        startNextServer(standaloneDir, serverPath)
+      })
+      .catch((error) => {
+        console.error('Failed to acquire port:', error)
+        // Try to start anyway
+        startNextServer(standaloneDir, serverPath)
+      })
   } else {
     createBrowserWindow()
   }
@@ -50,6 +226,8 @@ function createWindow() {
 
 function startNextServer(standaloneDir, serverPath) {
   try {
+    const isWindows = process.platform === 'win32'
+    
     // Spawn the Next.js standalone server using node
     nextServer = spawn('node', [serverPath], {
       cwd: standaloneDir,
@@ -60,8 +238,10 @@ function startNextServer(standaloneDir, serverPath) {
         NODE_ENV: 'production',
         HOSTNAME: 'localhost'
       },
-      shell: true,
-      windowsHide: true
+      shell: isWindows,
+      windowsHide: true,
+      // On Unix, create a new process group so we can kill all children
+      detached: !isWindows
     })
 
     let serverStarted = false
@@ -334,14 +514,46 @@ app.whenReady().then(() => {
 })
 
 // Quit when all windows are closed, except on macOS
-app.on('window-all-closed', () => {
-  // Kill the Next.js server
-  if (nextServer) {
-    nextServer.kill()
-    nextServer = null
-  }
+app.on('window-all-closed', async () => {
   if (process.platform !== 'darwin') {
+    // Perform cleanup before quitting
+    await performCleanup()
     app.quit()
+  }
+})
+
+// Handle before-quit to perform cleanup
+app.on('before-quit', async (event) => {
+  if (!isQuitting) {
+    isQuitting = true
+    event.preventDefault()
+    
+    console.log('App is quitting, performing cleanup...')
+    await performCleanup()
+    
+    // Now actually quit
+    app.quit()
+  }
+})
+
+// Final cleanup on will-quit (synchronous, last resort)
+app.on('will-quit', (event) => {
+  // Synchronous cleanup as a last resort
+  if (nextServer && nextServer.pid) {
+    const isWindows = process.platform === 'win32'
+    try {
+      if (isWindows) {
+        execSync(`taskkill /F /T /PID ${nextServer.pid}`, { stdio: 'ignore' })
+      } else {
+        try {
+          process.kill(-nextServer.pid, 'SIGKILL')
+        } catch (e) {
+          process.kill(nextServer.pid, 'SIGKILL')
+        }
+      }
+    } catch (e) {
+      // Process already dead
+    }
   }
 })
 
@@ -413,3 +625,55 @@ if (!isDev) {
     return app.getVersion()
   })
 }
+
+// ============================================
+// CRITICAL: Handle unexpected process termination
+// ============================================
+
+// Handle SIGINT (Ctrl+C)
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT, cleaning up...')
+  await performCleanup()
+  process.exit(0)
+})
+
+// Handle SIGTERM
+process.on('SIGTERM', async () => {
+  console.log('Received SIGTERM, cleaning up...')
+  await performCleanup()
+  process.exit(0)
+})
+
+// Handle uncaught exceptions
+process.on('uncaughtException', async (error) => {
+  console.error('Uncaught exception:', error)
+  await performCleanup()
+  process.exit(1)
+})
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', async (reason, promise) => {
+  console.error('Unhandled rejection at:', promise, 'reason:', reason)
+  await performCleanup()
+  process.exit(1)
+})
+
+// Windows-specific: Handle the process exit event
+process.on('exit', () => {
+  // Synchronous cleanup only - async operations won't complete here
+  if (nextServer && nextServer.pid) {
+    try {
+      if (process.platform === 'win32') {
+        require('child_process').execSync(`taskkill /F /T /PID ${nextServer.pid}`, { stdio: 'ignore' })
+      } else {
+        try {
+          process.kill(-nextServer.pid, 'SIGKILL')
+        } catch (e) {
+          process.kill(nextServer.pid, 'SIGKILL')
+        }
+      }
+    } catch (e) {
+      // Process already dead
+    }
+  }
+})
