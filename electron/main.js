@@ -279,15 +279,23 @@ function startNextServer(standaloneDir, serverPath) {
   try {
     const isWindows = process.platform === 'win32'
     
-    // Spawn the Next.js standalone server using node
-    nextServer = spawn('node', [serverPath], {
+    // Use Electron's bundled Node.js executable instead of system 'node'
+    // process.execPath points to the Electron executable which includes Node.js
+    // Use the ELECTRON_RUN_AS_NODE=1 env var to make Electron behave like Node.js
+    const nodeExecutable = process.execPath
+    
+    console.log('Using Node executable:', nodeExecutable)
+    
+    // Spawn the Next.js standalone server using Electron's Node.js
+    nextServer = spawn(nodeExecutable, [serverPath], {
       cwd: standaloneDir,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: { 
         ...process.env, 
         PORT: String(PORT),
         NODE_ENV: 'production',
-        HOSTNAME: 'localhost'
+        HOSTNAME: 'localhost',
+        ELECTRON_RUN_AS_NODE: '1'  // Make Electron run as Node.js
       },
       shell: isWindows,
       windowsHide: true,
