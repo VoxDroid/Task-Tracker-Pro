@@ -5,7 +5,10 @@
   "private": true,
   "main": "electron/main.js",
   "homepage": "https://github.com/VoxDroid",
-  "author": "VoxDroid",
+  "author": {
+    "name": "VoxDroid",
+    "email": "izeno.contact@gmail.com"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 3456",
