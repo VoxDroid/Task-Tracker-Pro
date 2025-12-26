@@ -12,6 +12,42 @@ let mainWindow
 let nextServer = null
 let isQuitting = false
 
+// ============================================
+// SINGLE INSTANCE LOCK
+// Prevents multiple instances of the app from running
+// ============================================
+const gotTheLock = app.requestSingleInstanceLock()
+
+if (!gotTheLock) {
+  // Another instance is already running - quit immediately
+  // The dialog will be shown by the first instance via 'second-instance' event
+  app.quit()
+} else {
+  // This is the first instance - handle when second instance tries to start
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance
+    if (mainWindow) {
+      // Show dialog to the user in the existing instance
+      dialog.showMessageBox(mainWindow, {
+        type: 'info',
+        title: 'Task Tracker Pro Already Running',
+        message: 'Another instance of Task Tracker Pro tried to start.',
+        detail: 'This instance is already running. The new instance has been prevented from starting.\n\nYour existing window will now be focused.',
+        buttons: ['OK'],
+        defaultId: 0,
+        noLink: true
+      }).then(() => {
+        // Restore and focus the existing window
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore()
+        }
+        mainWindow.show()
+        mainWindow.focus()
+      })
+    }
+  })
+}
+
 /**
  * Force kill any process using the specified port
  * Works on Windows, macOS, and Linux
@@ -450,6 +486,7 @@ function createBrowserWindow() {
 }
 
 // This method will be called when Electron has finished initialization
+// Note: This will only run if we got the single instance lock (otherwise app.quit() was called above)
 app.whenReady().then(() => {
   // Set up application menu
   if (!isDev) {
