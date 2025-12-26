@@ -1,0 +1,164 @@
+name: 🔒 Security Vulnerability Report
+description: Report a security vulnerability in Task-Tracker-Pro (for non-sensitive issues only)
+labels: ["security", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Important Security Notice
+        
+        **For sensitive security vulnerabilities**, please do NOT use this public form. Instead, report them privately by emailing **izeno.contact@gmail.com** to ensure responsible disclosure.
+        
+        Use this form only for:
+        - Security improvements or hardening suggestions
+        - Non-critical security concerns
+        - Security-related questions
+        
+        ---
+
+  - type: checkboxes
+    id: security-acknowledgment
+    attributes:
+      label: Security Disclosure Acknowledgment
+      description: Please confirm you understand the security reporting guidelines.
+      options:
+        - label: I understand that sensitive security vulnerabilities should be reported privately via email (izeno.contact@gmail.com).
+          required: true
+        - label: I confirm this issue is appropriate for public disclosure.
+          required: true
+        - label: I have searched existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) and this has not been reported.
+          required: true
+
+  - type: dropdown
+    id: vulnerability-type
+    attributes:
+      label: Vulnerability Type
+      description: What type of security concern is this?
+      options:
+        - Data Exposure - Sensitive data may be accessible
+        - Input Validation - Insufficient input sanitization
+        - Authentication/Authorization - Access control issues
+        - Dependency Vulnerability - Security issue in a dependency
+        - Local Storage Security - Insecure data storage
+        - Cross-Site Scripting (XSS)
+        - SQL Injection
+        - Path Traversal
+        - Security Hardening Suggestion
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity-level
+    attributes:
+      label: Estimated Severity
+      description: How severe do you believe this vulnerability is?
+      options:
+        - Critical - Remote code execution or complete data breach possible
+        - High - Significant data exposure or privilege escalation
+        - Medium - Limited data exposure or requires user interaction
+        - Low - Minimal impact or theoretical concern
+        - Informational - Security improvement suggestion
+      default: 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: vulnerability-description
+    attributes:
+      label: Vulnerability Description
+      description: Describe the security issue in detail. Be specific but avoid providing exploit code in public issues.
+      placeholder: |
+        Example: The database export feature does not sanitize the export filename, which could potentially allow path traversal when a user with malicious intent names their export.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-component
+    attributes:
+      label: Affected Component
+      description: Which part of the application is affected?
+      multiple: true
+      options:
+        - Database Layer (SQLite/better-sqlite3)
+        - API Routes
+        - Client-Side Application
+        - Electron Main Process
+        - Electron Renderer Process
+        - File System Operations
+        - Data Import/Export
+        - Third-Party Dependencies
+        - Configuration/Settings
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: If applicable, provide steps to demonstrate the vulnerability. Avoid including actual exploit code.
+      placeholder: |
+        1. Navigate to Settings
+        2. Click Export Database
+        3. Enter filename "../../sensitive"
+        4. Observe that...
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact-assessment
+    attributes:
+      label: Potential Impact
+      description: What could an attacker potentially achieve by exploiting this vulnerability?
+      placeholder: |
+        Example: An attacker could potentially read files outside the intended export directory, leading to information disclosure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: mitigation-suggestion
+    attributes:
+      label: Suggested Mitigation
+      description: If you have ideas for how to fix or mitigate this issue, please share them.
+      placeholder: |
+        Example: 
+        - Sanitize the filename by removing path separators
+        - Validate that the resolved path is within the allowed directory
+        - Use a whitelist of allowed characters for filenames
+    validations:
+      required: false
+
+  - type: dropdown
+    id: affected-versions
+    attributes:
+      label: Affected Versions
+      description: Which versions are affected by this issue?
+      options:
+        - All versions
+        - Latest version only
+        - Specific versions (please specify in description)
+        - Unknown
+      default: 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information, references, or CVEs related to this issue.
+      placeholder: |
+        Example: Similar vulnerability documented in CVE-XXXX-XXXXX
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution Interest
+      description: Would you be interested in helping fix this security issue?
+      options:
+        - label: I would be willing to submit a pull request to address this security issue.
+          required: false

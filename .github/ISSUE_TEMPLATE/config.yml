@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/VoxDroid/Task-Tracker-Pro/discussions
+    about: For general questions, ideas, and community discussions - this is often faster than opening an issue!
+  - name: 📖 Documentation
+    url: https://github.com/VoxDroid/Task-Tracker-Pro#readme
+    about: Check the README for installation instructions, usage guides, and FAQs.
+  - name: 🔒 Report Security Vulnerability (Private)
+    url: mailto:izeno.contact@gmail.com
+    about: For sensitive security issues, please email us directly instead of opening a public issue.

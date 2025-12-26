@@ -1,0 +1,112 @@
+name: 📚 Documentation Issue
+description: Report errors, gaps, or suggest improvements to Task-Tracker-Pro documentation
+labels: ["documentation", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Help us improve our documentation!
+        
+        Good documentation is essential for a great user experience. Thank you for helping us make Task-Tracker-Pro easier to understand and use.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight Checklist
+      description: Please confirm the following before submitting.
+      options:
+        - label: I have searched existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) and this documentation issue has not been reported.
+          required: true
+
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Documentation Issue Type
+      description: What type of documentation issue is this?
+      options:
+        - Incorrect Information - Documentation contains errors
+        - Missing Information - Important details are not documented
+        - Unclear/Confusing - Documentation is hard to understand
+        - Outdated - Documentation doesn't reflect current functionality
+        - Typo/Grammar - Spelling or grammatical errors
+        - Broken Links - Links that don't work
+        - Missing Examples - Need more code examples or screenshots
+        - Accessibility - Documentation not accessible to all users
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: doc-location
+    attributes:
+      label: Documentation Location
+      description: Where is the issue located? Provide file path, URL, or section name.
+      placeholder: e.g., README.md, /docs/getting-started, Settings page help text
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: Current Content
+      description: What does the documentation currently say? (Quote the problematic section if applicable)
+      placeholder: |
+        Example: The README states "Run `npm start` to launch the application" but this doesn't work for the Electron app.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Description
+      description: Explain what's wrong or missing in detail.
+      placeholder: |
+        Example: The installation instructions don't mention that better-sqlite3 requires native build tools on Windows. New users get cryptic errors during npm install.
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-improvement
+    attributes:
+      label: Suggested Improvement
+      description: How should the documentation be changed? Provide specific text if possible.
+      placeholder: |
+        Example: Add a "Prerequisites" section that includes:
+        - Node.js v18 or higher
+        - For Windows: Visual Studio Build Tools with C++ workload
+        - For macOS: Xcode Command Line Tools
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: Target Audience
+      description: Who would benefit from this documentation improvement?
+      options:
+        - New Users - People just getting started
+        - Regular Users - People using the app day-to-day
+        - Developers - People contributing to the codebase
+        - All Users
+      default: 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help illustrate the issue.
+      placeholder: Drag and drop images here...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution Interest
+      description: Would you be interested in improving this documentation?
+      options:
+        - label: I would be willing to submit a pull request to improve this documentation.
+          required: false

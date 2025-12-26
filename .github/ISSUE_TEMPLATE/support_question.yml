@@ -1,0 +1,151 @@
+name: ❓ Support Question
+description: Ask a question or seek help with using Task-Tracker-Pro
+labels: ["question", "support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Need help with Task-Tracker-Pro?
+        
+        We're here to help! Before submitting, please:
+        - Check the **README** and any available documentation
+        - Search existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) for similar questions
+        - Consider using [Discussions](https://github.com/VoxDroid/Task-Tracker-Pro/discussions) for general questions
+        
+        ---
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight Checklist
+      description: Please confirm you've tried these steps first.
+      options:
+        - label: I have read the available documentation (README, etc.).
+          required: true
+        - label: I have searched existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) for similar questions.
+          required: true
+
+  - type: dropdown
+    id: question-category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Installation & Setup
+        - Running the Application
+        - Task Management
+        - Project Management
+        - Time Tracking
+        - Data Import/Export
+        - Database Issues
+        - Desktop App (Electron)
+        - Configuration & Settings
+        - Building from Source
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Describe your question or what you're trying to accomplish in detail.
+      placeholder: |
+        Example: I'm trying to export my tasks to share with a colleague, but I'm not sure what format the export uses and whether they can import it into their instance.
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-tried
+    attributes:
+      label: What Have You Tried?
+      description: Describe any steps you've already taken to solve the problem.
+      placeholder: |
+        Example: 
+        - I tried clicking the Export button in Settings
+        - I looked for export options in the Tasks page
+        - I searched the codebase for "export" but couldn't understand the format
+    validations:
+      required: false
+
+  - type: dropdown
+    id: app-type
+    attributes:
+      label: Application Type
+      description: Are you using the web version or the desktop application?
+      options:
+        - Desktop App (Electron)
+        - Web Browser (Development Server)
+        - Both
+        - Not Sure
+      default: 0
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which operating system are you using?
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: app-version
+    attributes:
+      label: Task-Tracker-Pro Version
+      description: What version are you using? (Check in Settings or About)
+      placeholder: e.g., v1.0.0 or "development/main branch"
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment Details
+      description: Any additional details about your setup that might be relevant.
+      placeholder: |
+        - Node.js version: v20.10.0
+        - Package manager: pnpm
+        - Browser (if web): Chrome 120
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your situation.
+      placeholder: Drag and drop images here...
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages
+      description: If you're encountering errors, paste them here.
+      placeholder: Paste any error messages you're seeing...
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How urgent is your question?
+      options:
+        - Low - Just curious or learning
+        - Medium - Need help but not blocking
+        - High - Blocking my workflow
+      default: 1
+    validations:
+      required: false

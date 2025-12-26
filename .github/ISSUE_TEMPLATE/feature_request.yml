@@ -1,0 +1,142 @@
+name: 💡 Feature Request
+description: Suggest a new feature or enhancement for Task-Tracker-Pro
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Thank you for your feature suggestion!
+        
+        We appreciate your ideas for improving Task-Tracker-Pro. Please provide as much detail as possible to help us understand and evaluate your request.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight Checklist
+      description: Please confirm the following before submitting your request.
+      options:
+        - label: I have searched existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) and this feature has not been requested.
+          required: true
+        - label: I have checked the project roadmap/TODO and this is not already planned.
+          required: true
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: What area of the application does this feature relate to?
+      options:
+        - Task Management
+        - Project Management
+        - Time Tracking
+        - Dashboard & Analytics
+        - Search & Filtering
+        - Data Management (Import/Export/Backup)
+        - User Interface / UX
+        - Settings & Customization
+        - Performance Optimization
+        - Accessibility
+        - Integration / API
+        - Desktop App (Electron) Specific
+        - Other
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: Is your feature request related to a problem? Describe the pain point or limitation you're experiencing.
+      placeholder: |
+        Example: I'm always frustrated when I have to manually calculate how much time I spent on tasks across different projects. There's no way to see aggregated time data.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature you'd like to see implemented. Be as specific as possible.
+      placeholder: |
+        Example: Add a "Time Reports" section that shows:
+        - Total time tracked per project (daily/weekly/monthly)
+        - Time breakdown by task priority
+        - Exportable reports in CSV/PDF format
+        - Visual charts showing time distribution
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe specific scenarios where this feature would be useful.
+      placeholder: |
+        Example:
+        1. As a freelancer, I need to generate weekly time reports for billing clients
+        2. As a team lead, I want to see which projects consume the most time
+        3. As a user, I want to identify tasks that are taking longer than expected
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        Example: I currently export data manually and use Excel to create reports, but this is time-consuming and error-prone.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Nice to have - Would improve experience
+        - Important - Significantly impacts productivity
+        - Critical - Essential for my workflow
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups / Design Ideas
+      description: If you have any visual ideas, sketches, or mockups, please share them here.
+      placeholder: Drag and drop images here, or describe your visual concept...
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: If you have technical insights or implementation suggestions, share them here.
+      placeholder: |
+        Example: This could potentially use the existing chart.tsx component and aggregate data from the time-entries API endpoint.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution Interest
+      description: Would you be interested in helping implement this feature?
+      options:
+        - label: I would be willing to submit a pull request to implement this feature.
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, references, or examples from other applications that might be helpful.
+      placeholder: |
+        Example: Similar functionality exists in Toggl Track and Clockify that could serve as inspiration.
+    validations:
+      required: false
