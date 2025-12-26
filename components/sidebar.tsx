@@ -217,7 +217,7 @@ export default function Sidebar({ children }: SidebarProps) {
         <div className={`border-t-2 border-[var(--color-border)] flex-shrink-0 ${isOpen ? 'p-4' : 'p-2 flex justify-center'}`}>
           <Link
             href="/about"
-            className={`flex items-center justify-center rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md ${
+            className={`flex items-center justify-center rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 hover:scale-105 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md hover:text-white ${
               isOpen ? 'w-12 h-12' : 'w-10 h-10'
             }`}
             title="About Task Tracker Pro"
