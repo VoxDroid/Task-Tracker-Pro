@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react"
 
 export interface NotificationProps {
@@ -11,6 +11,7 @@ export interface NotificationProps {
   title: string
   message?: string
   duration?: number
+  isExiting?: boolean
 }
 
 interface NotificationContextType {
@@ -28,7 +29,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const addNotification = (notification: Omit<NotificationProps, "id">) => {
     const id = Math.random().toString(36).substr(2, 9)
-    const newNotification = { ...notification, id }
+    const newNotification = { ...notification, id, isExiting: false }
     setNotifications((prev) => [...prev, newNotification])
 
     // Auto remove after duration
@@ -38,7 +39,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }
 
   const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id))
+    // First, mark the notification as exiting to trigger exit animation
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isExiting: true } : n))
+    )
+    // Then remove it after the animation completes
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id))
+    }, 300) // Match the animation duration
   }
 
   return (
@@ -107,38 +115,70 @@ function NotificationContainer() {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => {
-        const colors = getColors(notification.type)
-        return (
-          <div
-            key={notification.id}
-            className="max-w-sm w-full rounded-xl border-2 p-4 shadow-lg transform transition-all duration-300 ease-in-out"
-            style={{
-              backgroundColor: "var(--color-surface)",
-              borderColor: colors.borderColor,
-              color: "var(--color-text)",
-            }}
-          >
-            <div className="flex items-start">
-              <div className="flex-shrink-0" style={{ backgroundColor: colors.backgroundColor, opacity: colors.opacity, padding: '4px', borderRadius: '6px' }}>
-                {getIcon(notification.type)}
+    <>
+      <style jsx global>{`
+        @keyframes slideInFromRight {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slideOutToRight {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+        .notification-enter {
+          animation: slideInFromRight 0.3s ease-out forwards;
+        }
+        .notification-exit {
+          animation: slideOutToRight 0.3s ease-in forwards;
+        }
+      `}</style>
+      <div className="fixed bottom-4 right-4 z-50 space-y-2">
+        {notifications.map((notification) => {
+          const colors = getColors(notification.type)
+          return (
+            <div
+              key={notification.id}
+              className={`max-w-sm w-full rounded-xl border-2 p-4 shadow-lg ${
+                notification.isExiting ? 'notification-exit' : 'notification-enter'
+              }`}
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: colors.borderColor,
+                color: "var(--color-text)",
+              }}
+            >
+              <div className="flex items-start">
+                <div className="flex-shrink-0" style={{ backgroundColor: colors.backgroundColor, opacity: colors.opacity, padding: '4px', borderRadius: '6px' }}>
+                  {getIcon(notification.type)}
+                </div>
+                <div className="ml-3 flex-1">
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{notification.title}</p>
+                  {notification.message && <p className="text-sm mt-1 opacity-90" style={{ color: "var(--color-text)" }}>{notification.message}</p>}
+                </div>
+                <button
+                  onClick={() => removeNotification(notification.id)}
+                  className="ml-4 flex-shrink-0 rounded-lg p-1 hover:bg-black hover:bg-opacity-10 transition-colors"
+                  style={{ color: "var(--color-text)" }}
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-              <div className="ml-3 flex-1">
-                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{notification.title}</p>
-                {notification.message && <p className="text-sm mt-1 opacity-90" style={{ color: "var(--color-text)" }}>{notification.message}</p>}
-              </div>
-              <button
-                onClick={() => removeNotification(notification.id)}
-                className="ml-4 flex-shrink-0 rounded-lg p-1 hover:bg-black hover:bg-opacity-10 transition-colors"
-                style={{ color: "var(--color-text)" }}
-              >
-                <X className="w-4 h-4" />
-              </button>
             </div>
-          </div>
-        )
-      })}
-    </div>
+          )
+        })}
+      </div>
+    </>
   )
 }
