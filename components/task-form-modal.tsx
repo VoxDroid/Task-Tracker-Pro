@@ -6,7 +6,8 @@ import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
 import type { Task, Project } from "@/lib/types"
-import { Calendar, FolderOpen, User, Star, AlertCircle, Check } from "lucide-react"
+import { FolderOpen, User, Star, AlertCircle, Check } from "lucide-react"
+import DateTimePicker from "@/components/datetime-picker"
 
 interface TaskFormModalProps {
   isOpen: boolean
@@ -28,6 +29,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
   })
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(false)
+  const [showAssignee, setShowAssignee] = useState(false)
   const { addNotification } = useNotification()
 
   useEffect(() => {
@@ -40,9 +42,10 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
           project_id: task.project_id || 0,
           priority: task.priority,
           assigned_to: task.assigned_to || "",
-          due_date: task.due_date ? task.due_date.split("T")[0] : "",
+          due_date: task.due_date ? task.due_date.slice(0, 16) : "",
           is_favorite: task.is_favorite === 1,
         })
+        setShowAssignee(!!task.assigned_to)
       } else {
         setFormData({
           title: "",
@@ -53,6 +56,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
           due_date: "",
           is_favorite: false,
         })
+        setShowAssignee(false)
       }
     }
   }, [isOpen, task, projectId])
@@ -85,7 +89,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
         ...formData,
         project_id: formData.project_id || null,
         due_date: formData.due_date || null,
-        assigned_to: formData.assigned_to || null,
+        assigned_to: showAssignee ? (formData.assigned_to || null) : null,
         description: formData.description || null,
         is_favorite: formData.is_favorite ? 1 : 0,
       }
@@ -203,9 +207,47 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
 
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
-              <User className="inline w-4 h-4 mr-1" />
-              Assigned To
+              Due Date & Time
             </label>
+            <DateTimePicker
+              value={formData.due_date}
+              onChange={(value) => setFormData({ ...formData, due_date: value })}
+              placeholder="Select due date and time"
+            />
+          </div>
+        </div>
+
+        {/* Assignee toggle and field */}
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => setShowAssignee(!showAssignee)}
+              className={`flex-shrink-0 relative w-5 h-5 rounded-full border-2 transition-all duration-300 flex items-center justify-center ${
+                showAssignee
+                  ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-105"
+                  : "border-[var(--color-border)] hover:border-[var(--color-primary)] opacity-60 hover:opacity-100"
+              }`}
+            >
+              {showAssignee && (
+                <Check className="w-3 h-3 text-white" />
+              )}
+            </button>
+            <label 
+              className="text-sm cursor-pointer transition-opacity duration-200" 
+              style={{ color: "var(--color-text)", opacity: showAssignee ? 1 : 0.6 }}
+              onClick={() => setShowAssignee(!showAssignee)}
+            >
+              <User className="inline w-4 h-4 mr-1" />
+              Assign to someone
+            </label>
+          </div>
+          
+          <div 
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              showAssignee ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
             <input
               type="text"
               value={formData.assigned_to}
@@ -213,20 +255,6 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
               style={{ color: "var(--color-text)" }}
               placeholder="Enter assignee name..."
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
-              <Calendar className="inline w-4 h-4 mr-1" />
-              Due Date
-            </label>
-            <input
-              type="date"
-              value={formData.due_date}
-              onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" }}
             />
           </div>
         </div>

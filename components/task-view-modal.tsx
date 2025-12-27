@@ -5,6 +5,7 @@ import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
 import type { Task, Project } from "@/lib/types"
 import { Calendar, FolderOpen, User, Star, Clock, AlertCircle, Edit, Archive, RotateCcw } from "lucide-react"
+import { formatDateTime } from "@/components/datetime-picker"
 
 interface TaskViewModalProps {
   isOpen: boolean
@@ -165,7 +166,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             <div className="flex items-center space-x-3">
               <Calendar className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
               <span className="font-medium" style={{ color: "var(--color-text)" }}>
-                Due: {new Date(task.due_date).toLocaleDateString()}
+                Due: {formatDateTime(task.due_date)}
               </span>
             </div>
           )}
@@ -173,7 +174,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
           <div className="flex items-center space-x-3">
             <Clock className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
             <span className="font-medium" style={{ color: "var(--color-text)" }}>
-              Created: {new Date(task.created_at).toLocaleDateString()}
+              Created: {formatDateTime(task.created_at)}
             </span>
           </div>
 
@@ -181,7 +182,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             <div className="flex items-center space-x-3">
               <AlertCircle className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
               <span className="font-medium" style={{ color: "var(--color-text)" }}>
-                Completed: {new Date(task.completed_at).toLocaleDateString()}
+                Completed: {formatDateTime(task.completed_at)}
               </span>
             </div>
           )}

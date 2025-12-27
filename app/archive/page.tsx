@@ -7,6 +7,7 @@ import { useNotification } from "@/components/notification"
 import type { Task } from "@/lib/types"
 import { Archive, RotateCcw, Trash2, Search, Calendar, FolderOpen, User, ChevronLeft, ChevronRight, Star, Check, Plus } from "lucide-react"
 import TaskViewModal from "@/components/task-view-modal"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 
 const ITEMS_PER_PAGE = 6
 
@@ -255,6 +256,9 @@ export default function ArchivePage() {
       month: "short",
       day: "numeric",
       year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     })
   }
 
@@ -628,7 +632,7 @@ export default function ArchivePage() {
                           <Calendar size={16} style={{ color: "var(--color-accent)" }} />
                         </div>
                         <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {formatDateTimeShort(task.due_date)}
                         </span>
                       </div>
                     )}

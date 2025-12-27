@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
 import Sidebar from "@/components/sidebar"
 import type { DashboardStats, ActivityLog, Task } from "@/lib/types"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 import {
   BarChart,
   Bar,
@@ -352,7 +353,7 @@ export default function Dashboard() {
                 style={{ color: "var(--color-text)" }}
               >
                 <span>{task.project?.name || "No project"}</span>
-                <span>{task.due_date ? new Date(task.due_date).toLocaleDateString() : "No due date"}</span>
+                <span>{task.due_date ? formatDateTimeShort(task.due_date) : "No due date"}</span>
               </div>
             </div>
           ))

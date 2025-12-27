@@ -27,6 +27,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import TaskEditModal from "@/components/task-edit-modal"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 
 const priorityConfig = {
   low: {
@@ -454,6 +455,9 @@ export default function TasksPage() {
       month: "short",
       day: "numeric",
       year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     })
   }
 
@@ -858,7 +862,7 @@ export default function TasksPage() {
                           <Calendar size={16} style={{ color: priorityConfig[task.priority].color }} />
                         </div>
                         <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {formatDateTimeShort(task.due_date)}
                         </span>
                       </div>
                     )}

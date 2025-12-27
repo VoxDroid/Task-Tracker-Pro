@@ -21,6 +21,7 @@ import {
   ChevronRight,
   Trash2,
 } from "lucide-react"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 
 const ITEMS_PER_PAGE = 6
 
@@ -442,13 +443,13 @@ export default function ProjectsPage() {
                   className="relative z-10 flex items-center justify-between text-xs opacity-60 mb-4"
                   style={{ color: "var(--color-text)" }}
                 >
-                  <div className="flex items-center space-x-1">
+                                  <div className="flex items-center space-x-1">
                     <Calendar size={12} />
-                    <span>Created {new Date(project.created_at).toLocaleDateString()}</span>
+                    <span>Created {formatDateTimeShort(project.created_at)}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Clock size={12} />
-                    <span>Updated {new Date(project.updated_at).toLocaleDateString()}</span>
+                    <span>Updated {formatDateTimeShort(project.updated_at)}</span>
                   </div>
                 </div>
 

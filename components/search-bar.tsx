@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Search, X, Clock, FolderOpen, CheckSquare, Archive } from "lucide-react"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 
 interface SearchResult {
   id: number
@@ -180,7 +181,7 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
                         {result.project_name && <span>Project: {result.project_name}</span>}
                         {result.status && <span>Status: {result.status}</span>}
                         {result.priority && <span>Priority: {result.priority}</span>}
-                        <span>{new Date(result.created_at).toLocaleDateString()}</span>
+                        <span>{formatDateTimeShort(result.created_at)}</span>
                       </div>
                     </div>
                   </div>

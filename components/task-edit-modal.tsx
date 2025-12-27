@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
+import DateTimePicker from "@/components/datetime-picker"
 import type { Task } from "@/lib/types"
 
 interface TaskEditModalProps {
@@ -35,7 +36,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
         project_id: task.project_id?.toString() || "",
         priority: task.priority,
         assigned_to: task.assigned_to || "",
-        due_date: task.due_date ? task.due_date.split("T")[0] : "",
+        due_date: task.due_date ? task.due_date.slice(0, 16) : "",
         status: task.status,
       })
       fetchProjects()
@@ -209,18 +210,11 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Due Date</label>
-            <input
-              type="date"
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Due Date & Time</label>
+            <DateTimePicker
               value={formData.due_date}
-              onChange={(e) => setFormData({ ...formData, due_date: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                borderColor: "var(--color-border)",
-                "--tw-ring-color": "var(--color-primary)",
-                color: "var(--color-text)",
-                backgroundColor: "var(--color-background)",
-              } as React.CSSProperties}
+              onChange={(value) => setFormData({ ...formData, due_date: value })}
+              placeholder="Select due date and time"
             />
           </div>
         </div>

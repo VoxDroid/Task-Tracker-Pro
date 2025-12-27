@@ -10,6 +10,7 @@ import TaskEditModal from "@/components/task-edit-modal"
 import { useNotification } from "@/components/notification"
 import { truncateText } from "@/lib/utils"
 import { ArrowLeft, Plus, Calendar, User, CheckCircle, Clock, AlertTriangle, Edit, Check, Copy, Archive, Trash2, FolderOpen, Filter, Heart, CheckSquare, Star, Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { formatDateTimeShort } from "@/components/datetime-picker"
 
 const ITEMS_PER_PAGE = 6
 
@@ -844,7 +845,7 @@ export default function ProjectDetailPage() {
                           <Calendar size={16} style={{ color: "var(--color-secondary)" }} />
                         </div>
                         <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
-                          {new Date(task.due_date).toLocaleDateString()}
+                          {formatDateTimeShort(task.due_date)}
                         </span>
                       </div>
                     )}
@@ -855,8 +856,8 @@ export default function ProjectDetailPage() {
                     className="flex items-center justify-between text-xs opacity-60 mb-4"
                     style={{ color: "var(--color-text)" }}
                   >
-                    <span>Created {new Date(task.created_at).toLocaleDateString()}</span>
-                    {task.updated_at !== task.created_at && <span>Updated {new Date(task.updated_at).toLocaleDateString()}</span>}
+                    <span>Created {formatDateTimeShort(task.created_at)}</span>
+                    {task.updated_at !== task.created_at && <span>Updated {formatDateTimeShort(task.updated_at)}</span>}
                   </div>
 
                   {/* Actions */}
