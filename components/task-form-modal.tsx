@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
 import type { Task, Project } from "@/lib/types"
-import { Calendar, FolderOpen, User, Star, AlertCircle } from "lucide-react"
+import { Calendar, FolderOpen, User, Star, AlertCircle, Check } from "lucide-react"
 
 interface TaskFormModalProps {
   isOpen: boolean
@@ -232,14 +232,20 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
         </div>
 
         <div className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            id="is_favorite"
-            checked={formData.is_favorite}
-            onChange={(e) => setFormData({ ...formData, is_favorite: e.target.checked })}
-            className="w-5 h-5 rounded border-2 border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
-          />
-          <label htmlFor="is_favorite" className="flex items-center space-x-2" style={{ color: "var(--color-text)" }}>
+          <button
+            type="button"
+            onClick={() => setFormData({ ...formData, is_favorite: !formData.is_favorite })}
+            className={`flex-shrink-0 relative w-6 h-6 rounded-full border-2 transition-all duration-300 flex items-center justify-center ${
+              formData.is_favorite
+                ? "bg-[var(--color-primary)] border-[var(--color-primary)] scale-110 shadow-lg"
+                : "border-[var(--color-border)] hover:border-[var(--color-primary)] hover:scale-110"
+            }`}
+          >
+            {formData.is_favorite && (
+              <Check className="w-4 h-4 text-white animate-in fade-in duration-200" />
+            )}
+          </button>
+          <label className="flex items-center space-x-2 cursor-pointer" style={{ color: "var(--color-text)" }} onClick={() => setFormData({ ...formData, is_favorite: !formData.is_favorite })}>
             <Star className="w-4 h-4" />
             <span>Mark as favorite</span>
           </label>
