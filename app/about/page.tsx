@@ -43,8 +43,10 @@ export default function AboutPage() {
               </div>
             </div>
 
-            {/* Developer Info */}
+
+            {/* Developer Info & Help */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Developer */}
               <div className="bg-[var(--color-surface)] rounded-xl p-6 border-2 border-[var(--color-border)]">
                 <div className="flex items-center space-x-3 mb-4">
                   <User size={24} style={{ color: "var(--color-primary)" } as CSSProperties} />
@@ -80,6 +82,21 @@ export default function AboutPage() {
                 </a>
                 <p className="text-sm opacity-70 mt-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Find documentation, report issues, and contribute
+                </p>
+              </div>
+            </div>
+
+            {/* Credits - Sena */}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-[var(--color-surface)] rounded-xl p-6 border-2 border-[var(--color-border)] col-span-2">
+                <div className="flex items-center space-x-3 mb-4">
+                  <User size={24} style={{ color: "var(--color-primary)" } as CSSProperties} />
+                  <h3 className="text-2xl font-semibold" style={{ color: "var(--color-text)" } as CSSProperties}>
+                    Special Thanks: Sena
+                  </h3>
+                </div>
+                <p className="text-base opacity-80" style={{ color: "var(--color-text)" } as CSSProperties}>
+                  Thank you, Sena, for your help testing, finding gaps, and suggesting features. Your feedback made this app better!
                 </p>
               </div>
             </div>
