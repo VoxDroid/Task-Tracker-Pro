@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import Sidebar from "@/components/sidebar"
@@ -281,7 +282,7 @@ export default function ArchivePage() {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
               Loading archived tasks...
             </div>
           </div>
@@ -296,11 +297,11 @@ export default function ArchivePage() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
+            <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
               <Archive className="mr-4" />
               Archive
             </h1>
-            <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+            <p className="text-xl opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
               Manage your archived tasks
             </p>
           </div>
@@ -311,25 +312,25 @@ export default function ArchivePage() {
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Total Archived
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.total}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-secondary)] bg-opacity-10 rounded-2xl flex items-center justify-center">
-                <Archive className="w-6 h-6" style={{ color: "var(--color-secondary)" }} />
+                <Archive className="w-6 h-6" style={{ color: "var(--color-secondary)" } as CSSProperties} />
               </div>
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Urgent Priority
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.urgent}
                 </p>
               </div>
@@ -341,30 +342,30 @@ export default function ArchivePage() {
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   High Priority
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.high}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-10 rounded-2xl flex items-center justify-center">
-                <Star className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
+                <Star className="w-6 h-6" style={{ color: "var(--color-primary)" } as CSSProperties} />
               </div>
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Recent (7 days)
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.recent}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-accent)] bg-opacity-10 rounded-2xl flex items-center justify-center">
-                <Calendar className="w-6 h-6" style={{ color: "var(--color-accent)" }} />
+                <Calendar className="w-6 h-6" style={{ color: "var(--color-accent)" } as CSSProperties} />
               </div>
             </div>
           </div>
@@ -376,7 +377,7 @@ export default function ArchivePage() {
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               />
               <input
                 type="text"
@@ -387,7 +388,7 @@ export default function ArchivePage() {
                 style={{
                   backgroundColor: "var(--color-background)",
                   color: "var(--color-text)",
-                }}
+                } as CSSProperties}
               />
             </div>
             <div className="flex items-center space-x-4">
@@ -395,7 +396,7 @@ export default function ArchivePage() {
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
                 className="px-4 py-3 pr-8 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-background)] appearance-none cursor-pointer"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent</option>
@@ -411,7 +412,7 @@ export default function ArchivePage() {
               <button
                 onClick={selectedTasks.length === getCurrentPageTasks().length ? clearSelection : selectAllTasks}
                 className="px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 {selectedTasks.length === getCurrentPageTasks().length ? "Deselect All" : "Select All"}
               </button>
@@ -422,7 +423,7 @@ export default function ArchivePage() {
                     setPriorityFilter("all")
                   }}
                   className="px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                   title="Clear filters"
                 >
                   ✕
@@ -443,13 +444,13 @@ export default function ArchivePage() {
           <div className="bg-[var(--color-surface)] p-4 rounded-2xl border-2 border-[var(--color-border)] backdrop-blur-sm shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <span className="font-medium" style={{ color: "var(--color-text)" }}>
+                <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {selectedTasks.length} task{selectedTasks.length !== 1 ? "s" : ""} selected
                 </span>
                 <button
                   onClick={clearSelection}
                   className="text-sm opacity-70 hover:opacity-100 font-medium transition-opacity duration-200"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Clear selection
                 </button>
@@ -458,14 +459,14 @@ export default function ArchivePage() {
                 <button
                   onClick={() => setShowBatchRestoreModal(true)}
                   className="px-4 py-2 bg-blue-500 bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "#3b82f6" }}
+                  style={{ color: "#3b82f6" } as CSSProperties}
                 >
                   Restore Tasks
                 </button>
                 <button
                   onClick={() => setShowBatchDeleteModal(true)}
                   className="px-4 py-2 bg-red-500 bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "#ef4444" }}
+                  style={{ color: "#ef4444" } as CSSProperties}
                 >
                   Delete Tasks
                 </button>
@@ -479,15 +480,15 @@ export default function ArchivePage() {
           {filteredTasks.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-secondary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
-                <Archive className="w-12 h-12 opacity-40" style={{ color: "var(--color-secondary)" }} />
+                <Archive className="w-12 h-12 opacity-40" style={{ color: "var(--color-secondary)" } as CSSProperties} />
               </div>
-              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {searchQuery || priorityFilter !== "all"
                   ? `No archived tasks found for the selected filters`
                   : "No archived tasks"
                 }
               </p>
-              <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm opacity-50" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Tasks you archive will appear here
               </p>
             </div>
@@ -503,7 +504,7 @@ export default function ArchivePage() {
                 style={{
                   backgroundColor: "var(--color-surface)",
                   borderColor: selectedTasks.includes(task.id) ? "var(--color-primary)" : "var(--color-border)",
-                }}
+                } as CSSProperties}
               >
                 {/* Remove gradient background completely */}
                 <div className="relative z-10 p-6 h-full flex flex-col">
@@ -527,7 +528,7 @@ export default function ArchivePage() {
                       </button>
                       <h3
                         className="text-lg font-bold leading-tight min-w-0 flex-1"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.title}
                       >
                         {truncateText(task.title, 20)}
@@ -540,7 +541,7 @@ export default function ArchivePage() {
                           backgroundColor: priorityConfig[task.priority].bg,
                           color: priorityConfig[task.priority].text,
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         {priorityConfig[task.priority].label}
                       </span>
@@ -549,7 +550,7 @@ export default function ArchivePage() {
                         style={{
                           backgroundColor: statusConfig[task.status].bg,
                           color: statusConfig[task.status].text,
-                        }}
+                        } as CSSProperties}
                       >
                         {statusConfig[task.status].label}
                       </span>
@@ -561,7 +562,7 @@ export default function ArchivePage() {
                     {task.description && (
                       <p
                         className="text-sm opacity-70 leading-relaxed mb-4"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.description}
                       >
                         {truncateText(task.description, 80)}
@@ -577,17 +578,17 @@ export default function ArchivePage() {
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
-                          style={{ backgroundColor: "var(--color-primary)", opacity: 0.1 }}
+                          style={{ backgroundColor: "var(--color-primary)", opacity: 0.1 } as CSSProperties}
                         >
-                          <FolderOpen size={16} style={{ color: "var(--color-primary)" }} />
+                          <FolderOpen size={16} style={{ color: "var(--color-primary)" } as CSSProperties} />
                         </div>
                         <span
                           className="text-sm font-medium truncate"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                           title={task.project?.name}
                         >
                           {truncateText(task.project?.name, 18)}
@@ -600,17 +601,17 @@ export default function ArchivePage() {
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
-                          style={{ backgroundColor: "var(--color-secondary)", opacity: 0.1 }}
+                          style={{ backgroundColor: "var(--color-secondary)", opacity: 0.1 } as CSSProperties}
                         >
-                          <User size={16} style={{ color: "var(--color-secondary)" }} />
+                          <User size={16} style={{ color: "var(--color-secondary)" } as CSSProperties} />
                         </div>
                         <span
                           className="text-sm font-medium truncate"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                           title={task.assigned_to}
                         >
                           {truncateText(task.assigned_to, 15)}
@@ -623,15 +624,15 @@ export default function ArchivePage() {
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
-                          style={{ backgroundColor: "var(--color-accent)", opacity: 0.1 }}
+                          style={{ backgroundColor: "var(--color-accent)", opacity: 0.1 } as CSSProperties}
                         >
-                          <Calendar size={16} style={{ color: "var(--color-accent)" }} />
+                          <Calendar size={16} style={{ color: "var(--color-accent)" } as CSSProperties} />
                         </div>
-                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                           {formatDateTimeShort(task.due_date)}
                         </span>
                       </div>
@@ -641,7 +642,7 @@ export default function ArchivePage() {
                   {/* Metadata */}
                   <div
                     className="flex items-center justify-between text-xs opacity-60 mb-4"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     <span>Archived {getTimeSince(task.updated_at)}</span>
                   </div>
@@ -656,7 +657,7 @@ export default function ArchivePage() {
                           setShowRestoreModal(true)
                         }}
                         className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-blue-500 hover:bg-opacity-10 transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title="Restore Task"
                       >
                         <RotateCcw size={16} />
@@ -671,7 +672,7 @@ export default function ArchivePage() {
                           setShowDeleteModal(true)
                         }}
                         className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title="Delete Task"
                       >
                         <Trash2 size={16} />
@@ -691,7 +692,7 @@ export default function ArchivePage() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronLeft size={20} />
             </button>
@@ -707,7 +708,7 @@ export default function ArchivePage() {
                 }`}
                 style={{
                   color: currentPage === page ? "#ffffff" : "var(--color-text)"
-                }}
+                } as CSSProperties}
               >
                 {page}
               </button>
@@ -717,7 +718,7 @@ export default function ArchivePage() {
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
               className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronRight size={20} />
             </button>
@@ -732,16 +733,16 @@ export default function ArchivePage() {
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Delete Task
                 </h3>
-                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to delete "{taskToDelete.title}"? This action cannot be undone.
                 </p>
                 <div className="flex space-x-4">
@@ -751,14 +752,14 @@ export default function ArchivePage() {
                       setTaskToDelete(null)
                     }}
                     className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={deleteTask}
                     className="flex-1 px-4 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Delete
                   </button>
@@ -776,16 +777,16 @@ export default function ArchivePage() {
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <RotateCcw className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Restore Task
                 </h3>
-                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to restore "{taskToRestore.title}"? This will move the task back to your active tasks.
                 </p>
                 <div className="flex space-x-4">
@@ -795,7 +796,7 @@ export default function ArchivePage() {
                       setTaskToRestore(null)
                     }}
                     className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Cancel
                   </button>
@@ -806,7 +807,7 @@ export default function ArchivePage() {
                       setTaskToRestore(null)
                     }}
                     className="flex-1 px-4 py-3 hover:bg-blue-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Restore
                   </button>
@@ -824,23 +825,23 @@ export default function ArchivePage() {
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <RotateCcw className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Restore Tasks
                 </h3>
-                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to restore {selectedTasks.length} selected task{selectedTasks.length !== 1 ? "s" : ""}? This will move them back to your active tasks.
                 </p>
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setShowBatchRestoreModal(false)}
                     className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Cancel
                   </button>
@@ -850,7 +851,7 @@ export default function ArchivePage() {
                       setShowBatchRestoreModal(false)
                     }}
                     className="flex-1 px-4 py-3 hover:bg-blue-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Restore All
                   </button>
@@ -868,20 +869,20 @@ export default function ArchivePage() {
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Delete Tasks
                 </h3>
-                <p className="opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                <p className="opacity-70 mb-4" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to permanently delete {selectedTasks.length} selected task{selectedTasks.length !== 1 ? "s" : ""}? This action cannot be undone.
                 </p>
                 <div className="mb-6">
-                  <p className="text-sm opacity-70 mb-2" style={{ color: "var(--color-text)" }}>
+                  <p className="text-sm opacity-70 mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                     Type <strong>DELETE</strong> to confirm:
                   </p>
                   <input
@@ -893,7 +894,7 @@ export default function ArchivePage() {
                     style={{
                       backgroundColor: "var(--color-background)",
                       color: "var(--color-text)",
-                    }}
+                    } as CSSProperties}
                   />
                 </div>
                 <div className="flex space-x-4">
@@ -903,7 +904,7 @@ export default function ArchivePage() {
                       setDeleteConfirmationText("")
                     }}
                     className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Cancel
                   </button>
@@ -917,7 +918,7 @@ export default function ArchivePage() {
                     }}
                     disabled={deleteConfirmationText !== "DELETE"}
                     className="flex-1 px-4 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Delete All
                   </button>

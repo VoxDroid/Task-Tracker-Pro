@@ -1,6 +1,7 @@
-"use client"
+﻿"use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 
 import { useState, useEffect } from "react"
 import { Settings, Palette, Moon, Sun, Database, Download, Upload, Trash2 } from "lucide-react"
@@ -195,11 +196,11 @@ export default function SettingsPage() {
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
+          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
             <Settings className="mr-4" />
             Settings
           </h1>
-          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
             Customize your Task Tracker Pro experience
           </p>
         </div>
@@ -209,7 +210,7 @@ export default function SettingsPage() {
           <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center mb-6">
               <Palette className="w-6 h-6 text-purple-600 mr-3" />
-              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Theme Settings
               </h2>
             </div>
@@ -218,13 +219,13 @@ export default function SettingsPage() {
             <div className="space-y-8">
               {/* All Themes */}
               <div>
-                <h3 className="text-xl font-semibold mb-6 flex items-center" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-semibold mb-6 flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
                   <Palette className="w-5 h-5 mr-2" />
                   Themes
                 </h3>
                 <div className="max-w-md">
                   <Select value={currentTheme} onValueChange={setTheme}>
-                    <SelectTrigger className="w-full" style={{ backgroundColor: "var(--color-background)", borderColor: "var(--color-border)", color: "var(--color-text)" }}>
+                    <SelectTrigger className="w-full" style={{ backgroundColor: "var(--color-background)", borderColor: "var(--color-border)", color: "var(--color-text)" } as CSSProperties}>
                       <SelectValue placeholder="Select a theme">
                         {currentTheme && themes[currentTheme] && (
                           <div className="flex items-center space-x-3">
@@ -240,7 +241,7 @@ export default function SettingsPage() {
                         )}
                       </SelectValue>
                     </SelectTrigger>
-                    <SelectContent style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }} className="max-w-md">
+                    <SelectContent style={{ backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" } as CSSProperties} className="max-w-md">
                       {/* Light Themes */}
                       <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                         Light Themes
@@ -252,25 +253,25 @@ export default function SettingsPage() {
                             <div className="space-y-3">
                               <div className="flex items-center space-x-3">
                                 {getThemeIcon(key)}
-                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" } as CSSProperties}>
                                   {theme.name}
                                 </span>
                               </div>
                               <div className="flex space-x-2">
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.primary }}
+                                  style={{ backgroundColor: theme.colors.primary } as CSSProperties}
                                 />
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.secondary }}
+                                  style={{ backgroundColor: theme.colors.secondary } as CSSProperties}
                                 />
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.accent }}
+                                  style={{ backgroundColor: theme.colors.accent } as CSSProperties}
                                 />
                               </div>
-                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                                 {key === "default" && "Clean and professional"}
                                 {key === "ocean" && "Cool and refreshing"}
                                 {key === "forest" && "Natural and calming"}
@@ -309,25 +310,25 @@ export default function SettingsPage() {
                             <div className="space-y-3">
                               <div className="flex items-center space-x-3">
                                 {getThemeIcon(key)}
-                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" }}>
+                                <span className="font-semibold text-lg" style={{ color: "var(--color-text)" } as CSSProperties}>
                                   {theme.name}
                                 </span>
                               </div>
                               <div className="flex space-x-2">
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.primary }}
+                                  style={{ backgroundColor: theme.colors.primary } as CSSProperties}
                                 />
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.secondary }}
+                                  style={{ backgroundColor: theme.colors.secondary } as CSSProperties}
                                 />
                                 <div
                                   className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                                  style={{ backgroundColor: theme.colors.accent }}
+                                  style={{ backgroundColor: theme.colors.accent } as CSSProperties}
                                 />
                               </div>
-                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                                 {key === "dark" && "Easy on the eyes"}
                                 {key === "softDark" && "Gentle dark theme"}
                                 {key === "midnight" && "Deep and immersive"}
@@ -345,14 +346,14 @@ export default function SettingsPage() {
 
               {/* Custom Theme */}
               <div>
-                <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-semibold mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Custom Theme
                 </h3>
                 <div className="flex items-center space-x-4">
                   <button
                     onClick={() => setShowCustomThemeModal(true)}
                     className="px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium flex items-center space-x-3"
-                    style={{ color: "var(--color-secondary-foreground)" }}
+                    style={{ color: "var(--color-secondary-foreground)" } as CSSProperties}
                   >
                     <Palette className="w-5 h-5" />
                     <span>Customize Theme</span>
@@ -361,20 +362,20 @@ export default function SettingsPage() {
                     <div className="flex space-x-2">
                       <div
                         className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: customTheme.colors.primary }}
+                        style={{ backgroundColor: customTheme.colors.primary } as CSSProperties}
                       />
                       <div
                         className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: customTheme.colors.secondary }}
+                        style={{ backgroundColor: customTheme.colors.secondary } as CSSProperties}
                       />
                       <div
                         className="w-6 h-6 rounded-3xl border-2 border-[var(--color-border)]"
-                        style={{ backgroundColor: customTheme.colors.accent }}
+                        style={{ backgroundColor: customTheme.colors.accent } as CSSProperties}
                       />
                     </div>
                   )}
                 </div>
-                <p className="text-sm opacity-70 mt-3" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-70 mt-3" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Create and customize your own color scheme
                 </p>
               </div>
@@ -385,7 +386,7 @@ export default function SettingsPage() {
           <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center mb-6">
               <Database className="w-6 h-6 text-blue-600 mr-3" />
-              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+              <h2 className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Database Management
               </h2>
             </div>
@@ -396,16 +397,16 @@ export default function SettingsPage() {
                 <div className="w-20 h-20 bg-green-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
                   <Download className="w-10 h-10 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Export Data
                 </h3>
-                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Download a backup of all your data
                 </p>
                 <button
                   onClick={exportData}
                   className="px-6 py-3 bg-green-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Export
                 </button>
@@ -416,15 +417,15 @@ export default function SettingsPage() {
                 <div className="w-20 h-20 bg-blue-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
                   <Upload className="w-10 h-10 text-blue-600" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Import Data
                 </h3>
-                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Restore data from a backup file
                 </p>
                 <label
                   className="inline-block px-6 py-3 bg-blue-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium cursor-pointer"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Import
                   <input type="file" accept=".json" onChange={importData} className="hidden" />
@@ -436,16 +437,16 @@ export default function SettingsPage() {
                 <div className="w-20 h-20 bg-red-500 bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-[var(--color-border)]">
                   <Trash2 className="w-10 h-10 text-red-600" />
                 </div>
-                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Reset Database
                 </h3>
-                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-70 mb-4" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Delete all data and start fresh
                 </p>
                 <button
                   onClick={() => setShowResetModal(true)}
                   className="px-6 py-3 bg-red-500 bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Reset
                 </button>
@@ -462,13 +463,13 @@ export default function SettingsPage() {
               backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           >
             <DialogHeader className="space-y-4">
-              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" }}>
+              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
                 <div
                   className="w-12 h-12 bg-purple-500 bg-opacity-10 rounded-xl flex items-center justify-center mr-4 border-2"
-                  style={{ borderColor: "var(--color-border)" }}
+                  style={{ borderColor: "var(--color-border)" } as CSSProperties}
                 >
                   <Palette className="w-6 h-6 text-purple-600" />
                 </div>
@@ -476,7 +477,7 @@ export default function SettingsPage() {
               </DialogTitle>
               <DialogDescription
                 className="text-base leading-relaxed"
-                style={{ color: "var(--color-text)", opacity: 0.8 }}
+                style={{ color: "var(--color-text)", opacity: 0.8 } as CSSProperties}
               >
                 Customize your theme colors. Changes will be applied immediately when you save.
               </DialogDescription>
@@ -486,7 +487,7 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {Object.entries(customColors).map(([key, value]) => (
                   <div key={key} className="space-y-4">
-                    <label className="block text-sm font-medium capitalize" style={{ color: "var(--color-text)" }}>
+                    <label className="block text-sm font-medium capitalize" style={{ color: "var(--color-text)" } as CSSProperties}>
                       {key.replace(/([A-Z])/g, " $1")}
                     </label>
                     <div className="space-y-3">
@@ -498,7 +499,7 @@ export default function SettingsPage() {
                         />
                         <div
                           className="absolute top-2 right-2 w-6 h-6 rounded-full border-2 border-white shadow-md"
-                          style={{ backgroundColor: value }}
+                          style={{ backgroundColor: value } as CSSProperties}
                         />
                       </div>
                       <div className="flex items-center space-x-2">
@@ -511,7 +512,7 @@ export default function SettingsPage() {
                         />
                         <div
                           className="w-10 h-10 rounded-lg border-2 border-[var(--color-border)]"
-                          style={{ backgroundColor: value }}
+                          style={{ backgroundColor: value } as CSSProperties}
                         />
                       </div>
                     </div>
@@ -528,14 +529,14 @@ export default function SettingsPage() {
                   backgroundColor: "var(--color-background)",
                   borderColor: "var(--color-border)",
                   color: "var(--color-text)",
-                }}
+                } as CSSProperties}
               >
                 Cancel
               </button>
               <button
                 onClick={saveCustomTheme}
                 className="flex-1 px-6 py-3 bg-[var(--color-secondary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-[1.02] transition-all duration-200 font-medium"
-                style={{ color: "var(--color-secondary-foreground)" }}
+                style={{ color: "var(--color-secondary-foreground)" } as CSSProperties}
               >
                 Apply Custom Theme
               </button>
@@ -551,13 +552,13 @@ export default function SettingsPage() {
               backgroundColor: "var(--color-surface)",
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           >
             <DialogHeader className="space-y-4">
-              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" }}>
+              <DialogTitle className="text-2xl font-bold flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
                 <div
                   className="w-12 h-12 bg-red-500 bg-opacity-10 rounded-xl flex items-center justify-center mr-4 border-2"
-                  style={{ borderColor: "var(--color-border)" }}
+                  style={{ borderColor: "var(--color-border)" } as CSSProperties}
                 >
                   <Trash2 className="w-6 h-6 text-red-600" />
                 </div>
@@ -565,7 +566,7 @@ export default function SettingsPage() {
               </DialogTitle>
               <DialogDescription
                 className="text-base leading-relaxed"
-                style={{ color: "var(--color-text)", opacity: 0.8 }}
+                style={{ color: "var(--color-text)", opacity: 0.8 } as CSSProperties}
               >
                 Are you sure you want to reset the database? This will permanently delete ALL your data including:
               </DialogDescription>
@@ -577,9 +578,9 @@ export default function SettingsPage() {
                 style={{
                   backgroundColor: "var(--color-background)",
                   borderColor: "var(--color-border)",
-                }}
+                } as CSSProperties}
               >
-                <ul className="space-y-3 text-sm" style={{ color: "var(--color-text)", opacity: 0.9 }}>
+                <ul className="space-y-3 text-sm" style={{ color: "var(--color-text)", opacity: 0.9 } as CSSProperties}>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
                     All projects and tasks
@@ -620,7 +621,7 @@ export default function SettingsPage() {
                   backgroundColor: "var(--color-background)",
                   borderColor: "var(--color-border)",
                   color: "var(--color-text)",
-                }}
+                } as CSSProperties}
               >
                 Cancel
               </button>

@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
 import { useNotification } from "@/components/notification"
@@ -301,7 +302,7 @@ export default function TimeTrackingPage() {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
               Loading time tracking...
             </div>
           </div>
@@ -315,11 +316,11 @@ export default function TimeTrackingPage() {
       <div className="p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
+          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
             <Clock className="mr-4" />
             Time Tracking
           </h1>
-          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
             Track time spent on your tasks
           </p>
         </div>
@@ -329,36 +330,36 @@ export default function TimeTrackingPage() {
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Total Hours
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.totalHours}h
                 </p>
               </div>
-              <Clock className="w-8 h-8" style={{ color: "var(--color-primary)" }} />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary)" } as CSSProperties} />
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Time Entries
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.entriesCount}
                 </p>
               </div>
-              <Target className="w-8 h-8" style={{ color: "var(--color-accent)" }} />
+              <Target className="w-8 h-8" style={{ color: "var(--color-accent)" } as CSSProperties} />
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Avg Session
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.avgSession}m
                 </p>
               </div>
@@ -368,10 +369,10 @@ export default function TimeTrackingPage() {
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Productivity
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {activeTimer ? "Active" : "Idle"}
                 </p>
               </div>
@@ -387,22 +388,22 @@ export default function TimeTrackingPage() {
               <div className="flex items-center">
                 <div className="w-4 h-4 bg-red-500 rounded-full animate-pulse mr-4"></div>
                 <div>
-                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                     Timer Running
                   </h3>
-                  <p className="opacity-70" style={{ color: "var(--color-text)" }}>
+                  <p className="opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                     Currently tracking time
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-6">
-                <div className="text-4xl font-bold font-mono" style={{ color: "var(--color-text)" }}>
+                <div className="text-4xl font-bold font-mono" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {formatTime(currentTime)}
                 </div>
                 <button
                   onClick={stopTimer}
                   className="flex items-center px-6 py-3 bg-[var(--color-surface)] rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   <Square size={20} />
                   <span className="ml-2">Stop</span>
@@ -415,11 +416,11 @@ export default function TimeTrackingPage() {
         {/* Start Timer Section */}
         <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
               Start Timer for Task
             </h3>
             {totalTaskPages > 1 && (
-              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Page {currentTaskPage} of {totalTaskPages}
               </div>
             )}
@@ -431,7 +432,7 @@ export default function TimeTrackingPage() {
               <div className="relative flex-1">
                 <Search
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 />
                 <input
                   type="text"
@@ -439,7 +440,7 @@ export default function TimeTrackingPage() {
                   onChange={(e) => setTaskSearchQuery(e.target.value)}
                   placeholder="Search tasks..."
                   className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-surface)]"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 />
               </div>
               <div className="flex gap-2">
@@ -448,7 +449,7 @@ export default function TimeTrackingPage() {
                     value={taskStatusFilter}
                     onChange={(e) => setTaskStatusFilter(e.target.value)}
                     className="px-4 py-3 pr-8 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-surface)] appearance-none cursor-pointer"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     <option value="all">All Status</option>
                     <option value="todo">To Do</option>
@@ -469,7 +470,7 @@ export default function TimeTrackingPage() {
                       setTaskStatusFilter("all")
                     }}
                     className="px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                     title="Clear filters"
                   >
                     ✕
@@ -490,7 +491,7 @@ export default function TimeTrackingPage() {
                   <div className="flex-1 mb-3">
                     <h4
                       className="font-semibold text-sm leading-tight mb-1"
-                      style={{ color: "var(--color-text)" }}
+                      style={{ color: "var(--color-text)" } as CSSProperties}
                       title={task.title}
                     >
                       {truncateTaskName(task.title)}
@@ -498,7 +499,7 @@ export default function TimeTrackingPage() {
                     {task.project_name && (
                       <p
                         className="text-xs opacity-70 leading-tight"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.project_name}
                       >
                         {truncateProjectName(task.project_name)}
@@ -512,7 +513,7 @@ export default function TimeTrackingPage() {
                     }}
                     disabled={!!activeTimer}
                     className="flex items-center px-3 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium w-full justify-center text-sm mt-auto"
-                    style={{ color: "#ffffff" }}
+                    style={{ color: "#ffffff" } as CSSProperties}
                   >
                     <Play size={14} />
                     <span className="ml-1">Start</span>
@@ -529,7 +530,7 @@ export default function TimeTrackingPage() {
                 onClick={() => setCurrentTaskPage(Math.max(1, currentTaskPage - 1))}
                 disabled={currentTaskPage === 1}
                 className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -547,7 +548,7 @@ export default function TimeTrackingPage() {
                   }`}
                   style={{
                     color: currentTaskPage === page ? "#ffffff" : "var(--color-text)"
-                  }}
+                  } as CSSProperties}
                 >
                   {page}
                 </button>
@@ -557,7 +558,7 @@ export default function TimeTrackingPage() {
                 onClick={() => setCurrentTaskPage(Math.min(totalTaskPages, currentTaskPage + 1))}
                 disabled={currentTaskPage === totalTaskPages}
                 className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -572,7 +573,7 @@ export default function TimeTrackingPage() {
           <div className="relative">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             />
             <input
               type="text"
@@ -580,7 +581,7 @@ export default function TimeTrackingPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search time entries..."
               className="w-full pl-10 pr-4 py-3 rounded-2xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] transition-colors bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             />
           </div>
         </div>
@@ -588,11 +589,11 @@ export default function TimeTrackingPage() {
         {/* Time Entries History */}
         <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+            <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
               Time Entries
             </h3>
             {totalEntryPages > 1 && (
-              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+              <div className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Page {currentEntryPage} of {totalEntryPages}
               </div>
             )}
@@ -600,11 +601,11 @@ export default function TimeTrackingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
             {filteredEntries.length === 0 ? (
               <div className="col-span-full text-center py-12">
-                <Timer size={48} className="mx-auto mb-4 opacity-40" style={{ color: "var(--color-text)" }} />
-                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+                <Timer size={48} className="mx-auto mb-4 opacity-40" style={{ color: "var(--color-text)" } as CSSProperties} />
+                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {searchQuery ? `No time entries found for "${searchQuery}"` : "No time entries yet"}
                 </p>
-                <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-50" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Start tracking time on your tasks
                 </p>
               </div>
@@ -619,7 +620,7 @@ export default function TimeTrackingPage() {
                     <div className="flex items-center space-x-3 mb-2">
                       <h4
                         className="font-semibold text-sm leading-tight"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={entry.task_title}
                       >
                         {entry.task_title && entry.task_title.length > 25
@@ -635,7 +636,7 @@ export default function TimeTrackingPage() {
                     {entry.description && (
                       <p
                         className="text-xs opacity-60 mb-1 leading-tight italic"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={entry.description}
                       >
                         {truncateDescription(entry.description)}
@@ -644,7 +645,7 @@ export default function TimeTrackingPage() {
                     {entry.project_name && (
                       <p
                         className="text-xs opacity-70 mb-1 leading-tight"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={entry.project_name}
                       >
                         {entry.project_name.length > 20
@@ -652,13 +653,13 @@ export default function TimeTrackingPage() {
                           : entry.project_name}
                       </p>
                     )}
-                    <p className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
+                    <p className="text-xs opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
                       {new Date(entry.start_time).toLocaleString()}
                       {entry.end_time && ` - ${new Date(entry.end_time).toLocaleString()}`}
                     </p>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <div className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
+                    <div className="text-lg font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                       {getEntryDisplayTime(entry)}
                     </div>
                   </div>
@@ -674,7 +675,7 @@ export default function TimeTrackingPage() {
                 onClick={() => setCurrentEntryPage(Math.max(1, currentEntryPage - 1))}
                 disabled={currentEntryPage === 1}
                 className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -692,7 +693,7 @@ export default function TimeTrackingPage() {
                   }`}
                   style={{
                     color: currentEntryPage === page ? "#ffffff" : "var(--color-text)"
-                  }}
+                  } as CSSProperties}
                 >
                   {page}
                 </button>
@@ -702,7 +703,7 @@ export default function TimeTrackingPage() {
                 onClick={() => setCurrentEntryPage(Math.min(totalEntryPages, currentEntryPage + 1))}
                 disabled={currentEntryPage === totalEntryPages}
                 className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -718,13 +719,13 @@ export default function TimeTrackingPage() {
             <div className="bg-[var(--color-surface)] rounded-2xl border-2 border-[var(--color-border)] shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                     Task Details
                   </h3>
                   <button
                     onClick={() => setShowTaskModal(false)}
                     className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     ✕
                   </button>
@@ -732,27 +733,27 @@ export default function TimeTrackingPage() {
 
                 <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>
+                    <h4 className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                       {selectedTask.title}
                     </h4>
                     {selectedTask.project_name && (
-                      <p className="text-sm opacity-70 mb-3" style={{ color: "var(--color-text)" }}>
+                      <p className="text-sm opacity-70 mb-3" style={{ color: "var(--color-text)" } as CSSProperties}>
                         Project: {selectedTask.project_name}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <h5 className="font-medium mb-2" style={{ color: "var(--color-text)" }}>
+                    <h5 className="font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                       Description
                     </h5>
                     <div className="bg-[var(--color-background)] rounded-2xl p-4 border-2 border-[var(--color-border)]">
                       {selectedTask.description ? (
-                        <p className="text-sm leading-relaxed" style={{ color: "var(--color-text)" }}>
+                        <p className="text-sm leading-relaxed" style={{ color: "var(--color-text)" } as CSSProperties}>
                           {selectedTask.description}
                         </p>
                       ) : (
-                        <p className="text-sm opacity-60 italic" style={{ color: "var(--color-text)" }}>
+                        <p className="text-sm opacity-60 italic" style={{ color: "var(--color-text)" } as CSSProperties}>
                           No description provided
                         </p>
                       )}
@@ -760,7 +761,7 @@ export default function TimeTrackingPage() {
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t-2 border-[var(--color-border)]">
-                    <div className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
+                    <div className="text-xs opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
                       Status: {selectedTask.status?.replace("_", " ") || "Unknown"}
                     </div>
                     <button
@@ -770,7 +771,7 @@ export default function TimeTrackingPage() {
                       }}
                       disabled={!!activeTimer}
                       className="flex items-center px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:bg-opacity-30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
-                      style={{ color: "#ffffff" }}
+                      style={{ color: "#ffffff" } as CSSProperties}
                     >
                       <Play size={16} />
                       <span className="ml-2">Start Timer</span>

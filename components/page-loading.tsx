@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 
 export default function Loading() {
@@ -18,7 +19,7 @@ export default function Loading() {
     return (
       <div
         className="fixed inset-x-0 top-14 bottom-0 z-50"
-        style={{ backgroundColor: 'var(--color-background)' }}
+        style={{ backgroundColor: 'var(--color-background)' } as CSSProperties}
       />
     )
   }
@@ -31,7 +32,7 @@ export default function Loading() {
       style={{
         backgroundColor: 'var(--color-background)',
         backdropFilter: 'blur(1px)'
-      }}
+      } as CSSProperties}
     >
       <div className="flex flex-col items-center space-y-4">
         {/* Logo */}
@@ -40,21 +41,21 @@ export default function Loading() {
             src="/TaskTrackerPro.png"
             alt="Task Tracker Pro"
             className="h-16 w-auto transition-opacity duration-300"
-            style={{ opacity: isVisible ? 1 : 0.7 }}
+            style={{ opacity: isVisible ? 1 : 0.7 } as CSSProperties}
           />
           {/* Loading ring */}
           <div className="absolute -inset-4 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin opacity-60"></div>
         </div>
 
         {/* Loading text */}
-        <div className="text-center transition-opacity duration-300" style={{ opacity: isVisible ? 1 : 0.7 }}>
-          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' }}>
+        <div className="text-center transition-opacity duration-300" style={{ opacity: isVisible ? 1 : 0.7 } as CSSProperties}>
+          <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--color-text)' } as CSSProperties}>
             Loading Task Tracker Pro
           </h3>
           <div className="flex space-x-1 justify-center">
             <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce opacity-80"></div>
-            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce opacity-80" style={{ animationDelay: '0.15s' }}></div>
-            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce opacity-80" style={{ animationDelay: '0.3s' }}></div>
+            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce opacity-80" style={{ animationDelay: '0.15s' } as CSSProperties}></div>
+            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce opacity-80" style={{ animationDelay: '0.3s' } as CSSProperties}></div>
           </div>
         </div>
       </div>

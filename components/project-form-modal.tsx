@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 
 import { useState } from "react"
 import Modal from "./modal"
@@ -64,7 +65,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
     <Modal isOpen={isOpen} onClose={onClose} title="Create New Project">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Project Name *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Project Name *</label>
           <input
             type="text"
             required
@@ -82,7 +83,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Description</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -98,7 +99,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
           />
         </div>
 
-        <div className="flex justify-end space-x-3 pt-4" style={{ borderTop: "2px solid var(--color-border)" }}>
+        <div className="flex justify-end space-x-3 pt-4" style={{ borderTop: "2px solid var(--color-border)" } as CSSProperties}>
           <button
             type="button"
             onClick={onClose}
@@ -107,7 +108,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
               color: "var(--color-text)",
               backgroundColor: "var(--color-background)",
               borderColor: "var(--color-border)"
-            }}
+            } as CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = "var(--color-primary)"
               e.currentTarget.style.color = "var(--color-primary-foreground)"
@@ -129,7 +130,7 @@ export default function ProjectFormModal({ isOpen, onClose, onSuccess }: Project
               color: "var(--color-secondary-foreground)",
               backgroundColor: "var(--color-secondary)",
               borderColor: "var(--color-border)"
-            }}
+            } as CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = "0.8"
             }}

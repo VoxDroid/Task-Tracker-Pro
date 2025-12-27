@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
@@ -104,14 +105,14 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center space-x-3 mb-4">
-              <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+              <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {task.title}
               </h2>
-              {task.is_favorite === 1 && <Star className="w-6 h-6" style={{ fill: "var(--color-accent)", color: "var(--color-accent)" }} />}
+              {task.is_favorite === 1 && <Star className="w-6 h-6" style={{ fill: "var(--color-accent)", color: "var(--color-accent)" } as CSSProperties} />}
             </div>
 
             {task.description && (
-              <p className="text-lg mb-6 opacity-80" style={{ color: "var(--color-text)" }}>
+              <p className="text-lg mb-6 opacity-80" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {task.description}
               </p>
             )}
@@ -123,7 +124,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
               style={{
                 backgroundColor: statusConfig[task.status].bg,
                 color: statusConfig[task.status].text,
-              }}
+              } as CSSProperties}
             >
               {statusConfig[task.status].label}
             </span>
@@ -132,7 +133,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
               style={{
                 backgroundColor: priorityConfig[task.priority].bg,
                 color: priorityConfig[task.priority].text,
-              }}
+              } as CSSProperties}
             >
               {priorityConfig[task.priority].label}
             </span>
@@ -144,10 +145,10 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             <div className="flex items-center space-x-3">
               <div
                 className="w-4 h-4 rounded-full border-2 border-white shadow-sm"
-                style={{ backgroundColor: "var(--color-primary)" }}
+                style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
               />
-              <FolderOpen className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
-              <span className="font-medium" style={{ color: "var(--color-text)" }}>
+              <FolderOpen className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
+              <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {project.name}
               </span>
             </div>
@@ -155,8 +156,8 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
 
           {task.assigned_to && (
             <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
-              <span className="font-medium" style={{ color: "var(--color-text)" }}>
+              <User className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
+              <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {task.assigned_to}
               </span>
             </div>
@@ -164,31 +165,31 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
 
           {task.due_date && (
             <div className="flex items-center space-x-3">
-              <Calendar className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
-              <span className="font-medium" style={{ color: "var(--color-text)" }}>
+              <Calendar className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
+              <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Due: {formatDateTime(task.due_date)}
               </span>
             </div>
           )}
 
           <div className="flex items-center space-x-3">
-            <Clock className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
-            <span className="font-medium" style={{ color: "var(--color-text)" }}>
+            <Clock className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
+            <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
               Created: {formatDateTime(task.created_at)}
             </span>
           </div>
 
           {task.completed_at && (
             <div className="flex items-center space-x-3">
-              <AlertCircle className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" }} />
-              <span className="font-medium" style={{ color: "var(--color-text)" }}>
+              <AlertCircle className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
+              <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Completed: {formatDateTime(task.completed_at)}
               </span>
             </div>
           )}
         </div>
 
-        <div className="flex justify-end space-x-3 pt-6 border-t" style={{ borderColor: "var(--color-border)" }}>
+        <div className="flex justify-end space-x-3 pt-6 border-t" style={{ borderColor: "var(--color-border)" } as CSSProperties}>
           <button
             onClick={onClose}
             className="px-6 py-3 rounded-xl font-medium transition-all duration-200 border-2"
@@ -196,7 +197,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
               backgroundColor: "var(--color-background)",
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           >
             Close
           </button>
@@ -208,7 +209,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
               style={{
                 backgroundColor: "var(--color-primary)",
                 color: "var(--color-primary-foreground)",
-              }}
+              } as CSSProperties}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--color-primary)";
                 e.currentTarget.style.opacity = "0.8";
@@ -229,7 +230,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
                 style={{
                   backgroundColor: "var(--color-primary)",
                   color: "var(--color-primary-foreground)",
-                }}
+                } as CSSProperties}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--color-primary)";
                   e.currentTarget.style.opacity = "0.8";
@@ -249,7 +250,7 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
                 style={{
                   backgroundColor: "var(--color-secondary)",
                   color: "var(--color-secondary-foreground)",
-                }}
+                } as CSSProperties}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--color-secondary)";
                   e.currentTarget.style.opacity = "0.8";

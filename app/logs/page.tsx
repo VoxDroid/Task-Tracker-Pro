@@ -1,5 +1,6 @@
-"use client"
+﻿"use client"
 
+import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
 import type { ActivityLog } from "@/lib/types"
@@ -211,7 +212,7 @@ export default function LogsPage() {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
               Loading activity logs...
             </div>
           </div>
@@ -224,11 +225,11 @@ export default function LogsPage() {
     <Sidebar>
       <div className="p-8">
         <div className="mb-8">
-          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" }}>
+          <h1 className="text-5xl font-bold mb-2 flex items-center" style={{ color: "var(--color-text)" } as CSSProperties}>
             <Activity className="mr-4" />
             Activity Logs
           </h1>
-          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+          <p className="text-xl opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
             Track all activities in your workspace
           </p>
         </div>
@@ -237,45 +238,45 @@ export default function LogsPage() {
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Total Activities
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.total}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-primary)] bg-opacity-10 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
+                <TrendingUp className="w-6 h-6" style={{ color: "var(--color-primary)" } as CSSProperties} />
               </div>
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Today's Activities
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.todayLogs}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-accent)] bg-opacity-10 rounded-xl flex items-center justify-center">
-                <Target className="w-6 h-6" style={{ color: "var(--color-accent)" }} />
+                <Target className="w-6 h-6" style={{ color: "var(--color-accent)" } as CSSProperties} />
               </div>
             </div>
           </div>
           <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium opacity-70 mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Action Types
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {stats.actions}
                 </p>
               </div>
               <div className="w-12 h-12 bg-[var(--color-secondary)] bg-opacity-10 rounded-xl flex items-center justify-center">
-                <Zap className="w-6 h-6" style={{ color: "var(--color-secondary)" }} />
+                <Zap className="w-6 h-6" style={{ color: "var(--color-secondary)" } as CSSProperties} />
               </div>
             </div>
           </div>
@@ -286,7 +287,7 @@ export default function LogsPage() {
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               />
               <input
                 type="text"
@@ -297,13 +298,13 @@ export default function LogsPage() {
                 style={{
                   backgroundColor: "var(--color-background)",
                   color: "var(--color-text)",
-                }}
+                } as CSSProperties}
               />
             </div>
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
+                <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" } as CSSProperties} />
                 <select
                   value={actionFilter}
                   onChange={(e) => setActionFilter(e.target.value)}
@@ -311,7 +312,7 @@ export default function LogsPage() {
                   style={{
                     backgroundColor: "var(--color-background)",
                     color: "var(--color-text)",
-                  }}
+                  } as CSSProperties}
                 >
                   <option value="all">All Actions</option>
                   {uniqueActions.map((action) => (
@@ -323,7 +324,7 @@ export default function LogsPage() {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
+                <Clock className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" } as CSSProperties} />
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
@@ -331,7 +332,7 @@ export default function LogsPage() {
                   style={{
                     backgroundColor: "var(--color-background)",
                     color: "var(--color-text)",
-                  }}
+                  } as CSSProperties}
                 >
                   <option value="all">All Dates</option>
                   <option value="today">Today</option>
@@ -352,9 +353,9 @@ export default function LogsPage() {
                     style={{
                       backgroundColor: "var(--color-background)",
                       color: "var(--color-text)",
-                    }}
+                    } as CSSProperties}
                   />
-                  <span className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>to</span>
+                  <span className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>to</span>
                   <input
                     type="date"
                     value={endDate}
@@ -363,7 +364,7 @@ export default function LogsPage() {
                     style={{
                       backgroundColor: "var(--color-background)",
                       color: "var(--color-text)",
-                    }}
+                    } as CSSProperties}
                   />
                 </div>
               )}
@@ -378,7 +379,7 @@ export default function LogsPage() {
                     setEndDate("")
                   }}
                   className="px-4 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                   title="Clear filters"
                 >
                   ✕
@@ -390,14 +391,14 @@ export default function LogsPage() {
 
         <div className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <h3 className="text-lg font-semibold" style={{ color: "var(--color-text)" }}>
+            <h3 className="text-lg font-semibold" style={{ color: "var(--color-text)" } as CSSProperties}>
               Log Management
             </h3>
             <div className="flex space-x-4">
               <button
                 onClick={exportLogs}
                 className="flex items-center px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                style={{ color: "#ffffff" }}
+                style={{ color: "#ffffff" } as CSSProperties}
               >
                 <Download className="w-4 h-4 mr-2" />
                 Export Logs
@@ -405,7 +406,7 @@ export default function LogsPage() {
               <button
                 onClick={() => setShowResetModal(true)}
                 className="flex items-center px-4 py-2 bg-[var(--color-primary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 hover:shadow-md hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                style={{ color: "var(--color-primary-foreground)" }}
+                style={{ color: "var(--color-primary-foreground)" } as CSSProperties}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Reset Logs
@@ -418,15 +419,15 @@ export default function LogsPage() {
           {filteredLogs.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
-                <Activity className="w-12 h-12 opacity-40" style={{ color: "var(--color-text)" }} />
+                <Activity className="w-12 h-12 opacity-40" style={{ color: "var(--color-text)" } as CSSProperties} />
               </div>
-              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {searchQuery || actionFilter !== "all" || dateFilter !== "all"
                   ? "No matching activity logs found"
                   : "No activity logs"
                 }
               </p>
-              <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm opacity-50" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Your activities will appear here
               </p>
             </div>
@@ -447,31 +448,31 @@ export default function LogsPage() {
               >
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0 mt-1">
-                    <Clock size={20} className="opacity-40" style={{ color: "var(--color-text)" }} />
+                    <Clock size={20} className="opacity-40" style={{ color: "var(--color-text)" } as CSSProperties} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-3">
                       <span
                         className={`px-3 py-1 rounded-xl text-sm font-medium border-2 ${getActionColor(log.action)}`}
-                        style={{ color: getActionTextColor(log.action) }}
+                        style={{ color: getActionTextColor(log.action) } as CSSProperties}
                       >
                         {log.action.toUpperCase()}
                       </span>
                       <span
                         className="text-sm font-medium bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                       >
                         {log.entity_type.charAt(0).toUpperCase() + log.entity_type.slice(1)} #{log.entity_id}
                       </span>
                       <span
                         className="text-sm opacity-60 bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                       >
                         {new Date(log.created_at).toLocaleString()}
                       </span>
                     </div>
                     {log.details && (
-                      <p className="text-base leading-relaxed" style={{ color: "var(--color-text)" }}>
+                      <p className="text-base leading-relaxed" style={{ color: "var(--color-text)" } as CSSProperties}>
                         {log.details}
                       </p>
                     )}
@@ -488,7 +489,7 @@ export default function LogsPage() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronLeft size={20} />
             </button>
@@ -502,7 +503,7 @@ export default function LogsPage() {
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
                 }`}
-                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined }}
+                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined } as CSSProperties}
               >
                 {page}
               </button>
@@ -512,7 +513,7 @@ export default function LogsPage() {
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
               className="p-2 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronRight size={20} />
             </button>
@@ -526,30 +527,30 @@ export default function LogsPage() {
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-[var(--color-primary)] bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-8 h-8" style={{ color: "var(--color-primary)" }} />
+                  <Trash2 className="w-8 h-8" style={{ color: "var(--color-primary)" } as CSSProperties} />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Reset Activity Logs
                 </h3>
-                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" }}>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to delete all activity logs? This action cannot be undone.
                 </p>
                 <div className="flex space-x-4">
                   <button
                     onClick={() => setShowResetModal(false)}
                     className="flex-1 px-4 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Cancel
                   </button>
                   <button
                     onClick={resetLogs}
                     className="flex-1 px-4 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     Reset Logs
                   </button>

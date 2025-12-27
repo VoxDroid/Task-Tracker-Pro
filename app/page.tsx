@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import React, { useMemo, useState, useEffect, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { CheckCircle, Target, Clock, AlertTriangle, FolderOpen, Zap, Activity, LineChartIcon, TrendingUp, PieChartIcon, Calendar, BarChart3 } from "lucide-react"
@@ -159,10 +160,10 @@ export default function Dashboard() {
       <Sidebar>
         <div className="p-8">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+            <h1 className="text-4xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               Dashboard
             </h1>
-            <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+            <p className="text-lg opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
               Overview of your tasks and productivity
             </p>
           </div>
@@ -191,11 +192,11 @@ export default function Dashboard() {
     <div className="xl:col-span-2 bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <LineChartIcon
         className="absolute top-4 right-4 w-12 h-12 opacity-5"
-        style={{ color: "var(--color-accent)" }}
+        style={{ color: "var(--color-accent)" } as CSSProperties}
       />
       <div className="flex items-center mb-6 relative z-10">
-        <TrendingUp className="w-6 h-6 mr-3" style={{ color: "var(--color-accent)" }} />
-        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+        <TrendingUp className="w-6 h-6 mr-3" style={{ color: "var(--color-accent)" } as CSSProperties} />
+        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
           Task Completion Trend
         </h3>
       </div>
@@ -216,7 +217,7 @@ export default function Dashboard() {
               border: "2px solid var(--color-border)",
               borderRadius: "12px",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           />
           <Area
             type="monotone"
@@ -234,9 +235,9 @@ export default function Dashboard() {
     <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <PieChartIcon
         className="absolute top-4 right-4 w-12 h-12 opacity-5"
-        style={{ color: "var(--color-primary)" }}
+        style={{ color: "var(--color-primary)" } as CSSProperties}
       />
-      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
+      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" } as CSSProperties}>
         Tasks by Status
       </h3>
       <ResponsiveContainer width="100%" height={300}>
@@ -263,7 +264,7 @@ export default function Dashboard() {
               border: "2px solid var(--color-border)",
               borderRadius: "12px",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           />
         </PieChart>
       </ResponsiveContainer>
@@ -274,17 +275,17 @@ export default function Dashboard() {
     <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <Activity
         className="absolute top-4 right-4 w-12 h-12 opacity-5"
-        style={{ color: "var(--color-primary)" }}
+        style={{ color: "var(--color-primary)" } as CSSProperties}
       />
       <div className="flex items-center mb-6 relative z-10">
-        <Activity className="w-6 h-6 mr-3" style={{ color: "var(--color-primary)" }} />
-        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+        <Activity className="w-6 h-6 mr-3" style={{ color: "var(--color-primary)" } as CSSProperties} />
+        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
           Recent Activity
         </h3>
       </div>
       <div className="space-y-4 relative z-10">
         {recentActivity.length === 0 ? (
-          <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
+          <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
             No recent activity
           </p>
         ) : (
@@ -292,7 +293,7 @@ export default function Dashboard() {
             <div
               key={activity.id}
               className="flex items-start space-x-3 p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
-              style={{ backgroundColor: "var(--color-background)" }}
+              style={{ backgroundColor: "var(--color-background)" } as CSSProperties}
               onClick={() => {
                 if (activity.entity_type === "task") {
                   window.location.href = "/tasks"
@@ -303,13 +304,13 @@ export default function Dashboard() {
             >
               <div
                 className="w-2 h-2 rounded-full mt-2"
-                style={{ backgroundColor: "var(--color-primary)" }}
+                style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
               ></div>
               <div className="flex-1">
-                <p className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {activity.details}
                 </p>
-                <p className="text-xs opacity-60" style={{ color: "var(--color-text)" }}>
+                <p className="text-xs opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {new Date(activity.created_at).toLocaleString()}
                 </p>
               </div>
@@ -324,17 +325,17 @@ export default function Dashboard() {
     <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <Calendar
         className="absolute top-4 right-4 w-12 h-12 opacity-5"
-        style={{ color: "var(--color-secondary)" }}
+        style={{ color: "var(--color-secondary)" } as CSSProperties}
       />
       <div className="flex items-center mb-6 relative z-10">
-        <Calendar className="w-6 h-6 mr-3" style={{ color: "var(--color-secondary)" }} />
-        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+        <Calendar className="w-6 h-6 mr-3" style={{ color: "var(--color-secondary)" } as CSSProperties} />
+        <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
           Upcoming Tasks
         </h3>
       </div>
       <div className="space-y-4 relative z-10">
         {upcomingTasks.length === 0 ? (
-          <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" }}>
+          <p className="text-center py-8 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
             No upcoming tasks
           </p>
         ) : (
@@ -342,15 +343,15 @@ export default function Dashboard() {
             <div
               key={task.id}
               className="p-3 rounded-xl bg-opacity-50 hover:bg-opacity-70 transition-colors cursor-pointer hover:scale-105"
-              style={{ backgroundColor: "var(--color-background)" }}
+              style={{ backgroundColor: "var(--color-background)" } as CSSProperties}
               onClick={() => (window.location.href = "/tasks")}
             >
-              <h4 className="font-semibold text-sm mb-1" style={{ color: "var(--color-text)" }}>
+              <h4 className="font-semibold text-sm mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {task.title}
               </h4>
               <div
                 className="flex items-center justify-between text-xs opacity-60"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               >
                 <span>{task.project?.name || "No project"}</span>
                 <span>{task.due_date ? formatDateTimeShort(task.due_date) : "No due date"}</span>
@@ -366,9 +367,9 @@ export default function Dashboard() {
     <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <BarChart3
         className="absolute top-4 right-4 w-12 h-12 opacity-5"
-        style={{ color: "var(--color-accent)" }}
+        style={{ color: "var(--color-accent)" } as CSSProperties}
       />
-      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
+      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" } as CSSProperties}>
         Project Progress
       </h3>
       <ResponsiveContainer width="100%" height={300}>
@@ -382,7 +383,7 @@ export default function Dashboard() {
               border: "2px solid var(--color-border)",
               borderRadius: "12px",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           />
           <Bar
             dataKey="total_tasks"
@@ -410,9 +411,9 @@ export default function Dashboard() {
     <div className="bg-[var(--color-surface)] p-8 rounded-2xl border-2 border-[var(--color-border)] shadow-lg relative overflow-hidden">
       <LineChartIcon
         className="absolute top-4 right-4 w-16 h-16 opacity-5"
-        style={{ color: "var(--color-primary)" }}
+        style={{ color: "var(--color-primary)" } as CSSProperties}
       />
-      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" }}>
+      <h3 className="text-2xl font-bold mb-6 relative z-10" style={{ color: "var(--color-text)" } as CSSProperties}>
         Activity Trend (Last 7 Days)
       </h3>
       <ResponsiveContainer width="100%" height={250}>
@@ -426,7 +427,7 @@ export default function Dashboard() {
               border: "2px solid var(--color-border)",
               borderRadius: "12px",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           />
           <Line
             type="monotone"
@@ -446,13 +447,13 @@ export default function Dashboard() {
       <div className="p-8 space-y-8">
         <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
           <div>
-            <h1 className="text-5xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+            <h1 className="text-5xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               Dashboard
             </h1>
-            <p className="text-xl opacity-70" style={{ color: "var(--color-text)" }}>
+            <p className="text-xl opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
               Welcome back! Here's your productivity overview
             </p>
-            <div className="mt-2 text-sm opacity-60" style={{ color: "var(--color-text)" }}>
+            <div className="mt-2 text-sm opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
               Last updated: {new Date().toLocaleString()}
             </div>
           </div>
@@ -468,11 +469,11 @@ export default function Dashboard() {
                 className="absolute top-0 right-0 w-20 h-20 opacity-5"
                 style={{
                   background: `radial-gradient(circle, var(${card.colorVar}) 0%, transparent 70%)`,
-                }}
+                } as CSSProperties}
               />
               <card.bgIcon
                 className="absolute top-2 right-2 w-8 h-8 opacity-10"
-                style={{ color: `var(${card.colorVar})` }}
+                style={{ color: `var(${card.colorVar})` } as CSSProperties}
               />
 
               <div className="relative z-10">
@@ -482,16 +483,16 @@ export default function Dashboard() {
                     style={{
                       backgroundColor: `var(${card.colorVar})`,
                       opacity: 0.1,
-                    }}
+                    } as CSSProperties}
                   >
-                    <card.icon className="w-6 h-6" style={{ color: `var(${card.colorVar})` }} />
+                    <card.icon className="w-6 h-6" style={{ color: `var(${card.colorVar})` } as CSSProperties} />
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm font-medium opacity-70 mb-2" style={{ color: "var(--color-text)" }}>
+                  <p className="text-sm font-medium opacity-70 mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                     {card.title}
                   </p>
-                  <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
+                  <p className="text-3xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                     {card.value}
                   </p>
                 </div>

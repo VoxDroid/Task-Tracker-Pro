@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 import { useState, useEffect } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
@@ -75,7 +76,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Project">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Project Name *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Project Name *</label>
           <input
             type="text"
             required
@@ -93,7 +94,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Description</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -110,7 +111,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Status</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Status</label>
           <select
             value={formData.status}
             onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -119,14 +120,14 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
               backgroundColor: "var(--color-background)"
-            }}
+            } as CSSProperties}
           >
             <option value="active">Active</option>
             <option value="completed">Completed</option>
           </select>
         </div>
 
-        <div className="flex justify-end pt-4" style={{ borderTop: "2px solid var(--color-border)" }}>
+        <div className="flex justify-end pt-4" style={{ borderTop: "2px solid var(--color-border)" } as CSSProperties}>
           <div className="flex space-x-3">
             <button
               type="button"
@@ -136,7 +137,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
                 color: "var(--color-text)",
                 backgroundColor: "var(--color-background)",
                 borderColor: "var(--color-border)"
-              }}
+              } as CSSProperties}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = "var(--color-primary)"
                 e.currentTarget.style.color = "var(--color-primary-foreground)"
@@ -156,7 +157,7 @@ export default function ProjectEditModal({ isOpen, onClose, onSuccess, project }
                 color: "var(--color-secondary-foreground)",
                 backgroundColor: "var(--color-secondary)",
                 borderColor: "var(--color-border)"
-              }}
+              } as CSSProperties}
               onMouseEnter={(e) => {
                 e.currentTarget.style.opacity = "0.8"
               }}

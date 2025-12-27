@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 import { useState, useEffect } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
@@ -97,7 +98,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
     <Modal isOpen={isOpen} onClose={onClose} title="Edit Task" size="lg">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Title *</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Title *</label>
           <input
             type="text"
             required
@@ -113,7 +114,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Description</label>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -129,7 +130,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Status</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Status</label>
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value })}
@@ -149,7 +150,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Project</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Project</label>
             <select
               value={formData.project_id}
               onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
@@ -171,7 +172,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Priority</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Priority</label>
             <select
               value={formData.priority}
               onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
@@ -193,7 +194,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Assigned To</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Assigned To</label>
             <input
               type="text"
               value={formData.assigned_to}
@@ -210,7 +211,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>Due Date & Time</label>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Due Date & Time</label>
             <DateTimePicker
               value={formData.due_date}
               onChange={(value) => setFormData({ ...formData, due_date: value })}
@@ -219,7 +220,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
+        <div className="flex justify-end pt-4 border-t-2" style={{ borderColor: "var(--color-border)" } as CSSProperties}>
           <div className="flex space-x-3">
             <button
               type="button"
@@ -229,7 +230,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
                 color: "var(--color-text)",
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               Cancel
             </button>
@@ -241,7 +242,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
                 backgroundColor: "var(--color-primary)",
                 color: "var(--color-primary-foreground)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               {loading ? "Updating..." : "Update Task"}
             </button>

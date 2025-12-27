@@ -1,5 +1,6 @@
-"use client"
+﻿"use client"
 
+import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { useQueryClient, useMutation } from "@tanstack/react-query"
@@ -384,7 +385,7 @@ export default function ProjectDetailPage() {
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
             <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-            <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+            <div className="text-lg font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
               Loading project...
             </div>
           </div>
@@ -398,13 +399,13 @@ export default function ProjectDetailPage() {
       <Sidebar>
         <div className="flex items-center justify-center h-full">
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               Project Not Found
             </h2>
             <Link
               href="/projects"
               className="inline-flex items-center px-4 py-2 bg-[var(--color-primary)] bg-opacity-20 rounded-xl border-2 border-[var(--color-border)] hover:bg-opacity-30 transition-colors font-medium"
-              style={{ color: "var(--color-primary-foreground)" }}
+              style={{ color: "var(--color-primary-foreground)" } as CSSProperties}
             >
               <ArrowLeft size={16} />
               <span className="ml-2">Back to Projects</span>
@@ -431,21 +432,21 @@ export default function ProjectDetailPage() {
             <Link
               href="/projects"
               className="mr-4 p-2 bg-[var(--color-surface)] rounded-xl border-2 border-[var(--color-border)] hover:shadow-md hover:transform hover:scale-105 transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ArrowLeft size={20} />
             </Link>
             <div className="flex items-center">
               <div
                 className="w-8 h-8 rounded-full border-2 border-[var(--color-border)] mr-4 shadow-md"
-                style={{ backgroundColor: "var(--color-primary)" }}
+                style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
               />
               <div>
-                <h1 className="text-4xl font-bold" style={{ color: "var(--color-text)" }}>
+                <h1 className="text-4xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {project.name}
                 </h1>
                 {project.description && (
-                  <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" }}>
+                  <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                     {project.description}
                   </p>
                 )}
@@ -459,7 +460,7 @@ export default function ProjectDetailPage() {
             style={{
               backgroundColor: "var(--color-primary)",
               color: "var(--color-primary-foreground)",
-            }}
+            } as CSSProperties}
           >
             <Plus size={20} />
             <span className="ml-2">Add Task</span>
@@ -474,7 +475,7 @@ export default function ProjectDetailPage() {
             style={{
               backgroundColor: "var(--color-secondary)",
               color: "var(--color-secondary-foreground)",
-            }}
+            } as CSSProperties}
           >
             <FolderOpen size={20} />
             <span className="ml-2">Select Existing Task</span>
@@ -486,66 +487,66 @@ export default function ProjectDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   To Do
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   {todoTasks}
                 </p>
               </div>
-              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" } as CSSProperties} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   In Progress
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   {inProgressTasks}
                 </p>
               </div>
-              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
+              <Clock className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" } as CSSProperties} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   Completed
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   {completedTasks}
                 </p>
               </div>
-              <CheckCircle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
+              <CheckCircle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" } as CSSProperties} />
             </div>
           </div>
           <div
             className="p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg"
-            style={{ backgroundColor: "var(--color-primary)" }}
+            style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-sm font-medium opacity-80 mb-1" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   Overdue
                 </p>
-                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" }}>
+                <p className="text-3xl font-bold" style={{ color: "var(--color-primary-foreground)" } as CSSProperties}>
                   {overdueTasks}
                 </p>
               </div>
-              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" }} />
+              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-primary-foreground)" } as CSSProperties} />
             </div>
           </div>
         </div>
@@ -556,7 +557,7 @@ export default function ProjectDetailPage() {
             <div className="flex-1 relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 opacity-50"
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
               />
               <input
                 type="text"
@@ -567,12 +568,12 @@ export default function ProjectDetailPage() {
                 style={{
                   backgroundColor: "var(--color-background)",
                   color: "var(--color-text)",
-                }}
+                } as CSSProperties}
               />
             </div>
 
             <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" }} />
+              <Filter className="w-5 h-5 opacity-50" style={{ color: "var(--color-text)" } as CSSProperties} />
               {["all", "todo", "in_progress", "completed"].map((status) => (
                 <button
                   key={status}
@@ -582,7 +583,7 @@ export default function ProjectDetailPage() {
                       ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg transform scale-105"
                       : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md hover:transform hover:scale-105"
                   }`}
-                  style={{ color: filter === status ? "var(--color-primary-foreground)" : undefined }}
+                  style={{ color: filter === status ? "var(--color-primary-foreground)" : undefined } as CSSProperties}
                 >
                   {status === "all" ? "All" : status.replace("_", " ").toUpperCase()}
                 </button>
@@ -595,7 +596,7 @@ export default function ProjectDetailPage() {
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg transform scale-105"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md hover:transform hover:scale-105"
                 }`}
-                style={{ color: showFavoritesOnly ? "var(--color-primary-foreground)" : undefined }}
+                style={{ color: showFavoritesOnly ? "var(--color-primary-foreground)" : undefined } as CSSProperties}
               >
                 <Heart size={16} className={favoriteTaskIds.length > 0 ? "fill-current" : ""} />
               </button>
@@ -605,7 +606,7 @@ export default function ProjectDetailPage() {
               <button
                 onClick={selectedTasks.length === getCurrentPageTasks().length ? clearSelection : selectAllTasks}
                 className="px-4 py-2 rounded-2xl border-2 border-[var(--color-border)] font-medium transition-all duration-200 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 hover:shadow-md hover:transform hover:scale-105"
-                style={{ color: "var(--color-secondary-foreground)" }}
+                style={{ color: "var(--color-secondary-foreground)" } as CSSProperties}
               >
                 {selectedTasks.length === getCurrentPageTasks().length ? "Deselect All" : "Select All"}
               </button>
@@ -626,13 +627,13 @@ export default function ProjectDetailPage() {
           <div className="bg-[var(--color-surface)] p-4 rounded-2xl border-2 border-[var(--color-border)] backdrop-blur-sm shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <span className="font-medium" style={{ color: "var(--color-text)" }}>
+                <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   {selectedTasks.length} task{selectedTasks.length !== 1 ? "s" : ""} selected
                 </span>
                 <button
                   onClick={clearSelection}
                   className="text-sm opacity-70 hover:opacity-100 font-medium transition-opacity duration-200"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Clear selection
                 </button>
@@ -641,14 +642,14 @@ export default function ProjectDetailPage() {
                 <button
                   onClick={() => bulkUpdateStatus("completed")}
                   className="px-4 py-2 bg-[var(--color-accent)] bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Mark Completed
                 </button>
                 <button
                   onClick={() => bulkUpdateStatus("archived")}
                   className="px-4 py-2 bg-[var(--color-secondary)] bg-opacity-20 hover:bg-opacity-30 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-secondary-foreground)" }}
+                  style={{ color: "var(--color-secondary-foreground)" } as CSSProperties}
                 >
                   Archive
                 </button>
@@ -662,9 +663,9 @@ export default function ProjectDetailPage() {
           {filteredTasks.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
-                <Plus className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+                <Plus className="w-12 h-12" style={{ color: "var(--color-primary)" } as CSSProperties} />
               </div>
-              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+              <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {searchQuery 
                   ? `No tasks found for "${searchQuery}"`
                   : filter !== "all" 
@@ -676,7 +677,7 @@ export default function ProjectDetailPage() {
                 <button
                   onClick={() => setShowTaskModal(true)}
                   className="inline-flex items-center px-6 py-3 bg-[var(--color-primary)] bg-opacity-10 hover:bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-primary-foreground)" }}
+                  style={{ color: "var(--color-primary-foreground)" } as CSSProperties}
                 >
                   <Plus size={16} />
                   <span className="ml-2">Add first task</span>
@@ -688,7 +689,7 @@ export default function ProjectDetailPage() {
                     fetchAvailableTasks()
                   }}
                   className="inline-flex items-center px-6 py-3 bg-[var(--color-secondary)] bg-opacity-10 hover:bg-opacity-20 rounded-2xl border-2 border-[var(--color-border)] hover:shadow-lg hover:transform hover:scale-105 transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-secondary-foreground)" }}
+                  style={{ color: "var(--color-secondary-foreground)" } as CSSProperties}
                 >
                   <FolderOpen size={16} />
                   <span className="ml-2">Select Existing Task</span>
@@ -709,7 +710,7 @@ export default function ProjectDetailPage() {
                 style={{
                   backgroundColor: "var(--color-surface)",
                   borderColor: selectedTasks.includes(task.id) ? "var(--color-primary)" : "var(--color-border)",
-                }}
+                } as CSSProperties}
               >
                 {/* Remove gradient background completely */}
                 <div className="relative z-10 p-6 h-full flex flex-col">
@@ -745,13 +746,13 @@ export default function ProjectDetailPage() {
                             ? "scale-110 text-yellow-500"
                             : "opacity-40 hover:opacity-80 hover:scale-110"
                         }`}
-                        style={{ color: favoriteTaskIds.includes(task.id) ? "#eab308" : "var(--color-text)" }}
+                        style={{ color: favoriteTaskIds.includes(task.id) ? "#eab308" : "var(--color-text)" } as CSSProperties}
                       >
                         <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
                       </button>
                       <h3
                         className="text-lg font-bold leading-tight min-w-0 flex-1"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.title}
                       >
                         {truncateText(task.title, 20)}
@@ -770,7 +771,7 @@ export default function ProjectDetailPage() {
                                 task.priority === "medium" ? "var(--color-text)" :
                                 "var(--color-text)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         {task.priority}
                       </span>
@@ -785,7 +786,7 @@ export default function ProjectDetailPage() {
                                 task.status === "in_progress" ? "var(--color-primary-foreground)" :
                                 task.status === "archived" ? "var(--color-secondary-foreground)" :
                                 "var(--color-text)",
-                        }}
+                        } as CSSProperties}
                       >
                         {task.status.replace("_", " ")}
                       </span>
@@ -797,7 +798,7 @@ export default function ProjectDetailPage() {
                     {task.description && (
                       <p
                         className="text-sm opacity-70 leading-relaxed mb-4"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.description}
                       >
                         {truncateText(task.description, 80)}
@@ -813,17 +814,17 @@ export default function ProjectDetailPage() {
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
-                          style={{ backgroundColor: "var(--color-primary)", opacity: 0.1 }}
+                          style={{ backgroundColor: "var(--color-primary)", opacity: 0.1 } as CSSProperties}
                         >
-                          <User size={16} style={{ color: "var(--color-primary)" }} />
+                          <User size={16} style={{ color: "var(--color-primary)" } as CSSProperties} />
                         </div>
                         <span
                           className="text-sm font-medium truncate"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                           title={task.assigned_to}
                         >
                           {truncateText(task.assigned_to, 15)}
@@ -836,15 +837,15 @@ export default function ProjectDetailPage() {
                         style={{
                           backgroundColor: "var(--color-background)",
                           borderColor: "var(--color-border)",
-                        }}
+                        } as CSSProperties}
                       >
                         <div
                           className="w-8 h-8 rounded-xl flex items-center justify-center mr-3"
-                          style={{ backgroundColor: "var(--color-secondary)", opacity: 0.1 }}
+                          style={{ backgroundColor: "var(--color-secondary)", opacity: 0.1 } as CSSProperties}
                         >
-                          <Calendar size={16} style={{ color: "var(--color-secondary)" }} />
+                          <Calendar size={16} style={{ color: "var(--color-secondary)" } as CSSProperties} />
                         </div>
-                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                        <span className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                           {formatDateTimeShort(task.due_date)}
                         </span>
                       </div>
@@ -854,7 +855,7 @@ export default function ProjectDetailPage() {
                   {/* Metadata */}
                   <div
                     className="flex items-center justify-between text-xs opacity-60 mb-4"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     <span>Created {formatDateTimeShort(task.created_at)}</span>
                     {task.updated_at !== task.created_at && <span>Updated {formatDateTimeShort(task.updated_at)}</span>}
@@ -870,7 +871,7 @@ export default function ProjectDetailPage() {
                           setShowEditModal(true)
                         }}
                         className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title="Edit"
                       >
                         <Edit size={16} />
@@ -883,7 +884,7 @@ export default function ProjectDetailPage() {
                             updateTaskStatus(task.id, "completed", task.title)
                           }}
                           className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-green-500 hover:bg-opacity-10 transition-all duration-200"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                           title="Complete"
                         >
                           <Check size={16} />
@@ -896,7 +897,7 @@ export default function ProjectDetailPage() {
                           duplicateTask(task)
                         }}
                         className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-secondary)] hover:bg-opacity-10 transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title="Duplicate"
                       >
                         <Copy size={16} />
@@ -912,7 +913,7 @@ export default function ProjectDetailPage() {
                             setShowArchiveModal(true)
                           }}
                           className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-yellow-500 hover:bg-opacity-10 transition-all duration-200"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                           title="Archive"
                         >
                           <Archive size={16} />
@@ -926,7 +927,7 @@ export default function ProjectDetailPage() {
                           setShowDeleteModal(true)
                         }}
                         className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                         title="Delete"
                       >
                         <Trash2 size={16} />
@@ -946,7 +947,7 @@ export default function ProjectDetailPage() {
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
               className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronLeft size={20} />
             </button>
@@ -960,7 +961,7 @@ export default function ProjectDetailPage() {
                     ? "bg-[var(--color-primary)] bg-opacity-20 shadow-lg"
                     : "hover:bg-[var(--color-primary)] hover:bg-opacity-10"
                 }`}
-                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined }}
+                style={{ color: currentPage === page ? "var(--color-primary-foreground)" : undefined } as CSSProperties}
               >
                 {page}
               </button>
@@ -970,7 +971,7 @@ export default function ProjectDetailPage() {
               onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
               disabled={currentPage === totalPages}
               className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <ChevronRight size={20} />
             </button>
@@ -1003,16 +1004,16 @@ export default function ProjectDetailPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div
               className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] p-8 max-w-md w-full shadow-2xl"
-              style={{ backgroundColor: "var(--color-surface)" }}
+              style={{ backgroundColor: "var(--color-surface)" } as CSSProperties}
             >
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Archive size={32} className="text-yellow-500" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Archive Task
                 </h3>
-                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to archive "{taskToArchive.title}"? You can restore it later from the archive.
                 </p>
               </div>
@@ -1024,7 +1025,7 @@ export default function ProjectDetailPage() {
                     setTaskToArchive(null)
                   }}
                   className="flex-1 px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Cancel
                 </button>
@@ -1044,16 +1045,16 @@ export default function ProjectDetailPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div
               className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] p-8 max-w-md w-full shadow-2xl"
-              style={{ backgroundColor: "var(--color-surface)" }}
+              style={{ backgroundColor: "var(--color-surface)" } as CSSProperties}
             >
               <div className="text-center mb-6">
                 <div className="w-16 h-16 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trash2 size={32} className="text-red-500" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
+                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Delete Task
                 </h3>
-                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" }}>
+                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to delete "{taskToDelete.title}"? This action cannot be undone.
                 </p>
               </div>
@@ -1065,14 +1066,14 @@ export default function ProjectDetailPage() {
                     setTaskToDelete(null)
                   }}
                   className="flex-1 px-6 py-3 hover:bg-green-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={deleteTask}
                   className="flex-1 px-6 py-3 hover:bg-red-500 hover:bg-opacity-10 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   Delete
                 </button>
@@ -1086,15 +1087,15 @@ export default function ProjectDetailPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div
               className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl"
-              style={{ backgroundColor: "var(--color-surface)" }}
+              style={{ backgroundColor: "var(--color-surface)" } as CSSProperties}
             >
               <div className="p-8">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+                    <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                       Select Existing Tasks
                     </h3>
-                    <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" }}>
+                    <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                       Choose tasks to assign to "{project?.name}"
                     </p>
                   </div>
@@ -1105,7 +1106,7 @@ export default function ProjectDetailPage() {
                       setAvailableTasks([])
                     }}
                     className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
-                    style={{ color: "var(--color-text)" }}
+                    style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     ✕
                   </button>
@@ -1115,7 +1116,7 @@ export default function ProjectDetailPage() {
                   <div className="flex items-center justify-center py-16">
                     <div className="text-center">
                       <div className="animate-spin w-12 h-12 border-4 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
-                      <div className="text-lg font-medium" style={{ color: "var(--color-text)" }}>
+                      <div className="text-lg font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                         Loading available tasks...
                       </div>
                     </div>
@@ -1123,12 +1124,12 @@ export default function ProjectDetailPage() {
                 ) : availableTasks.length === 0 ? (
                   <div className="text-center py-16">
                     <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
-                      <FolderOpen className="w-12 h-12" style={{ color: "var(--color-primary)" }} />
+                      <FolderOpen className="w-12 h-12" style={{ color: "var(--color-primary)" } as CSSProperties} />
                     </div>
-                    <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" }}>
+                    <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                       No available tasks found
                     </p>
-                    <p className="text-sm opacity-50" style={{ color: "var(--color-text)" }}>
+                    <p className="text-sm opacity-50" style={{ color: "var(--color-text)" } as CSSProperties}>
                       All tasks are already assigned to projects or archived.
                     </p>
                   </div>
@@ -1194,7 +1195,7 @@ export default function ProjectDetailPage() {
                                 <div className="flex items-center ml-1">
                                   <div
                                     className="w-2 h-2 rounded-full mr-1"
-                                    style={{ backgroundColor: task.project_color || "#6b7280" }}
+                                    style={{ backgroundColor: task.project_color || "#6b7280" } as CSSProperties}
                                   ></div>
                                   <span>{task.project_name}</span>
                                 </div>
@@ -1211,7 +1212,7 @@ export default function ProjectDetailPage() {
                 )}
 
                 <div className="flex items-center justify-between pt-6 border-t-2 border-[var(--color-border)]">
-                  <div className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+                  <div className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                     {selectedTaskIds.length} task{selectedTaskIds.length !== 1 ? 's' : ''} selected
                   </div>
                   <div className="flex space-x-4">
@@ -1222,7 +1223,7 @@ export default function ProjectDetailPage() {
                         setAvailableTasks([])
                       }}
                       className="px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
-                      style={{ color: "var(--color-text)" }}
+                      style={{ color: "var(--color-text)" } as CSSProperties}
                     >
                       Cancel
                     </button>
@@ -1230,7 +1231,7 @@ export default function ProjectDetailPage() {
                       onClick={assignTasksToProject}
                       disabled={selectedTaskIds.length === 0}
                       className="px-6 py-3 bg-[var(--color-secondary)] text-white rounded-2xl font-medium hover:bg-[var(--color-secondary)] hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                      style={{ backgroundColor: selectedTaskIds.length > 0 ? "var(--color-secondary)" : undefined }}
+                      style={{ backgroundColor: selectedTaskIds.length > 0 ? "var(--color-secondary)" : undefined } as CSSProperties}
                     >
                       Assign to Project
                     </button>

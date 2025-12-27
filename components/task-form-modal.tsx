@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 
 import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
@@ -138,7 +139,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
     <Modal isOpen={isOpen} onClose={onClose} title={task ? "Edit Task" : "Create New Task"} size="lg">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
             Task Title *
           </label>
           <input
@@ -146,28 +147,28 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-            style={{ color: "var(--color-text)" }}
+            style={{ color: "var(--color-text)" } as CSSProperties}
             placeholder="Enter task title..."
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
+          <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
             Description
           </label>
           <textarea
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)] min-h-[100px]"
-            style={{ color: "var(--color-text)" }}
+            style={{ color: "var(--color-text)" } as CSSProperties}
             placeholder="Enter task description..."
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               <FolderOpen className="inline w-4 h-4 mr-1" />
               Project
             </label>
@@ -175,7 +176,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               value={formData.project_id}
               onChange={(e) => setFormData({ ...formData, project_id: Number.parseInt(e.target.value) })}
               className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               <option value={0}>No Project</option>
               {projects.map((project) => (
@@ -187,7 +188,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               <AlertCircle className="inline w-4 h-4 mr-1" />
               Priority
             </label>
@@ -195,7 +196,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               value={formData.priority}
               onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
               className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
             >
               {priorityOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -206,7 +207,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               Due Date & Time
             </label>
             <DateTimePicker
@@ -235,7 +236,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
             </button>
             <label 
               className="text-sm cursor-pointer transition-opacity duration-200" 
-              style={{ color: "var(--color-text)", opacity: showAssignee ? 1 : 0.6 }}
+              style={{ color: "var(--color-text)", opacity: showAssignee ? 1 : 0.6 } as CSSProperties}
               onClick={() => setShowAssignee(!showAssignee)}
             >
               <User className="inline w-4 h-4 mr-1" />
@@ -253,7 +254,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               value={formData.assigned_to}
               onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
               className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
               placeholder="Enter assignee name..."
             />
           </div>
@@ -273,13 +274,13 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               <Check className="w-4 h-4 text-white animate-in fade-in duration-200" />
             )}
           </button>
-          <label className="flex items-center space-x-2 cursor-pointer" style={{ color: "var(--color-text)" }} onClick={() => setFormData({ ...formData, is_favorite: !formData.is_favorite })}>
+          <label className="flex items-center space-x-2 cursor-pointer" style={{ color: "var(--color-text)" } as CSSProperties} onClick={() => setFormData({ ...formData, is_favorite: !formData.is_favorite })}>
             <Star className="w-4 h-4" />
             <span>Mark as favorite</span>
           </label>
         </div>
 
-        <div className="flex justify-end space-x-3 pt-6 border-t" style={{ borderColor: "var(--color-border)" }}>
+        <div className="flex justify-end space-x-3 pt-6 border-t" style={{ borderColor: "var(--color-border)" } as CSSProperties}>
           <button
             type="button"
             onClick={onClose}
@@ -288,7 +289,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               backgroundColor: "var(--color-background)",
               borderColor: "var(--color-border)",
               color: "var(--color-text)",
-            }}
+            } as CSSProperties}
           >
             Cancel
           </button>

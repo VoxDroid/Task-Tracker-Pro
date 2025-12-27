@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -111,10 +112,10 @@ export default function Sidebar({ children }: SidebarProps) {
           {isOpen ? (
             <>
               <div className="min-w-0 flex-1 transition-opacity duration-200 delay-100">
-                <h1 className="text-xl font-bold truncate" style={{ color: "var(--color-text)" }}>
+                <h1 className="text-xl font-bold truncate" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Task Tracker Pro
                 </h1>
-                <p className="text-xs opacity-70 mt-1 truncate" style={{ color: "var(--color-text)" }}>
+                <p className="text-xs opacity-70 mt-1 truncate" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Manage your productivity
                 </p>
               </div>
@@ -129,7 +130,7 @@ export default function Sidebar({ children }: SidebarProps) {
                   }, 350) // 300ms transition + 50ms buffer
                 }}
                 className={`flex items-center justify-center px-4 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200 ml-2 flex-shrink-0`}
-                style={{ color: "var(--color-text)" }}
+                style={{ color: "var(--color-text)" } as CSSProperties}
                 title="Collapse sidebar"
               >
                 <X size={16} />
@@ -147,7 +148,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 }, 350) // 300ms transition + 50ms buffer
               }}
               className="flex items-center justify-center px-3 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
               title="Expand sidebar"
             >
               <Menu size={16} />
@@ -176,7 +177,7 @@ export default function Sidebar({ children }: SidebarProps) {
                 }, 350) // 300ms transition + 50ms buffer
               }}
               className="flex items-center justify-center px-3 py-3 rounded-xl border-2 border-[var(--color-border)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 transition-colors duration-200"
-              style={{ color: "var(--color-text)" }}
+              style={{ color: "var(--color-text)" } as CSSProperties}
               title="Search (opens sidebar)"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -201,7 +202,7 @@ export default function Sidebar({ children }: SidebarProps) {
                         ? "bg-[var(--color-primary)] bg-opacity-20 shadow-md transform scale-105"
                         : "hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:shadow-md"
                     }`}
-                    style={{ color: isActive ? "var(--color-primary-foreground)" : undefined }}
+                    style={{ color: isActive ? "var(--color-primary-foreground)" : undefined } as CSSProperties}
                     title={!isOpen ? item.name : undefined}
                   >
                     <item.icon size={20} className="flex-shrink-0" />
@@ -239,9 +240,9 @@ export default function Sidebar({ children }: SidebarProps) {
         style={{
           opacity: contentVisible ? 1 : 0,
           transition: 'margin-left 300ms ease-in-out, opacity 300ms ease-in-out'
-        }}
+        } as CSSProperties}
       >
-        <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)"}}>
+        <div className="h-full overflow-y-auto" style={{ backgroundColor: "var(--color-background)"} as CSSProperties}>
           {children}
         </div>
       </div>

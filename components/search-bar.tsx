@@ -1,5 +1,6 @@
 "use client"
 
+import type { CSSProperties } from "react"
 import { useState, useEffect, useRef } from "react"
 import { Search, X, Clock, FolderOpen, CheckSquare, Archive } from "lucide-react"
 import { formatDateTimeShort } from "@/components/datetime-picker"
@@ -79,15 +80,15 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
   const getIcon = (type: string) => {
     switch (type) {
       case "task":
-        return <CheckSquare className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+        return <CheckSquare className="w-4 h-4" style={{ color: "var(--color-primary)" } as CSSProperties} />
       case "project":
-        return <FolderOpen className="w-4 h-4" style={{ color: "var(--color-secondary)" }} />
+        return <FolderOpen className="w-4 h-4" style={{ color: "var(--color-secondary)" } as CSSProperties} />
       case "time_entry":
-        return <Clock className="w-4 h-4" style={{ color: "var(--color-accent)" }} />
+        return <Clock className="w-4 h-4" style={{ color: "var(--color-accent)" } as CSSProperties} />
       case "archived_task":
-        return <Archive className="w-4 h-4" style={{ color: "var(--color-muted)" }} />
+        return <Archive className="w-4 h-4" style={{ color: "var(--color-muted)" } as CSSProperties} />
       default:
-        return <Search className="w-4 h-4" style={{ color: "var(--color-muted)" }} />
+        return <Search className="w-4 h-4" style={{ color: "var(--color-muted)" } as CSSProperties} />
     }
   }
 
@@ -123,7 +124,7 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
           onChange={(e) => setQuery(e.target.value)}
           placeholder={placeholder}
           className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-[var(--color-border)] focus:border-[var(--color-primary)] focus:outline-none transition-colors bg-[var(--color-surface)]"
-          style={{ color: "var(--color-text)" }}
+          style={{ color: "var(--color-text)" } as CSSProperties}
         />
         {query && (
           <button
@@ -143,7 +144,7 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--color-surface)] border-2 border-[var(--color-border)] rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center" style={{ color: "var(--color-text)" }}>
+            <div className="p-4 text-center" style={{ color: "var(--color-text)" } as CSSProperties}>
               <div className="animate-spin w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full mx-auto mb-2"></div>
               Searching...
             </div>
@@ -159,24 +160,24 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
                     <div className="flex-shrink-0 mt-1">{getIcon(result.type)}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-semibold truncate" style={{ color: "var(--color-text)" }}>
+                        <span className="font-semibold truncate" style={{ color: "var(--color-text)" } as CSSProperties}>
                           {result.title}
                         </span>
                         <span
                           className="text-xs px-2 py-1 bg-[var(--color-background)] rounded-full border border-[var(--color-border)]"
-                          style={{ color: "var(--color-text)" }}
+                          style={{ color: "var(--color-text)" } as CSSProperties}
                         >
                           {getTypeLabel(result.type)}
                         </span>
                       </div>
                       {result.description && (
-                        <p className="text-sm truncate mb-1 opacity-70" style={{ color: "var(--color-text)" }}>
+                        <p className="text-sm truncate mb-1 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                           {result.description}
                         </p>
                       )}
                       <div
                         className="flex items-center space-x-3 text-xs opacity-60"
-                        style={{ color: "var(--color-text)" }}
+                        style={{ color: "var(--color-text)" } as CSSProperties}
                       >
                         {result.project_name && <span>Project: {result.project_name}</span>}
                         {result.status && <span>Status: {result.status}</span>}
@@ -189,7 +190,7 @@ export default function SearchBar({ onResultClick, placeholder = "Search...", cl
               ))}
             </div>
           ) : (
-            <div className="p-4 text-center opacity-60" style={{ color: "var(--color-text)" }}>
+            <div className="p-4 text-center opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
               No results found for "{query}"
             </div>
           )}

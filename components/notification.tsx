@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 
 import { useState, useEffect } from "react"
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from "lucide-react"
@@ -71,13 +72,13 @@ function NotificationContainer() {
   const getIcon = (type: string) => {
     switch (type) {
       case "success":
-        return <CheckCircle className="w-5 h-5" style={{ color: "var(--color-accent)" }} />
+        return <CheckCircle className="w-5 h-5" style={{ color: "var(--color-accent)" } as CSSProperties} />
       case "error":
-        return <AlertCircle className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+        return <AlertCircle className="w-5 h-5" style={{ color: "var(--color-primary)" } as CSSProperties} />
       case "warning":
-        return <AlertTriangle className="w-5 h-5" style={{ color: "var(--color-secondary)" }} />
+        return <AlertTriangle className="w-5 h-5" style={{ color: "var(--color-secondary)" } as CSSProperties} />
       default:
-        return <Info className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+        return <Info className="w-5 h-5" style={{ color: "var(--color-primary)" } as CSSProperties} />
     }
   }
 
@@ -157,20 +158,20 @@ function NotificationContainer() {
                 backgroundColor: "var(--color-surface)",
                 borderColor: colors.borderColor,
                 color: "var(--color-text)",
-              }}
+              } as CSSProperties}
             >
               <div className="flex items-start">
-                <div className="flex-shrink-0" style={{ backgroundColor: colors.backgroundColor, opacity: colors.opacity, padding: '4px', borderRadius: '6px' }}>
+                <div className="flex-shrink-0" style={{ backgroundColor: colors.backgroundColor, opacity: colors.opacity, padding: '4px', borderRadius: '6px' } as CSSProperties}>
                   {getIcon(notification.type)}
                 </div>
                 <div className="ml-3 flex-1">
-                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{notification.title}</p>
-                  {notification.message && <p className="text-sm mt-1 opacity-90" style={{ color: "var(--color-text)" }}>{notification.message}</p>}
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" } as CSSProperties}>{notification.title}</p>
+                  {notification.message && <p className="text-sm mt-1 opacity-90" style={{ color: "var(--color-text)" } as CSSProperties}>{notification.message}</p>}
                 </div>
                 <button
                   onClick={() => removeNotification(notification.id)}
                   className="ml-4 flex-shrink-0 rounded-lg p-1 hover:bg-black hover:bg-opacity-10 transition-colors"
-                  style={{ color: "var(--color-text)" }}
+                  style={{ color: "var(--color-text)" } as CSSProperties}
                 >
                   <X className="w-4 h-4" />
                 </button>

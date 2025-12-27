@@ -1,5 +1,6 @@
 'use client'
 
+import type { CSSProperties } from 'react'
 import { useState, useEffect } from 'react'
 import { X, Minus, Square, Copy, Maximize } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -76,7 +77,7 @@ export function TitleBar() {
         position: 'relative',
         backgroundColor: 'var(--color-surface)',
         borderBottom: '2px solid var(--color-border)'
-      }}
+      } as CSSProperties}
     >
       <div className="flex items-center">
         <img 

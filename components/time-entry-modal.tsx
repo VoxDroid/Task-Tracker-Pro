@@ -1,4 +1,5 @@
 "use client"
+import type { CSSProperties } from "react"
 import { useState } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
@@ -132,13 +133,13 @@ export default function TimeEntryModal({
             style={{
               backgroundColor: "var(--color-background)",
               borderColor: "var(--color-border)",
-            }}
+            } as CSSProperties}
           >
-            <h3 className="font-bold mb-2" style={{ color: "var(--color-text)" }}>
+            <h3 className="font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
               {entry.task_title}
             </h3>
             {entry.project_name && (
-              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {entry.project_name}
               </p>
             )}
@@ -151,13 +152,13 @@ export default function TimeEntryModal({
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="flex items-center justify-center mb-4">
-                <div className="w-4 h-4 rounded-full animate-pulse mr-3" style={{ backgroundColor: "var(--color-accent)" }}></div>
-                <Timer className="w-6 h-6" style={{ color: "var(--color-text)" }} />
+                <div className="w-4 h-4 rounded-full animate-pulse mr-3" style={{ backgroundColor: "var(--color-accent)" } as CSSProperties}></div>
+                <Timer className="w-6 h-6" style={{ color: "var(--color-text)" } as CSSProperties} />
               </div>
-              <div className="text-4xl font-bold mb-4" style={{ color: "var(--color-text)" }}>
+              <div className="text-4xl font-bold mb-4" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {currentTime !== undefined ? formatTime(currentTime) : "Running..."}
               </div>
               <button
@@ -166,7 +167,7 @@ export default function TimeEntryModal({
                 style={{
                   color: "var(--color-text)",
                   borderColor: "var(--color-border)",
-                }}
+                } as CSSProperties}
               >
                 <Square size={16} />
                 <span className="ml-2">Stop Timer</span>
@@ -181,15 +182,15 @@ export default function TimeEntryModal({
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="flex items-center mb-2">
-                <Clock className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
-                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                <Clock className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" } as CSSProperties} />
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Duration
                 </span>
               </div>
-              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
+              <p className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {!isActive && entry.duration
                   ? formatDurationFromSeconds(entry.duration)
                   : isActive && currentTime !== undefined
@@ -203,19 +204,19 @@ export default function TimeEntryModal({
               style={{
                 backgroundColor: "var(--color-surface)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               <div className="flex items-center mb-2">
-                <Play className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" }} />
-                <span className="text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                <Play className="w-4 h-4 mr-2" style={{ color: "var(--color-text)" } as CSSProperties} />
+                <span className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Started
                 </span>
               </div>
-              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {new Date(entry.start_time).toLocaleString()}
               </p>
               {entry.end_time && (
-                <p className="text-sm opacity-60 mt-1" style={{ color: "var(--color-text)" }}>
+                <p className="text-sm opacity-60 mt-1" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Ended: {new Date(entry.end_time).toLocaleString()}
                 </p>
               )}
@@ -226,7 +227,7 @@ export default function TimeEntryModal({
           {!isActive && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium" style={{ color: "var(--color-text)" }}>
+                <label className="block text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Description
                 </label>
                 <button
@@ -238,7 +239,7 @@ export default function TimeEntryModal({
                   style={{
                     color: "var(--color-text)",
                     borderColor: "var(--color-border)",
-                  }}
+                  } as CSSProperties}
                 >
                   <Edit size={14} />
                   <span className="ml-1">{isEditing ? "Cancel" : "Edit"}</span>
@@ -256,7 +257,7 @@ export default function TimeEntryModal({
                       backgroundColor: "var(--color-background)",
                       borderColor: "var(--color-border)",
                       color: "var(--color-text)",
-                    }}
+                    } as CSSProperties}
                     placeholder="Add a description for this time entry..."
                   />
                   <button
@@ -266,7 +267,7 @@ export default function TimeEntryModal({
                     style={{
                       color: "var(--color-text)",
                       borderColor: "var(--color-border)",
-                    }}
+                    } as CSSProperties}
                   >
                     {loading ? "Saving..." : "Save Description"}
                   </button>
@@ -277,16 +278,16 @@ export default function TimeEntryModal({
                   style={{
                     backgroundColor: "var(--color-background)",
                     borderColor: "var(--color-border)",
-                  }}
+                  } as CSSProperties}
                 >
-                  <p style={{ color: "var(--color-text)" }}>{entry.description || "No description added"}</p>
+                  <p style={{ color: "var(--color-text)" } as CSSProperties}>{entry.description || "No description added"}</p>
                 </div>
               )}
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex justify-between pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
+          <div className="flex justify-between pt-4 border-t-2" style={{ borderColor: "var(--color-border)" } as CSSProperties}>
             {!isActive && (
               <button
                 onClick={() => setShowDeleteConfirm(true)}
@@ -294,7 +295,7 @@ export default function TimeEntryModal({
                 style={{
                   color: "var(--color-text)",
                   borderColor: "var(--color-border)",
-                }}
+                } as CSSProperties}
               >
                 <Trash2 size={16} />
                 <span className="ml-2">Delete Entry</span>
@@ -306,7 +307,7 @@ export default function TimeEntryModal({
               style={{
                 color: "var(--color-text)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               Close
             </button>
@@ -319,19 +320,19 @@ export default function TimeEntryModal({
         <div className="space-y-6">
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
-              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-destructive)" }} />
+              <AlertTriangle className="w-8 h-8" style={{ color: "var(--color-destructive)" } as CSSProperties} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text)" }}>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Are you sure you want to delete this time entry?
               </h3>
-              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" }}>
+              <p className="text-sm opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 This action cannot be undone. The time entry for "{entry.task_title}" will be permanently deleted.
               </p>
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t-2" style={{ borderColor: "var(--color-border)" }}>
+          <div className="flex justify-end space-x-3 pt-4 border-t-2" style={{ borderColor: "var(--color-border)" } as CSSProperties}>
             <button
               onClick={() => setShowDeleteConfirm(false)}
               disabled={deleting}
@@ -339,7 +340,7 @@ export default function TimeEntryModal({
               style={{
                 color: "var(--color-text)",
                 borderColor: "var(--color-border)",
-              }}
+              } as CSSProperties}
             >
               Cancel
             </button>
@@ -350,7 +351,7 @@ export default function TimeEntryModal({
               style={{
                 borderColor: "var(--color-destructive)",
                 color: "var(--color-destructive)",
-              }}
+              } as CSSProperties}
             >
               {deleting ? "Deleting..." : "Delete Entry"}
             </button>

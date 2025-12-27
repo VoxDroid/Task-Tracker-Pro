@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import type { CSSProperties } from "react"
 
 import { useEffect } from "react"
 import { X } from "lucide-react"
@@ -57,7 +58,7 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
         {/* Backdrop */}
         <div 
           className="fixed inset-0 backdrop-blur-sm transition-opacity" 
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" } as CSSProperties}
           onClick={onClose} 
         />
 
@@ -68,14 +69,14 @@ export default function Modal({ isOpen, onClose, title, children, size = "md" }:
             backgroundColor: "var(--color-surface)",
             border: "2px solid var(--color-border)",
             boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
-          }}
+          } as CSSProperties}
         >
           {/* Header */}
           <div
             className="flex items-center justify-between p-6 border-b-2"
-            style={{ borderColor: "var(--color-border)" }}
+            style={{ borderColor: "var(--color-border)" } as CSSProperties}
           >
-            <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+            <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
               {title}
             </h3>
             <button
