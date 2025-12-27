@@ -3,7 +3,9 @@
 import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
-import type { ActivityLog } from "@/lib/types"
+import type { ActivityLog, Task, Project, TimeEntry } from "@/lib/types"
+import Modal from "@/components/modal"
+import EntityPreviewModal from "@/components/entity-preview-modal"
 import {
   Activity,
   Clock,
@@ -16,9 +18,135 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  Plus,
+  Edit,
+  Trash,
+  Play,
+  Square,
+  FolderOpen,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Info,
+  MapPin,
+  ExternalLink,
 } from "lucide-react"
 
 const ITEMS_PER_PAGE = 12
+
+// Helper function to get action icon and color
+const getActionIcon = (action: string) => {
+  switch (action) {
+    case "created":
+      return { icon: Plus, color: "var(--color-accent)" }
+    case "updated":
+      return { icon: Edit, color: "var(--color-primary)" }
+    case "deleted":
+      return { icon: Trash, color: "var(--color-destructive)" }
+    case "started":
+      return { icon: Play, color: "var(--color-secondary)" }
+    case "stopped":
+      return { icon: Square, color: "var(--color-muted)" }
+    default:
+      return { icon: Info, color: "var(--color-text)" }
+  }
+}
+
+// Helper function to get entity icon
+const getEntityIcon = (entityType: string) => {
+  switch (entityType) {
+    case "task":
+      return CheckCircle
+    case "project":
+      return FolderOpen
+    case "time_entry":
+      return Clock
+    default:
+      return Activity
+  }
+}
+
+// Helper function to parse log details into structured data
+const parseLogDetails = (details: string | undefined) => {
+  if (!details) return null
+
+  const parsed: { [key: string]: string } = {}
+
+  // Parse different log formats
+  if (details.includes(" with details: ")) {
+    // Creation logs: "Created task "Title" with details: field1: value1, field2: value2"
+    const parts = details.split(" with details: ")
+    parsed.summary = parts[0]
+    if (parts[1]) {
+      const fields = parts[1].split(", ")
+      fields.forEach(field => {
+        const [key, ...valueParts] = field.split(": ")
+        if (key && valueParts.length > 0) {
+          parsed[key.toLowerCase().replace(/\s+/g, "_")] = valueParts.join(": ")
+        }
+      })
+    }
+  } else if (details.includes(": ")) {
+    // Update logs: "Updated task "Title": field1: old → new, field2: old → new"
+    const colonIndex = details.indexOf(": ")
+    parsed.summary = details.substring(0, colonIndex)
+    const changesText = details.substring(colonIndex + 2)
+
+    if (changesText.includes(" → ")) {
+      // Parse field changes
+      const changes = changesText.split(", ")
+      changes.forEach(change => {
+        const [field, values] = change.split(": ")
+        if (field && values && values.includes(" → ")) {
+          const [oldVal, newVal] = values.split(" → ")
+          parsed[field.toLowerCase().replace(/\s+/g, "_")] = `${oldVal} → ${newVal}`
+        }
+      })
+    } else {
+      parsed.description = changesText
+    }
+  } else {
+    // Simple logs
+    parsed.summary = details
+  }
+
+  return parsed
+}
+
+// Helper function to get action color classes
+const getActionColor = (action: string) => {
+  switch (action) {
+    case "created":
+      return "bg-green-100 border-green-300 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-300"
+    case "updated":
+      return "bg-blue-100 border-blue-300 text-blue-800 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-300"
+    case "deleted":
+      return "bg-red-100 border-red-300 text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-300"
+    case "started":
+      return "bg-purple-100 border-purple-300 text-purple-800 dark:bg-purple-900/20 dark:border-purple-700 dark:text-purple-300"
+    case "stopped":
+      return "bg-gray-100 border-gray-300 text-gray-800 dark:bg-gray-900/20 dark:border-gray-700 dark:text-gray-300"
+    default:
+      return "bg-[var(--color-background)] border-[var(--color-border)] text-[var(--color-text)]"
+  }
+}
+
+const getActionTextColor = (action: string) => {
+  switch (action) {
+    case "created":
+      return "#166534"
+    case "updated":
+      return "#1e40af"
+    case "deleted":
+      return "#dc2626"
+    case "started":
+      return "#7c3aed"
+    case "stopped":
+      return "#374151"
+    default:
+      return "var(--color-text)"
+  }
+}
 
 export default function LogsPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([])
@@ -31,6 +159,10 @@ export default function LogsPage() {
   const [endDate, setEndDate] = useState("")
   const [showResetModal, setShowResetModal] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
+  const [selectedLog, setSelectedLog] = useState<ActivityLog | null>(null)
+  const [previewData, setPreviewData] = useState<Task | Project | TimeEntry | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
 
   useEffect(() => {
     fetchLogs()
@@ -113,6 +245,67 @@ export default function LogsPage() {
       setLogs([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const openPreviewModal = async (log: ActivityLog) => {
+    setSelectedLog(log)
+    setPreviewLoading(true)
+    setShowPreviewModal(true)
+
+    try {
+      let endpoint = ""
+      switch (log.entity_type) {
+        case "task":
+          endpoint = `/api/tasks/${log.entity_id}`
+          break
+        case "project":
+          endpoint = `/api/projects/${log.entity_id}`
+          break
+        case "time_entry":
+          endpoint = `/api/time-entries/${log.entity_id}`
+          break
+        default:
+          setPreviewData(null)
+          return
+      }
+
+      const response = await fetch(endpoint)
+      if (response.ok) {
+        const data = await response.json()
+        setPreviewData(data)
+      } else {
+        // Item might be deleted
+        setPreviewData(null)
+      }
+    } catch (error) {
+      console.error("Error fetching preview data:", error)
+      setPreviewData(null)
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  const closePreviewModal = () => {
+    setShowPreviewModal(false)
+    setSelectedLog(null)
+    setPreviewData(null)
+    setPreviewLoading(false)
+  }
+
+  const navigateToItem = () => {
+    if (!selectedLog) return
+
+    switch (selectedLog.entity_type) {
+      case "task":
+        window.location.href = "/tasks"
+        break
+      case "project":
+        window.location.href = "/projects"
+        break
+      case "time_entry":
+        window.location.href = "/time-tracking"
+        break
     }
   }
 
@@ -415,71 +608,125 @@ export default function LogsPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
           {filteredLogs.length === 0 ? (
             <div className="col-span-full text-center py-16">
-              <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
+              <div className="w-24 h-24 bg-[var(--color-primary)] bg-opacity-10 rounded-2xl flex items-center justify-center mx-auto mb-6 border-2 border-[var(--color-border)]">
                 <Activity className="w-12 h-12 opacity-40" style={{ color: "var(--color-text)" } as CSSProperties} />
               </div>
               <p className="text-xl mb-4 opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {searchQuery || actionFilter !== "all" || dateFilter !== "all"
                   ? "No matching activity logs found"
-                  : "No activity logs"
+                  : "No activity logs yet"
                 }
               </p>
               <p className="text-sm opacity-50" style={{ color: "var(--color-text)" } as CSSProperties}>
-                Your activities will appear here
+                Your activities will appear here as you use the application
               </p>
             </div>
           ) : (
-            getCurrentPageLogs().map((log) => (
-              <div
-                key={log.id}
-                className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-[1.01] transition-all duration-200 cursor-pointer"
-                onClick={() => {
-                  if (log.entity_type === "task") {
-                    window.location.href = "/tasks"
-                  } else if (log.entity_type === "project") {
-                    window.location.href = "/projects"
-                  } else if (log.entity_type === "time_entry") {
-                    window.location.href = "/time-tracking"
-                  }
-                }}
-              >
-                <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <Clock size={20} className="opacity-40" style={{ color: "var(--color-text)" } as CSSProperties} />
+            getCurrentPageLogs().map((log) => {
+              const { icon: ActionIcon, color: actionColor } = getActionIcon(log.action)
+              const EntityIcon = getEntityIcon(log.entity_type)
+              const parsedDetails = parseLogDetails(log.details)
+
+              return (
+                <div
+                  key={log.id}
+                  className="bg-[var(--color-surface)] p-6 rounded-2xl border-2 border-[var(--color-border)] shadow-lg hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-300 cursor-pointer group relative overflow-hidden pb-12"
+                  onClick={() => openPreviewModal(log)}
+                >
+                  {/* Background decoration */}
+                  <div
+                    className="absolute top-0 right-0 w-20 h-20 opacity-5 transform rotate-12 translate-x-4 -translate-y-4"
+                    style={{ color: actionColor }}
+                  >
+                    <ActionIcon size={32} />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-3">
-                      <span
-                        className={`px-3 py-1 rounded-xl text-sm font-medium border-2 ${getActionColor(log.action)}`}
-                        style={{ color: getActionTextColor(log.action) } as CSSProperties}
+
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4 relative z-10">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="p-2 rounded-xl border-2"
+                        style={{
+                          backgroundColor: `${actionColor}15`,
+                          borderColor: actionColor,
+                          color: actionColor
+                        }}
                       >
-                        {log.action.toUpperCase()}
-                      </span>
-                      <span
-                        className="text-sm font-medium bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
-                        style={{ color: "var(--color-text)" } as CSSProperties}
-                      >
-                        {log.entity_type.charAt(0).toUpperCase() + log.entity_type.slice(1)} #{log.entity_id}
-                      </span>
-                      <span
-                        className="text-sm opacity-60 bg-[var(--color-background)] px-3 py-1 rounded-xl border border-[var(--color-border)]"
-                        style={{ color: "var(--color-text)" } as CSSProperties}
-                      >
-                        {new Date(log.created_at).toLocaleString()}
-                      </span>
+                        <ActionIcon size={18} />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg capitalize" style={{ color: "var(--color-text)" }}>
+                          {log.action} {log.entity_type.replace("_", " ")}
+                        </h3>
+                        <div className="flex items-center space-x-2 text-sm opacity-70">
+                          <EntityIcon size={14} />
+                          <span style={{ color: "var(--color-text)" }}>
+                            {log.entity_type.charAt(0).toUpperCase() + log.entity_type.slice(1)} #{log.entity_id}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    {log.details && (
-                      <p className="text-base leading-relaxed" style={{ color: "var(--color-text)" } as CSSProperties}>
+                    <div className="text-right">
+                      <div className="text-sm opacity-60" style={{ color: "var(--color-text)" }}>
+                        {new Date(log.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="text-xs opacity-50" style={{ color: "var(--color-text)" }}>
+                        {new Date(log.created_at).toLocaleTimeString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="space-y-3 relative z-10">
+                    {parsedDetails?.summary && (
+                      <p className="text-base font-medium leading-relaxed" style={{ color: "var(--color-text)" }}>
+                        {parsedDetails.summary}
+                      </p>
+                    )}
+
+                    {/* Details Grid */}
+                    {parsedDetails && Object.keys(parsedDetails).length > 1 && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        {Object.entries(parsedDetails)
+                          .filter(([key]) => key !== "summary")
+                          .map(([key, value]) => (
+                            <div
+                              key={key}
+                              className="bg-[var(--color-background)] bg-opacity-50 p-3 rounded-xl border border-[var(--color-border)]"
+                            >
+                              <div className="text-xs font-medium uppercase tracking-wide opacity-70 mb-1" style={{ color: "var(--color-text)" }}>
+                                {key.replace(/_/g, " ")}
+                              </div>
+                              <div className="text-sm font-medium truncate" style={{ color: "var(--color-text)" }} title={value}>
+                                {value}
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Fallback for unparsed details */}
+                    {log.details && !parsedDetails && (
+                      <p className="text-base leading-relaxed opacity-80" style={{ color: "var(--color-text)" }}>
                         {log.details}
                       </p>
                     )}
                   </div>
+
+                  {/* Hover indicator */}
+                  <div className="absolute bottom-3 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                    <div className="bg-[var(--color-surface)] bg-opacity-90 backdrop-blur-sm px-3 py-1 rounded-full border border-[var(--color-border)] shadow-lg">
+                      <div className="text-xs font-medium" style={{ color: "var(--color-text)" }}>
+                        Click to view →
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
 
@@ -560,6 +807,16 @@ export default function LogsPage() {
           </div>
         )}
       </div>
+
+      {/* Preview Modal */}
+      <EntityPreviewModal
+        isOpen={showPreviewModal}
+        onClose={closePreviewModal}
+        entityType={selectedLog?.entity_type as "task" | "project" | "time_entry"}
+        entityData={previewData}
+        loading={previewLoading}
+        onLocate={previewData ? navigateToItem : undefined}
+      />
     </Sidebar>
   )
 }

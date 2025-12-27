@@ -43,7 +43,15 @@ export async function POST(request: NextRequest) {
     }
 
     const projectId = result.lastInsertRowid
-    logActivity("created", "project", projectId, `Created project: ${name}`)
+    
+    // Create detailed log message
+    const details = [
+      `Name: "${name}"`,
+      description && `Description: "${description}"`,
+      color && color !== "#6366f1" && `Color: ${color}`
+    ].filter(Boolean).join(", ")
+    
+    logActivity("created", "project", projectId, `Created project "${name}" with details: ${details}`)
 
     const project = executeQuery("SELECT * FROM projects WHERE id = ?", [projectId])[0]
     return NextResponse.json(project)

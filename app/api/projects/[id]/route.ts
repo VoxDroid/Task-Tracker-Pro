@@ -44,14 +44,28 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
 
-    // Build update query dynamically
+    // Build update query dynamically and track changes
     const updateFields = []
     const values = []
+    const changes: string[] = []
 
     for (const [key, value] of Object.entries(body)) {
-      if (key !== "id") {
+      if (key !== "id" && currentProject[key] !== value) {
         updateFields.push(`${key} = ?`)
         values.push(value)
+        
+        // Create readable change descriptions
+        if (key === "name") {
+          changes.push(`name: "${currentProject.name}" → "${value}"`)
+        } else if (key === "description") {
+          const oldDesc = currentProject.description ? `"${currentProject.description.substring(0, 50)}${currentProject.description.length > 50 ? '...' : ''}"` : "none"
+          const newDesc = value ? `"${(value as string).substring(0, 50)}${(value as string).length > 50 ? '...' : ''}"` : "none"
+          changes.push(`description: ${oldDesc} → ${newDesc}`)
+        } else if (key === "color") {
+          changes.push(`color: ${currentProject.color} → ${value}`)
+        } else if (key === "status") {
+          changes.push(`status: ${currentProject.status} → ${value}`)
+        }
       }
     }
 
@@ -66,8 +80,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const query = `UPDATE projects SET ${updateFields.join(", ")} WHERE id = ?`
     db.prepare(query).run(...values)
 
-    // Log the activity
-    logActivity("updated", "project", projectId, `Updated project: ${currentProject.name}`)
+    // Log the specific changes
+    const changeSummary = changes.length > 0 ? `Updated project "${currentProject.name}": ${changes.join(", ")}` : `Updated project "${currentProject.name}" (no field changes detected)`
+    logActivity("updated", "project", projectId, changeSummary)
 
     // Return updated project
     const updatedProject = db.prepare("SELECT * FROM projects WHERE id = ?").get(projectId)
@@ -85,8 +100,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     const db = getDatabase()
 
-    // Get project for logging
-    const project = db.prepare("SELECT name FROM projects WHERE id = ?").get(projectId) as any
+    // Get project info for detailed logging
+    const project = db.prepare(`
+      SELECT p.*, COUNT(t.id) as task_count
+      FROM projects p
+      LEFT JOIN tasks t ON p.id = t.project_id
+      WHERE p.id = ?
+      GROUP BY p.id
+    `).get(projectId) as any
+    
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 })
     }
@@ -97,7 +119,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Delete project
     db.prepare("DELETE FROM projects WHERE id = ?").run(projectId)
 
-    logActivity("deleted", "project", projectId, `Deleted project: ${project.name}`)
+    // Create detailed deletion log
+    const details = [
+      `Name: "${project.name}"`,
+      project.description && `Description: "${project.description.substring(0, 50)}${project.description.length > 50 ? '...' : ''}"`,
+      `Tasks: ${project.task_count}`,
+      `Color: ${project.color}`
+    ].filter(Boolean).join(", ")
+    
+    logActivity("deleted", "project", projectId, `Deleted project: ${details}`)
 
     return NextResponse.json({ success: true })
   } catch (error) {

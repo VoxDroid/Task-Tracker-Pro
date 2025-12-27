@@ -719,7 +719,7 @@ export default function TasksPage() {
                   setSelectedTask(task)
                   setShowViewModal(true)
                 }}
-                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${
+                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl hover:transform hover:scale-[1.02] transition-all duration-300 cursor-pointer ${
                   selectedTasks.includes(task.id)
                     ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-[1.02]"
                     : ""

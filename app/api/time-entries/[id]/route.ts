@@ -25,7 +25,26 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       `)
       stmt.run(description, entryId)
 
-      logActivity("updated", "time_entry", entryId, `Updated time entry description`)
+    if (description !== undefined && !end_time) {
+      const stmt = db.prepare(`
+        UPDATE time_entries 
+        SET description = ?
+        WHERE id = ?
+      `)
+      stmt.run(description, entryId)
+
+      // Get task info for better logging
+      const entryInfo = db.prepare(`
+        SELECT te.description as old_description, t.title as task_title
+        FROM time_entries te
+        JOIN tasks t ON te.task_id = t.id
+        WHERE te.id = ?
+      `).get(entryId) as any
+      
+      const oldDesc = entryInfo?.old_description ? `"${entryInfo.old_description}"` : "none"
+      const newDesc = description ? `"${description}"` : "none"
+      
+      logActivity("updated", "time_entry", entryId, `Updated time entry description for "${entryInfo?.task_title || "Unknown task"}": ${oldDesc} → ${newDesc}`)
 
       // Return updated entry
       const updatedEntry = db
@@ -102,7 +121,28 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const stmt = db.prepare("DELETE FROM time_entries WHERE id = ?")
     stmt.run(entryId)
 
-    logActivity("deleted", "time_entry", entryId, `Deleted time entry`)
+    // Get task info for better logging
+    const entryInfo = db.prepare(`
+      SELECT te.*, t.title as task_title, p.name as project_name
+      FROM time_entries te
+      JOIN tasks t ON te.task_id = t.id
+      LEFT JOIN projects p ON t.project_id = p.id
+      WHERE te.id = ?
+    `).get(entryId) as any
+    
+    // Delete the time entry
+    const stmt = db.prepare("DELETE FROM time_entries WHERE id = ?")
+    stmt.run(entryId)
+
+    const duration = entryInfo?.duration ? `${Math.floor(entryInfo.duration / 60)}m ${entryInfo.duration % 60}s` : "incomplete"
+    const details = [
+      `Task: "${entryInfo?.task_title || "Unknown"}"`,
+      `Duration: ${duration}`,
+      entryInfo?.description && `Description: "${entryInfo.description}"`,
+      entryInfo?.project_name && `Project: "${entryInfo.project_name}"`
+    ].filter(Boolean).join(", ")
+    
+    logActivity("deleted", "time_entry", entryId, `Deleted time entry: ${details}`)
 
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -84,7 +84,18 @@ export async function POST(request: NextRequest) {
     }
 
     const taskId = result.lastInsertRowid
-    logActivity("created", "task", taskId, `Created task: ${title}`)
+    
+    // Create detailed log message
+    const details = [
+      `Title: "${title}"`,
+      description && `Description: "${description}"`,
+      project_id && `Project ID: ${project_id}`,
+      priority && priority !== "medium" && `Priority: ${priority}`,
+      assigned_to && `Assigned to: ${assigned_to}`,
+      due_date && `Due date: ${due_date}`
+    ].filter(Boolean).join(", ")
+    
+    logActivity("created", "task", taskId, `Created task "${title}" with details: ${details}`)
 
     const task = executeQuery(
       `

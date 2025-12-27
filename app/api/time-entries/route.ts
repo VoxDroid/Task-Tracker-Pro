@@ -41,7 +41,15 @@ export async function POST(request: NextRequest) {
     }
 
     const entryId = result.lastInsertRowid
-    logActivity("started", "time_entry", entryId, `Started time tracking for task`)
+    
+    // Get task info for better logging
+    const taskInfo = executeQuery("SELECT title FROM tasks WHERE id = ?", [task_id])[0] as any
+    const details = [
+      `Task: "${taskInfo?.title || "Unknown"}"`,
+      description && `Description: "${description}"`
+    ].filter(Boolean).join(", ")
+    
+    logActivity("started", "time_entry", entryId, `Started time tracking: ${details}`)
 
     const entry = executeQuery(
       `
