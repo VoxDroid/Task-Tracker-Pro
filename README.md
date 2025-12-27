@@ -227,6 +227,62 @@ Before building from source, ensure you have the following installed:
    pnpm dist-all
    ```
 
+### Running with Docker
+
+You can also run Task Tracker Pro as a web application using Docker. This is useful for development, testing, or deploying to servers.
+
+#### Prerequisites
+
+- **Docker**: Latest version ([Download](https://docker.com/))
+- **Docker Compose**: Usually included with Docker Desktop
+
+#### Docker Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/VoxDroid/Task-Tracker-Pro.git
+   cd Task-Tracker-Pro
+   ```
+
+2. **Build and run with Docker Compose**
+
+   ```bash
+   # Build and start the application
+   docker-compose up --build
+
+   # Or run in background
+   docker-compose up -d --build
+   ```
+
+3. **Access the application**
+
+   Open your browser and go to `http://localhost:3456`
+
+#### Docker Commands
+
+```bash
+# Start the application (production)
+docker-compose up
+
+# Start in development mode
+docker-compose -f docker-compose.yml up task-tracker-dev
+
+# Stop the application
+docker-compose down
+
+# Rebuild after code changes
+docker-compose up --build
+
+# View logs
+docker-compose logs
+
+# Access the container shell
+docker-compose exec task-tracker-pro sh
+```
+
+**Note:** When running in Docker, the application runs as a web app rather than a desktop application. Your data is persisted in the `./data` directory on your host machine.
+
 ---
 
 ## Usage
