@@ -9,6 +9,7 @@ import type { Task } from "@/lib/types"
 import { Archive, RotateCcw, Trash2, Search, Calendar, FolderOpen, User, ChevronLeft, ChevronRight, Star, Check, Plus } from "lucide-react"
 import TaskViewModal from "@/components/task-view-modal"
 import { formatDateTimeShort } from "@/components/datetime-picker"
+import MarkdownRenderer from "@/components/markdown-renderer"
 
 const ITEMS_PER_PAGE = 6
 
@@ -531,16 +532,16 @@ export default function ArchivePage() {
                         )}
                       </button>
                       <h3
-                        className="text-lg font-bold leading-tight min-w-0 flex-1"
+                        className="text-lg font-bold leading-tight min-w-0 flex-1 truncate"
                         style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.title}
                       >
-                        {truncateText(task.title, 20)}
+                        {truncateText(task.title, 18)}
                       </h3>
                     </div>
                     <div className="flex flex-col space-y-2 flex-shrink-0 ml-3">
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm border-2"
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm border-2 whitespace-nowrap"
                         style={{
                           backgroundColor: priorityConfig[task.priority].bg,
                           color: priorityConfig[task.priority].text,
@@ -550,7 +551,7 @@ export default function ArchivePage() {
                         {priorityConfig[task.priority].label}
                       </span>
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm"
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm whitespace-nowrap"
                         style={{
                           backgroundColor: statusConfig[task.status].bg,
                           color: statusConfig[task.status].text,
@@ -562,15 +563,14 @@ export default function ArchivePage() {
                   </div>
 
                   {/* Description */}
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-hidden">
                     {task.description && (
-                      <p
-                        className="text-sm opacity-70 leading-relaxed mb-4"
+                      <div
+                        className="text-sm opacity-70 leading-relaxed mb-4 line-clamp-1"
                         style={{ color: "var(--color-text)" } as CSSProperties}
-                        title={task.description}
                       >
-                        {truncateText(task.description, 80)}
-                      </p>
+                        <MarkdownRenderer content={task.description} firstLineOnly maxFirstLineLength={45} />
+                      </div>
                     )}
                   </div>
 

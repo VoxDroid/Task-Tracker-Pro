@@ -6,9 +6,17 @@ import type { CSSProperties } from "react"
 import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
+import RichTextEditor from "@/components/rich-text-editor"
 import type { Task, Project } from "@/lib/types"
 import { FolderOpen, User, Star, AlertCircle, Check } from "lucide-react"
 import DateTimePicker from "@/components/datetime-picker"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface TaskFormModalProps {
   isOpen: boolean
@@ -136,7 +144,7 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
   ]
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={task ? "Edit Task" : "Create New Task"} size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title={task ? "Edit Task" : "Create New Task"} size="2xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
@@ -157,12 +165,11 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
           <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
             Description
           </label>
-          <textarea
+          <RichTextEditor
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)] min-h-[100px]"
-            style={{ color: "var(--color-text)" } as CSSProperties}
-            placeholder="Enter task description..."
+            onChange={(value) => setFormData({ ...formData, description: value })}
+            placeholder="Enter task description... (supports Markdown)"
+            minHeight={150}
           />
         </div>
 
@@ -172,19 +179,32 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               <FolderOpen className="inline w-4 h-4 mr-1" />
               Project
             </label>
-            <select
-              value={formData.project_id}
-              onChange={(e) => setFormData({ ...formData, project_id: Number.parseInt(e.target.value) })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" } as CSSProperties}
-            >
-              <option value={0}>No Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+            <Select value={formData.project_id.toString()} onValueChange={(value) => setFormData({ ...formData, project_id: Number.parseInt(value) })}>
+              <SelectTrigger 
+                className="w-full h-12 rounded-xl border-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-background)",
+                } as CSSProperties}
+              >
+                <SelectValue placeholder="No Project" />
+              </SelectTrigger>
+              <SelectContent 
+                className="rounded-xl"
+                style={{ 
+                  backgroundColor: "var(--color-surface)", 
+                  borderColor: "var(--color-border)" 
+                } as CSSProperties}
+              >
+                <SelectItem value="0" className="rounded-lg cursor-pointer">No Project</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id.toString()} className="rounded-lg cursor-pointer">
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
@@ -192,18 +212,31 @@ export default function TaskFormModal({ isOpen, onClose, onSuccess, task, projec
               <AlertCircle className="inline w-4 h-4 mr-1" />
               Priority
             </label>
-            <select
-              value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value as any })}
-              className="w-full px-4 py-3 rounded-xl border-2 border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-background)]"
-              style={{ color: "var(--color-text)" } as CSSProperties}
-            >
-              {priorityOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value as any })}>
+              <SelectTrigger 
+                className="w-full h-12 rounded-xl border-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-background)",
+                } as CSSProperties}
+              >
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent 
+                className="rounded-xl"
+                style={{ 
+                  backgroundColor: "var(--color-surface)", 
+                  borderColor: "var(--color-border)" 
+                } as CSSProperties}
+              >
+                {priorityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="rounded-lg cursor-pointer">
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>

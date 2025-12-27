@@ -6,6 +6,14 @@ import { useState, useEffect } from "react"
 import Modal from "./modal"
 import { useNotification } from "./notification"
 import DateTimePicker from "@/components/datetime-picker"
+import RichTextEditor from "@/components/rich-text-editor"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { Task } from "@/lib/types"
 
 interface TaskEditModalProps {
@@ -34,7 +42,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
       setFormData({
         title: task.title,
         description: task.description || "",
-        project_id: task.project_id?.toString() || "",
+        project_id: task.project_id?.toString() || "none",
         priority: task.priority,
         assigned_to: task.assigned_to || "",
         due_date: task.due_date ? task.due_date.slice(0, 16) : "",
@@ -66,7 +74,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          project_id: formData.project_id ? Number.parseInt(formData.project_id) : null,
+          project_id: formData.project_id && formData.project_id !== "none" ? Number.parseInt(formData.project_id) : null,
         }),
       })
 
@@ -95,7 +103,7 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
   if (!task) return null
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edit Task" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit Task" size="2xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Title *</label>
@@ -115,80 +123,99 @@ export default function TaskEditModal({ isOpen, onClose, onSuccess, task }: Task
 
         <div>
           <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Description</label>
-          <textarea
+          <RichTextEditor
             value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={3}
-            className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors resize-none"
-            style={{
-              borderColor: "var(--color-border)",
-              "--tw-ring-color": "var(--color-primary)",
-            } as React.CSSProperties}
-            placeholder="Enter task description"
+            onChange={(value) => setFormData({ ...formData, description: value })}
+            placeholder="Enter task description... (supports Markdown)"
+            minHeight={150}
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Status</label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                borderColor: "var(--color-border)",
-                "--tw-ring-color": "var(--color-primary)",
-                color: "var(--color-text)",
-                backgroundColor: "var(--color-background)",
-              } as React.CSSProperties}
-            >
-              <option value="todo">To Do</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="archived">Archived</option>
-            </select>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
+              <SelectTrigger 
+                className="w-full h-12 rounded-xl border-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-background)",
+                } as CSSProperties}
+              >
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent 
+                className="rounded-xl"
+                style={{ 
+                  backgroundColor: "var(--color-surface)", 
+                  borderColor: "var(--color-border)" 
+                } as CSSProperties}
+              >
+                <SelectItem value="todo" className="rounded-lg cursor-pointer">To Do</SelectItem>
+                <SelectItem value="in_progress" className="rounded-lg cursor-pointer">In Progress</SelectItem>
+                <SelectItem value="completed" className="rounded-lg cursor-pointer">Completed</SelectItem>
+                <SelectItem value="archived" className="rounded-lg cursor-pointer">Archived</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Project</label>
-            <select
-              value={formData.project_id}
-              onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                borderColor: "var(--color-border)",
-                "--tw-ring-color": "var(--color-primary)",
-                color: "var(--color-text)",
-                backgroundColor: "var(--color-background)",
-              } as React.CSSProperties}
-            >
-              <option value="">No Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+            <Select value={formData.project_id} onValueChange={(value) => setFormData({ ...formData, project_id: value })}>
+              <SelectTrigger 
+                className="w-full h-12 rounded-xl border-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-background)",
+                } as CSSProperties}
+              >
+                <SelectValue placeholder="No Project" />
+              </SelectTrigger>
+              <SelectContent 
+                className="rounded-xl"
+                style={{ 
+                  backgroundColor: "var(--color-surface)", 
+                  borderColor: "var(--color-border)" 
+                } as CSSProperties}
+              >
+                <SelectItem value="none" className="rounded-lg cursor-pointer">No Project</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id.toString()} className="rounded-lg cursor-pointer">
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>Priority</label>
-            <select
-              value={formData.priority}
-              onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 transition-colors"
-              style={{
-                borderColor: "var(--color-border)",
-                "--tw-ring-color": "var(--color-primary)",
-                color: "var(--color-text)",
-                backgroundColor: "var(--color-background)",
-              } as React.CSSProperties}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-              <option value="urgent">Urgent</option>
-            </select>
+            <Select value={formData.priority} onValueChange={(value) => setFormData({ ...formData, priority: value })}>
+              <SelectTrigger 
+                className="w-full h-12 rounded-xl border-2"
+                style={{
+                  borderColor: "var(--color-border)",
+                  color: "var(--color-text)",
+                  backgroundColor: "var(--color-background)",
+                } as CSSProperties}
+              >
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent 
+                className="rounded-xl"
+                style={{ 
+                  backgroundColor: "var(--color-surface)", 
+                  borderColor: "var(--color-border)" 
+                } as CSSProperties}
+              >
+                <SelectItem value="low" className="rounded-lg cursor-pointer">Low</SelectItem>
+                <SelectItem value="medium" className="rounded-lg cursor-pointer">Medium</SelectItem>
+                <SelectItem value="high" className="rounded-lg cursor-pointer">High</SelectItem>
+                <SelectItem value="urgent" className="rounded-lg cursor-pointer">Urgent</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 

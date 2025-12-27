@@ -13,6 +13,7 @@ import { useNotification } from "@/components/notification"
 import { truncateText } from "@/lib/utils"
 import { ArrowLeft, Plus, Calendar, User, CheckCircle, Clock, AlertTriangle, Edit, Check, Copy, Archive, Trash2, FolderOpen, Filter, Heart, CheckSquare, Star, Search, ChevronLeft, ChevronRight } from "lucide-react"
 import { formatDateTimeShort } from "@/components/datetime-picker"
+import MarkdownRenderer from "@/components/markdown-renderer"
 
 const ITEMS_PER_PAGE = 6
 
@@ -757,16 +758,16 @@ export default function ProjectDetailPage() {
                         <Star size={16} fill={favoriteTaskIds.includes(task.id) ? "currentColor" : "none"} />
                       </button>
                       <h3
-                        className="text-lg font-bold leading-tight min-w-0 flex-1"
+                        className="text-lg font-bold leading-tight min-w-0 flex-1 truncate"
                         style={{ color: "var(--color-text)" } as CSSProperties}
                         title={task.title}
                       >
-                        {truncateText(task.title, 20)}
+                        {truncateText(task.title, 18)}
                       </h3>
                     </div>
                     <div className="flex flex-col space-y-2 flex-shrink-0 ml-3">
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm border-2"
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm border-2 whitespace-nowrap"
                         style={{
                           backgroundColor: task.priority === "urgent" ? "var(--color-primary)" :
                                          task.priority === "high" ? "var(--color-secondary)" :
@@ -782,7 +783,7 @@ export default function ProjectDetailPage() {
                         {task.priority}
                       </span>
                       <span
-                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm"
+                        className="px-3 py-1 rounded-full text-xs font-bold shadow-sm whitespace-nowrap"
                         style={{
                           backgroundColor: task.status === "completed" ? "var(--color-accent)" :
                                          task.status === "in_progress" ? "var(--color-primary)" :
@@ -800,15 +801,14 @@ export default function ProjectDetailPage() {
                   </div>
 
                   {/* Description */}
-                  <div className="flex-1">
+                  <div className="flex-1 overflow-hidden">
                     {task.description && (
-                      <p
-                        className="text-sm opacity-70 leading-relaxed mb-4"
+                      <div
+                        className="text-sm opacity-70 leading-relaxed mb-4 line-clamp-1"
                         style={{ color: "var(--color-text)" } as CSSProperties}
-                        title={task.description}
                       >
-                        {truncateText(task.description, 80)}
-                      </p>
+                        <MarkdownRenderer content={task.description} firstLineOnly maxFirstLineLength={45} />
+                      </div>
                     )}
                   </div>
 
@@ -1146,12 +1146,12 @@ export default function ProjectDetailPage() {
               style={{ backgroundColor: "var(--color-surface)" } as CSSProperties}
             >
               <div className="p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <div className="min-w-0 flex-1">
                     <h3 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
                       Select Existing Tasks
                     </h3>
-                    <p className="text-lg opacity-70 mt-1" style={{ color: "var(--color-text)" } as CSSProperties}>
+                    <p className="text-lg opacity-70 mt-1 truncate" style={{ color: "var(--color-text)" } as CSSProperties} title={`Choose tasks to assign to "${project?.name}"`}>
                       Choose tasks to assign to "{project?.name}"
                     </p>
                   </div>
@@ -1161,7 +1161,7 @@ export default function ProjectDetailPage() {
                       setSelectedTaskIds([])
                       setAvailableTasks([])
                     }}
-                    className="p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
+                    className="flex-shrink-0 p-2 rounded-2xl border-2 border-[var(--color-border)] hover:bg-[var(--color-background)] transition-all duration-200"
                     style={{ color: "var(--color-text)" } as CSSProperties}
                   >
                     ✕
@@ -1204,11 +1204,11 @@ export default function ProjectDetailPage() {
                           }`}
                           onClick={() => handleSelectTask(task.id)}
                         >
-                          <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-semibold text-lg min-w-0 flex-1">
-                              {truncateText(task.title, 30)}
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h4 className="font-semibold text-lg min-w-0 flex-1 truncate" title={task.title}>
+                              {truncateText(task.title, 25)}
                             </h4>
-                            <div className="relative ml-2">
+                            <div className="relative flex-shrink-0 ml-2">
                               <input
                                 type="checkbox"
                                 checked={isSelected}
@@ -1231,9 +1231,9 @@ export default function ProjectDetailPage() {
                           </div>
                           <div className="flex-1">
                             {task.description && (
-                              <p className="text-sm mb-3 opacity-70 hover:text-opacity-90">
-                                {truncateText(task.description, 60)}
-                              </p>
+                              <div className="text-sm mb-3 opacity-70 hover:text-opacity-90">
+                                <MarkdownRenderer content={task.description} firstLineOnly />
+                              </div>
                             )}
                           </div>
                           <div className="mt-auto">

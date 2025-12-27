@@ -4,6 +4,7 @@ import type { CSSProperties } from "react"
 import { useState, useEffect } from "react"
 import { useNotification } from "@/components/notification"
 import Modal from "@/components/modal"
+import MarkdownRenderer from "@/components/markdown-renderer"
 import type { Task, Project } from "@/lib/types"
 import { Calendar, FolderOpen, User, Star, Clock, AlertCircle, Edit, Archive, RotateCcw } from "lucide-react"
 import { formatDateTime } from "@/components/datetime-picker"
@@ -76,44 +77,54 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
   const project = projects.find((p) => p.id === task.project_id)
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Task Details" size="lg">
+    <Modal isOpen={isOpen} onClose={onClose} title="Task Details" size="2xl">
       <div className="space-y-6">
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-4">
-              <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" } as CSSProperties}>
+        <div>
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center space-x-3 min-w-0 flex-1">
+              <h2 className="text-2xl font-bold truncate" style={{ color: "var(--color-text)" } as CSSProperties} title={task.title}>
                 {task.title}
               </h2>
-              {task.is_favorite === 1 && <Star className="w-6 h-6" style={{ fill: "var(--color-accent)", color: "var(--color-accent)" } as CSSProperties} />}
+              {task.is_favorite === 1 && <Star className="w-6 h-6 flex-shrink-0" style={{ fill: "var(--color-accent)", color: "var(--color-accent)" } as CSSProperties} />}
             </div>
 
-            {task.description && (
-              <p className="text-lg mb-6 opacity-80" style={{ color: "var(--color-text)" } as CSSProperties}>
-                {task.description}
-              </p>
-            )}
+            <div className="flex items-center space-x-2 flex-shrink-0">
+              <span
+                className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+                style={{
+                  backgroundColor: statusConfig[task.status].bg,
+                  color: statusConfig[task.status].text,
+                } as CSSProperties}
+              >
+                {statusConfig[task.status].label}
+              </span>
+              <span
+                className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap"
+                style={{
+                  backgroundColor: priorityConfig[task.priority].bg,
+                  color: priorityConfig[task.priority].text,
+                } as CSSProperties}
+              >
+                {priorityConfig[task.priority].label}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2 ml-4">
-            <span
-              className="px-3 py-1 rounded-full text-sm font-medium"
-              style={{
-                backgroundColor: statusConfig[task.status].bg,
-                color: statusConfig[task.status].text,
+          {task.description && (
+            <div 
+              className="rounded-2xl overflow-hidden"
+              style={{ 
+                backgroundColor: "var(--color-background)",
+                border: "2px solid var(--color-border)",
+                maxHeight: "350px",
+                minHeight: "150px"
               } as CSSProperties}
             >
-              {statusConfig[task.status].label}
-            </span>
-            <span
-              className="px-3 py-1 rounded-full text-sm font-medium"
-              style={{
-                backgroundColor: priorityConfig[task.priority].bg,
-                color: priorityConfig[task.priority].text,
-              } as CSSProperties}
-            >
-              {priorityConfig[task.priority].label}
-            </span>
-          </div>
+              <div className="p-5 overflow-y-auto h-full" style={{ maxHeight: "346px" } as CSSProperties}>
+                <MarkdownRenderer content={task.description} className="text-base opacity-90" />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,9 +142,9 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
           )}
 
           {task.assigned_to && (
-            <div className="flex items-center space-x-3">
-              <User className="w-5 h-5 opacity-60" style={{ color: "var(--color-text)" } as CSSProperties} />
-              <span className="font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
+            <div className="flex items-start space-x-3">
+              <User className="w-5 h-5 opacity-60 flex-shrink-0 mt-0.5" style={{ color: "var(--color-text)" } as CSSProperties} />
+              <span className="font-medium line-clamp-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                 {task.assigned_to}
               </span>
             </div>

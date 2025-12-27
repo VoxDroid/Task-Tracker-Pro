@@ -303,11 +303,11 @@ export default function Dashboard() {
               }}
             >
               <div
-                className="w-2 h-2 rounded-full mt-2"
+                className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
                 style={{ backgroundColor: "var(--color-primary)" } as CSSProperties}
               ></div>
-              <div className="flex-1">
-                <p className="text-sm font-medium" style={{ color: "var(--color-text)" } as CSSProperties}>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate" style={{ color: "var(--color-text)" } as CSSProperties} title={activity.details}>
                   {activity.details}
                 </p>
                 <p className="text-xs opacity-60" style={{ color: "var(--color-text)" } as CSSProperties}>
@@ -346,15 +346,15 @@ export default function Dashboard() {
               style={{ backgroundColor: "var(--color-background)" } as CSSProperties}
               onClick={() => (window.location.href = "/tasks")}
             >
-              <h4 className="font-semibold text-sm mb-1" style={{ color: "var(--color-text)" } as CSSProperties}>
+              <h4 className="font-semibold text-sm mb-1 truncate" style={{ color: "var(--color-text)" } as CSSProperties} title={task.title}>
                 {task.title}
               </h4>
               <div
-                className="flex items-center justify-between text-xs opacity-60"
+                className="flex items-center justify-between text-xs opacity-60 gap-2"
                 style={{ color: "var(--color-text)" } as CSSProperties}
               >
-                <span>{task.project?.name || "No project"}</span>
-                <span>{task.due_date ? formatDateTimeShort(task.due_date) : "No due date"}</span>
+                <span className="truncate min-w-0 flex-1" title={task.project?.name || "No project"}>{task.project?.name || "No project"}</span>
+                <span className="flex-shrink-0 whitespace-nowrap">{task.due_date ? formatDateTimeShort(task.due_date) : "No due date"}</span>
               </div>
             </div>
           ))
