@@ -28,6 +28,7 @@ import {
   ChevronRight,
 } from "lucide-react"
 import TaskEditModal from "@/components/task-edit-modal"
+import TaskViewModal from "@/components/task-view-modal"
 import { formatDateTimeShort } from "@/components/datetime-picker"
 
 const priorityConfig = {
@@ -107,6 +108,7 @@ export default function TasksPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [showTaskModal, setShowTaskModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showViewModal, setShowViewModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showArchiveModal, setShowArchiveModal] = useState(false)
@@ -712,7 +714,11 @@ export default function TasksPage() {
             getCurrentPageTasks().map((task) => (
               <div
                 key={task.id}
-                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 ${
+                onClick={() => {
+                  setSelectedTask(task)
+                  setShowViewModal(true)
+                }}
+                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${
                   selectedTasks.includes(task.id)
                     ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-[1.02]"
                     : ""
@@ -1114,6 +1120,22 @@ export default function TasksPage() {
           onClose={() => setShowEditModal(false)}
           onSuccess={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })}
           task={selectedTask}
+        />
+        <TaskViewModal
+          isOpen={showViewModal}
+          onClose={() => setShowViewModal(false)}
+          onSuccess={() => queryClient.invalidateQueries({ queryKey: ["tasks"] })}
+          task={selectedTask}
+          onEdit={(task) => {
+            setSelectedTask(task)
+            setShowViewModal(false)
+            setShowEditModal(true)
+          }}
+          onArchive={(task) => {
+            setTaskToArchive(task)
+            setShowViewModal(false)
+            setShowArchiveModal(true)
+          }}
         />
       </div>
     </Sidebar>

@@ -14,11 +14,12 @@ interface TaskViewModalProps {
   onSuccess: () => void
   task: Task | null
   onRestore?: (taskId: number, taskTitle: string) => void
+  onEdit?: (task: Task) => void
+  onArchive?: (task: Task) => void
 }
 
-export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRestore }: TaskViewModalProps) {
+export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRestore, onEdit, onArchive }: TaskViewModalProps) {
   const [projects, setProjects] = useState<Project[]>([])
-  const [showEditModal, setShowEditModal] = useState(false)
   const { addNotification } = useNotification()
 
   useEffect(() => {
@@ -39,40 +40,15 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
   }
 
   const handleEdit = () => {
-    setShowEditModal(true)
+    if (!task || !onEdit) return
+    onEdit(task)
     onClose()
   }
 
-  const handleArchive = async () => {
-    if (!task) return
-
-    if (!confirm(`Are you sure you want to archive "${task.title}"?`)) {
-      return
-    }
-
-    try {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "archived" }),
-      })
-
-      if (response.ok) {
-        addNotification({
-          type: "success",
-          title: "Task Archived",
-          message: `"${task.title}" has been archived successfully.`,
-        })
-        onSuccess()
-        onClose()
-      }
-    } catch (error) {
-      addNotification({
-        type: "error",
-        title: "Error",
-        message: "Failed to archive task. Please try again.",
-      })
-    }
+  const handleArchive = () => {
+    if (!task || !onArchive) return
+    onArchive(task)
+    onClose()
   }
 
   const handleRestore = async () => {
@@ -224,45 +200,49 @@ export default function TaskViewModal({ isOpen, onClose, onSuccess, task, onRest
             </button>
           ) : (
             <>
-              <button
-                onClick={handleEdit}
-                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
-                style={{
-                  backgroundColor: "var(--color-primary)",
-                  color: "var(--color-primary-foreground)",
-                } as CSSProperties}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-primary)";
-                  e.currentTarget.style.opacity = "0.8";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-primary)";
-                  e.currentTarget.style.opacity = "1";
-                }}
-              >
-                <Edit className="w-4 h-4" />
-                <span>Edit</span>
-              </button>
+              {onEdit && (
+                <button
+                  onClick={handleEdit}
+                  className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+                  style={{
+                    backgroundColor: "var(--color-primary)",
+                    color: "var(--color-primary-foreground)",
+                  } as CSSProperties}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                    e.currentTarget.style.opacity = "0.8";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--color-primary)";
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  <Edit className="w-4 h-4" />
+                  <span>Edit</span>
+                </button>
+              )}
 
-              <button
-                onClick={handleArchive}
-                className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
-                style={{
-                  backgroundColor: "var(--color-secondary)",
-                  color: "var(--color-secondary-foreground)",
-                } as CSSProperties}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-secondary)";
-                  e.currentTarget.style.opacity = "0.8";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--color-secondary)";
-                  e.currentTarget.style.opacity = "1";
-                }}
-              >
-                <Archive className="w-4 h-4" />
-                <span>Archive</span>
-              </button>
+              {onArchive && (
+                <button
+                  onClick={handleArchive}
+                  className="px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center space-x-2"
+                  style={{
+                    backgroundColor: "var(--color-secondary)",
+                    color: "var(--color-secondary-foreground)",
+                  } as CSSProperties}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--color-secondary)";
+                    e.currentTarget.style.opacity = "0.8";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--color-secondary)";
+                    e.currentTarget.style.opacity = "1";
+                  }}
+                >
+                  <Archive className="w-4 h-4" />
+                  <span>Archive</span>
+                </button>
+              )}
             </>
           )}
         </div>

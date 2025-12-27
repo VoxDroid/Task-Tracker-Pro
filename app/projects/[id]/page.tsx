@@ -8,6 +8,7 @@ import Link from "next/link"
 import Sidebar from "@/components/sidebar"
 import TaskFormModal from "@/components/task-form-modal"
 import TaskEditModal from "@/components/task-edit-modal"
+import TaskViewModal from "@/components/task-view-modal"
 import { useNotification } from "@/components/notification"
 import { truncateText } from "@/lib/utils"
 import { ArrowLeft, Plus, Calendar, User, CheckCircle, Clock, AlertTriangle, Edit, Check, Copy, Archive, Trash2, FolderOpen, Filter, Heart, CheckSquare, Star, Search, ChevronLeft, ChevronRight } from "lucide-react"
@@ -23,6 +24,7 @@ export default function ProjectDetailPage() {
   const [loading, setLoading] = useState(true)
   const [showTaskModal, setShowTaskModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showViewModal, setShowViewModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<any>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [taskToDelete, setTaskToDelete] = useState<any>(null)
@@ -702,7 +704,11 @@ export default function ProjectDetailPage() {
               return (
               <div
                 key={task.id}
-                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 ${
+                onClick={() => {
+                  setSelectedTask(task)
+                  setShowViewModal(true)
+                }}
+                className={`group relative overflow-hidden rounded-3xl border-2 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer ${
                   selectedTasks.includes(task.id)
                     ? "ring-2 ring-[var(--color-primary)] ring-opacity-50 transform scale-[1.02]"
                     : ""
@@ -998,43 +1004,93 @@ export default function ProjectDetailPage() {
           }}
           task={selectedTask}
         />
+        <TaskViewModal
+          isOpen={showViewModal}
+          onClose={() => setShowViewModal(false)}
+          onSuccess={() => {
+            fetchTasks()
+            fetchProject()
+            queryClient.invalidateQueries({ queryKey: ["tasks"] })
+          }}
+          task={selectedTask}
+          onEdit={(task) => {
+            setSelectedTask(task)
+            setShowViewModal(false)
+            setShowEditModal(true)
+          }}
+          onArchive={(task) => {
+            setTaskToArchive(task)
+            setShowViewModal(false)
+            setShowArchiveModal(true)
+          }}
+        />
 
         {/* Archive Confirmation Modal */}
         {showArchiveModal && taskToArchive && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-in fade-in duration-200">
             <div
-              className="bg-[var(--color-surface)] rounded-3xl border-2 border-[var(--color-border)] p-8 max-w-md w-full shadow-2xl"
-              style={{ backgroundColor: "var(--color-surface)" } as CSSProperties}
+              className="p-8 rounded-3xl border-2 shadow-2xl max-w-md w-full mx-4 animate-in slide-in-from-bottom-4 duration-300"
+              style={{
+                backgroundColor: "var(--color-surface)",
+                borderColor: "var(--color-border)",
+              } as CSSProperties}
             >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Archive size={32} className="text-yellow-500" />
+              <div className="text-center">
+                <div 
+                  className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                  style={{ 
+                    backgroundColor: "var(--color-secondary)",
+                    opacity: 0.1
+                  } as CSSProperties}
+                >
+                  <Archive 
+                    className="w-8 h-8" 
+                    style={{ color: "var(--color-secondary)" } as CSSProperties} 
+                  />
                 </div>
-                <h3 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
+                <h3 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Archive Task
                 </h3>
-                <p className="text-lg opacity-70" style={{ color: "var(--color-text)" } as CSSProperties}>
+                <p className="opacity-70 mb-6" style={{ color: "var(--color-text)" } as CSSProperties}>
                   Are you sure you want to archive "{taskToArchive.title}"? You can restore it later from the archive.
                 </p>
-              </div>
-
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => {
-                    setShowArchiveModal(false)
-                    setTaskToArchive(null)
-                  }}
-                  className="flex-1 px-6 py-3 bg-[var(--color-background)] border-2 border-[var(--color-border)] rounded-2xl font-medium hover:bg-opacity-80 transition-all duration-200"
-                  style={{ color: "var(--color-text)" } as CSSProperties}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={archiveTask}
-                  className="flex-1 px-6 py-3 bg-yellow-500 text-white rounded-2xl font-medium hover:bg-yellow-600 transition-all duration-200"
-                >
-                  Archive
-                </button>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => {
+                      setShowArchiveModal(false)
+                      setTaskToArchive(null)
+                    }}
+                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium hover:bg-opacity-10"
+                    style={{ 
+                      color: "var(--color-text)",
+                      backgroundColor: "transparent"
+                    } as CSSProperties}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(239, 68, 68, 0.1)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent"
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={archiveTask}
+                    className="flex-1 px-4 py-3 rounded-2xl border-2 border-[var(--color-border)] transition-all duration-200 font-medium hover:bg-opacity-10"
+                    style={{ 
+                      color: "var(--color-text)",
+                      backgroundColor: "transparent"
+                    } as CSSProperties}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = "rgba(245, 158, 11, 0.1)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent"
+                    }}
+                  >
+                    Archive
+                  </button>
+                </div>
               </div>
             </div>
           </div>

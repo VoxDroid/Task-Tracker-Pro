@@ -55,6 +55,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       if (status === "completed") {
         updates.push("completed_at = ?")
         values.push(new Date().toISOString())
+      } else {
+        // Reset completed_at when status changes to non-completed
+        updates.push("completed_at = ?")
+        values.push(null)
       }
     }
     if (priority !== undefined) {
@@ -139,6 +143,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       if (status === "completed") {
         updates.push("completed_at = ?")
         values.push(new Date().toISOString())
+      } else {
+        // Reset completed_at when status changes to non-completed
+        updates.push("completed_at = ?")
+        values.push(null)
       }
     }
     if (priority !== undefined) {
