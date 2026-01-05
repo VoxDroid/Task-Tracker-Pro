@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { X, Minus, Square, Copy, Maximize } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
+import { AppLogo } from '@/components/app-logo'
 
 // Extend CSS properties to include WebKit-specific properties
 declare module 'react' {
@@ -80,10 +81,8 @@ export function TitleBar() {
       } as CSSProperties}
     >
       <div className="flex items-center">
-        <img 
-          src="/TaskTrackerPro.png" 
-          alt="Task Tracker Pro" 
-          className="h-8 w-auto"
+        <AppLogo
+          className="h-8 w-8"
           style={{ WebkitAppRegion: 'drag' }}
         />
       </div>

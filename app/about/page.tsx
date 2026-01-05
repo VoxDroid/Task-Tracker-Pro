@@ -4,6 +4,7 @@ import type React from "react"
 import type { CSSProperties } from "react"
 import { Github, User, Code, ExternalLink } from "lucide-react"
 import Sidebar from "@/components/sidebar"
+import { AppLogo } from "@/components/app-logo"
 
 export default function AboutPage() {
   return (
@@ -14,11 +15,7 @@ export default function AboutPage() {
             {/* Header */}
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <img
-                  src="/TaskTrackerPro.png"
-                  alt="Task Tracker Pro"
-                  className="h-16 w-auto"
-                />
+                <AppLogo className="h-16 w-16" />
               </div>
               <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--color-text)" } as CSSProperties}>
                 Task Tracker Pro

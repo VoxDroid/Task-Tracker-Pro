@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react"
 import { useEffect, useState } from "react"
+import { AppLogo } from "@/components/app-logo"
 
 export default function Loading() {
   const [isVisible, setIsVisible] = useState(false)
@@ -26,9 +27,8 @@ export default function Loading() {
 
   return (
     <div
-      className={`fixed inset-x-0 top-14 bottom-0 z-50 flex items-center justify-center transition-opacity duration-500 ease-in-out ${
-        isVisible ? 'opacity-100' : 'opacity-0'
-      }`}
+      className={`fixed inset-x-0 top-14 bottom-0 z-50 flex items-center justify-center transition-opacity duration-500 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'
+        }`}
       style={{
         backgroundColor: 'var(--color-background)',
         backdropFilter: 'blur(1px)'
@@ -37,10 +37,8 @@ export default function Loading() {
       <div className="flex flex-col items-center space-y-4">
         {/* Logo */}
         <div className="relative">
-          <img
-            src="/TaskTrackerPro.png"
-            alt="Task Tracker Pro"
-            className="h-16 w-auto transition-opacity duration-300"
+          <AppLogo
+            className="h-16 w-16 transition-opacity duration-300"
             style={{ opacity: isVisible ? 1 : 0.7 } as CSSProperties}
           />
           {/* Loading ring */}
