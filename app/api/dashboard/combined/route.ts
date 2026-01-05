@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { executeQuery } from "@/lib/database"
+import { NextResponse } from 'next/server'
+import { executeQuery } from '@/lib/database'
 
 export async function GET() {
   try {
@@ -116,22 +116,22 @@ export async function GET() {
         overdueTasks: taskStats.overdue_tasks || 0,
         totalProjects: projectStats.total_projects || 0,
         activeProjects: projectStats.active_projects || 0,
-        totalTimeLogged: timeStats.total_time_logged || 0,
+        totalTimeLogged: timeStats.total_time_logged || 0
       },
       charts: {
         completionTrend,
         tasksByStatus,
         tasksByPriority,
         projectProgress,
-        activityTrend,
+        activityTrend
       },
       recentActivity,
-      upcomingTasks,
+      upcomingTasks
     }
 
     return NextResponse.json(result)
   } catch (error) {
-    console.error("Error fetching dashboard data:", error)
-    return NextResponse.json({ error: "Failed to fetch dashboard data" }, { status: 500 })
+    console.error('Error fetching dashboard data:', error)
+    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 })
   }
 }

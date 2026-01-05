@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server"
-import { executeQuery } from "@/lib/database"
+import { NextResponse } from 'next/server'
+import { executeQuery } from '@/lib/database'
 
 export async function GET() {
   try {
@@ -65,10 +65,10 @@ export async function GET() {
       tasksByStatus,
       tasksByPriority,
       projectProgress,
-      activityTrend,
+      activityTrend
     })
   } catch (error) {
-    console.error("Error fetching dashboard charts:", error)
-    return NextResponse.json({ error: "Failed to fetch dashboard charts" }, { status: 500 })
+    console.error('Error fetching dashboard charts:', error)
+    return NextResponse.json({ error: 'Failed to fetch dashboard charts' }, { status: 500 })
   }
 }

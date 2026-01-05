@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { executeQuery, executeUpdate, logActivity } from "@/lib/database"
+import { type NextRequest, NextResponse } from 'next/server'
+import { executeQuery, executeUpdate, logActivity } from '@/lib/database'
 
 export async function GET() {
   try {
@@ -16,8 +16,8 @@ export async function GET() {
 
     return NextResponse.json(projects)
   } catch (error) {
-    console.error("Error fetching projects:", error)
-    return NextResponse.json({ error: "Failed to fetch projects" }, { status: 500 })
+    console.error('Error fetching projects:', error)
+    return NextResponse.json({ error: 'Failed to fetch projects' }, { status: 500 })
   }
 }
 
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const { name, description, color } = body
 
     if (!name) {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 })
+      return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
     const result = executeUpdate(
@@ -35,28 +35,35 @@ export async function POST(request: NextRequest) {
       INSERT INTO projects (name, description, color)
       VALUES (?, ?, ?)
     `,
-      [name, description, color || "#6366f1"],
+      [name, description, color || '#6366f1']
     )
 
     if (result.changes === 0) {
-      return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
     }
 
     const projectId = result.lastInsertRowid
-    
+
     // Create detailed log message
     const details = [
       `Name: "${name}"`,
       description && `Description: "${description}"`,
-      color && color !== "#6366f1" && `Color: ${color}`
-    ].filter(Boolean).join(", ")
-    
-    logActivity("created", "project", projectId, `Created project "${name}" with details: ${details}`)
+      color && color !== '#6366f1' && `Color: ${color}`
+    ]
+      .filter(Boolean)
+      .join(', ')
 
-    const project = executeQuery("SELECT * FROM projects WHERE id = ?", [projectId])[0]
+    logActivity(
+      'created',
+      'project',
+      projectId,
+      `Created project "${name}" with details: ${details}`
+    )
+
+    const project = executeQuery('SELECT * FROM projects WHERE id = ?', [projectId])[0]
     return NextResponse.json(project)
   } catch (error) {
-    console.error("Error creating project:", error)
-    return NextResponse.json({ error: "Failed to create project" }, { status: 500 })
+    console.error('Error creating project:', error)
+    return NextResponse.json({ error: 'Failed to create project' }, { status: 500 })
   }
 }

@@ -1,5 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getDatabase, logActivity } from "@/lib/database"
+import { type NextRequest, NextResponse } from 'next/server'
+import { getDatabase, logActivity } from '@/lib/database'
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const db = getDatabase()
 
     // Start transaction
-    db.exec("BEGIN TRANSACTION")
+    db.exec('BEGIN TRANSACTION')
 
     try {
       // Clear existing data
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
             project.color,
             project.status,
             project.created_at,
-            project.updated_at,
+            project.updated_at
           )
         }
       }
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
             task.due_date,
             task.completed_at,
             task.created_at,
-            task.updated_at,
+            task.updated_at
           )
         }
       }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
             entry.end_time,
             entry.duration,
             entry.description,
-            entry.created_at,
+            entry.created_at
           )
         }
       }
@@ -110,23 +110,30 @@ export async function POST(request: NextRequest) {
           VALUES (?, ?, ?, ?, ?, ?)
         `)
         for (const log of data.activity_logs) {
-          logStmt.run(log.id, log.action, log.entity_type, log.entity_id, log.details, log.created_at)
+          logStmt.run(
+            log.id,
+            log.action,
+            log.entity_type,
+            log.entity_id,
+            log.details,
+            log.created_at
+          )
         }
       }
 
       // Commit transaction
-      db.exec("COMMIT")
+      db.exec('COMMIT')
 
-      logActivity("imported", "database", 0, "Database imported successfully")
+      logActivity('imported', 'database', 0, 'Database imported successfully')
 
       return NextResponse.json({ success: true })
     } catch (error) {
       // Rollback on error
-      db.exec("ROLLBACK")
+      db.exec('ROLLBACK')
       throw error
     }
   } catch (error) {
-    console.error("Error importing data:", error)
-    return NextResponse.json({ error: "Failed to import data" }, { status: 500 })
+    console.error('Error importing data:', error)
+    return NextResponse.json({ error: 'Failed to import data' }, { status: 500 })
   }
 }

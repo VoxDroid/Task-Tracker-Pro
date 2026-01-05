@@ -1,15 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { executeQuery, executeUpdate, logActivity } from "@/lib/database"
+import { type NextRequest, NextResponse } from 'next/server'
+import { executeQuery, executeUpdate, logActivity } from '@/lib/database'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const status = searchParams.get("status")
-    const projectId = searchParams.get("project_id")
-    const archived = searchParams.get("archived") === "true"
-    const favorites = searchParams.get("favorites") === "true"
-    const limit = searchParams.get("limit")
-    const offset = searchParams.get("offset")
+    const status = searchParams.get('status')
+    const projectId = searchParams.get('project_id')
+    const archived = searchParams.get('archived') === 'true'
+    const favorites = searchParams.get('favorites') === 'true'
+    const limit = searchParams.get('limit')
+    const offset = searchParams.get('offset')
 
     let query = `
       SELECT t.*, p.name as project_name, p.color as project_color
@@ -20,45 +20,45 @@ export async function GET(request: NextRequest) {
     const params: any[] = []
 
     if (archived) {
-      query += " AND t.status = ?"
-      params.push("archived")
+      query += ' AND t.status = ?'
+      params.push('archived')
     } else {
-      query += " AND t.status != ?"
-      params.push("archived")
+      query += ' AND t.status != ?'
+      params.push('archived')
     }
 
     if (status) {
-      query += " AND t.status = ?"
+      query += ' AND t.status = ?'
       params.push(status)
     }
 
     if (projectId) {
-      query += " AND t.project_id = ?"
+      query += ' AND t.project_id = ?'
       params.push(Number.parseInt(projectId))
     }
 
     if (favorites) {
-      query += " AND t.is_favorite = 1"
+      query += ' AND t.is_favorite = 1'
     }
 
-    query += " ORDER BY t.created_at DESC"
+    query += ' ORDER BY t.created_at DESC'
 
     // Add pagination
     if (limit) {
-      query += " LIMIT ?"
+      query += ' LIMIT ?'
       params.push(Number.parseInt(limit))
     }
 
     if (offset) {
-      query += " OFFSET ?"
+      query += ' OFFSET ?'
       params.push(Number.parseInt(offset))
     }
 
     const tasks = executeQuery(query, params)
     return NextResponse.json(tasks)
   } catch (error) {
-    console.error("Error fetching tasks:", error)
-    return NextResponse.json({ error: "Failed to fetch tasks" }, { status: 500 })
+    console.error('Error fetching tasks:', error)
+    return NextResponse.json({ error: 'Failed to fetch tasks' }, { status: 500 })
   }
 }
 
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     const { title, description, project_id, priority, assigned_to, due_date } = body
 
     if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 })
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 })
     }
 
     const result = executeUpdate(
@@ -76,26 +76,28 @@ export async function POST(request: NextRequest) {
       INSERT INTO tasks (title, description, project_id, priority, assigned_to, due_date)
       VALUES (?, ?, ?, ?, ?, ?)
     `,
-      [title, description, project_id, priority || "medium", assigned_to, due_date],
+      [title, description, project_id, priority || 'medium', assigned_to, due_date]
     )
 
     if (result.changes === 0) {
-      return NextResponse.json({ error: "Failed to create task" }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
     }
 
     const taskId = result.lastInsertRowid
-    
+
     // Create detailed log message
     const details = [
       `Title: "${title}"`,
       description && `Description: "${description}"`,
       project_id && `Project ID: ${project_id}`,
-      priority && priority !== "medium" && `Priority: ${priority}`,
+      priority && priority !== 'medium' && `Priority: ${priority}`,
       assigned_to && `Assigned to: ${assigned_to}`,
       due_date && `Due date: ${due_date}`
-    ].filter(Boolean).join(", ")
-    
-    logActivity("created", "task", taskId, `Created task "${title}" with details: ${details}`)
+    ]
+      .filter(Boolean)
+      .join(', ')
+
+    logActivity('created', 'task', taskId, `Created task "${title}" with details: ${details}`)
 
     const task = executeQuery(
       `
@@ -104,12 +106,12 @@ export async function POST(request: NextRequest) {
       LEFT JOIN projects p ON t.project_id = p.id
       WHERE t.id = ?
     `,
-      [taskId],
+      [taskId]
     )[0]
 
     return NextResponse.json(task)
   } catch (error) {
-    console.error("Error creating task:", error)
-    return NextResponse.json({ error: "Failed to create task" }, { status: 500 })
+    console.error('Error creating task:', error)
+    return NextResponse.json({ error: 'Failed to create task' }, { status: 500 })
   }
 }
