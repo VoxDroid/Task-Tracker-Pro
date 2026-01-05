@@ -12,7 +12,8 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev -p 3456",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "start": "next start -p 3456",
     "electron": "electron .",
     "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:3456 && cross-env NODE_ENV=development electron .\"",
@@ -170,6 +171,8 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.2",
+    "@eslint/eslintrc": "^3.3.3",
+    "@eslint/js": "^9.39.2",
     "@next/bundle-analyzer": "^16.1.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/hast": "^3.0.4",
@@ -183,9 +186,17 @@
     "electron": "^39.2.7",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-next": "^0.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "postcss": "^8.5",
+    "prettier": "^3.7.4",
     "tailwindcss": "^3.4.17",
     "typescript": "^5",
     "wait-on": "^9.0.3"
-  }
+  },
+
 }

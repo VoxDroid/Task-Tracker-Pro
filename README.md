@@ -32,16 +32,16 @@ Built as a cross-platform desktop application, it runs on Windows, macOS, and Li
 
 ### What You Can Do
 
-| Feature | Description |
-|---------|-------------|
-| **Task Management** | Create and organize your tasks with priorities, due dates, and notes |
-| **Project Organization** | Group related tasks into projects with custom colors |
-| **Time Tracking** | Track how long you spend on tasks with a simple timer |
-| **Dashboard** | See your productivity at a glance with charts and stats |
-| **Archive** | Keep completed tasks archived for reference |
-| **Activity Logs** | See what you've been working on recently |
-| **Search** | Quickly find any task or project |
-| **Backup & Restore** | Export and import your data anytime |
+| Feature                  | Description                                                          |
+| ------------------------ | -------------------------------------------------------------------- |
+| **Task Management**      | Create and organize your tasks with priorities, due dates, and notes |
+| **Project Organization** | Group related tasks into projects with custom colors                 |
+| **Time Tracking**        | Track how long you spend on tasks with a simple timer                |
+| **Dashboard**            | See your productivity at a glance with charts and stats              |
+| **Archive**              | Keep completed tasks archived for reference                          |
+| **Activity Logs**        | See what you've been working on recently                             |
+| **Search**               | Quickly find any task or project                                     |
+| **Backup & Restore**     | Export and import your data anytime                                  |
 
 ### Task Features
 
@@ -83,6 +83,7 @@ Built as a cross-platform desktop application, it runs on Windows, macOS, and Li
 ## Screenshots
 
 ### Dashboard
+
 The main dashboard gives you a quick overview of your tasks, projects, and time tracked.
 
 <p align="center">
@@ -90,6 +91,7 @@ The main dashboard gives you a quick overview of your tasks, projects, and time 
 </p>
 
 ### Tasks
+
 Manage all your tasks in one place with filtering, sorting, and batch actions.
 
 <p align="center">
@@ -97,6 +99,7 @@ Manage all your tasks in one place with filtering, sorting, and batch actions.
 </p>
 
 ### Projects
+
 Organize tasks into color-coded projects.
 
 <p align="center">
@@ -104,6 +107,7 @@ Organize tasks into color-coded projects.
 </p>
 
 ### Time Tracking
+
 Track time spent on tasks with a simple start/stop timer.
 
 <p align="center">
@@ -111,6 +115,7 @@ Track time spent on tasks with a simple start/stop timer.
 </p>
 
 ### Archive
+
 Keep completed tasks archived for future reference.
 
 <p align="center">
@@ -118,6 +123,7 @@ Keep completed tasks archived for future reference.
 </p>
 
 ### Activity Logs
+
 See a history of all your actions and changes.
 
 <p align="center">
@@ -125,6 +131,7 @@ See a history of all your actions and changes.
 </p>
 
 ### Settings & Themes
+
 Customize the app with different themes or create your own color scheme.
 
 <p align="center">
@@ -137,12 +144,12 @@ Customize the app with different themes or create your own color scheme.
 
 Task Tracker Pro is lightweight and should run on most modern computers.
 
-| Component | Requirement |
-|-----------|-------------|
+| Component            | Requirement                         |
+| -------------------- | ----------------------------------- |
 | **Operating System** | Windows 10+, macOS 10.15+, or Linux |
-| **RAM** | 4 GB minimum |
-| **Storage** | ~200 MB |
-| **Display** | 1280x720 or higher |
+| **RAM**              | 4 GB minimum                        |
+| **Storage**          | ~200 MB                             |
+| **Display**          | 1280x720 or higher                  |
 
 ---
 
@@ -152,11 +159,11 @@ Task Tracker Pro is lightweight and should run on most modern computers.
 
 Download the latest release for your operating system from the [Releases](https://github.com/VoxDroid/Task-Tracker-Pro/releases) page.
 
-| Platform | File Format |
-|----------|-------------|
-| Windows | `.exe` (NSIS installer) |
-| macOS | `.dmg` |
-| Linux | `.AppImage`, `.deb` |
+| Platform | File Format             |
+| -------- | ----------------------- |
+| Windows  | `.exe` (NSIS installer) |
+| macOS    | `.dmg`                  |
+| Linux    | `.AppImage`, `.deb`     |
 
 ### Building from Source
 
@@ -170,11 +177,11 @@ Before building from source, ensure you have the following installed:
 
 **Platform-specific requirements:**
 
-| Platform | Additional Requirements |
-|----------|------------------------|
-| Windows | Visual Studio Build Tools with C++ workload |
-| macOS | Xcode Command Line Tools (`xcode-select --install`) |
-| Linux | `build-essential`, `python3` |
+| Platform | Additional Requirements                             |
+| -------- | --------------------------------------------------- |
+| Windows  | Visual Studio Build Tools with C++ workload         |
+| macOS    | Xcode Command Line Tools (`xcode-select --install`) |
+| Linux    | `build-essential`, `python3`                        |
 
 #### Installation Steps
 
@@ -304,16 +311,19 @@ docker-compose exec task-tracker-pro sh
 Your data is stored locally, so it's a good idea to back it up occasionally.
 
 **To export:**
+
 1. Go to **Settings**
 2. Click **Export Data**
 3. Save the JSON file somewhere safe
 
 **To import:**
+
 1. Go to **Settings**
 2. Click **Import Data**
 3. Select your backup file
 
 **To start fresh:**
+
 1. Go to **Settings**
 2. Click **Reset Database** (this deletes everything, so be sure!)
 
@@ -403,42 +413,42 @@ Task-Tracker-Pro/
 
 ### Frontend
 
-| Technology | Purpose |
-|------------|---------|
-| [Next.js 16](https://nextjs.org/) | React framework with App Router |
-| [React 19](https://react.dev/) | UI library |
-| [TypeScript](https://www.typescriptlang.org/) | Type safety |
-| [Tailwind CSS](https://tailwindcss.com/) | Utility-first styling |
-| [shadcn/ui](https://ui.shadcn.com/) | UI component library |
-| [Radix UI](https://www.radix-ui.com/) | Accessible primitives |
-| [Recharts](https://recharts.org/) | Data visualization |
-| [TanStack Query](https://tanstack.com/query/) | Data fetching & caching |
-| [React Hook Form](https://react-hook-form.com/) | Form management |
-| [Zod](https://zod.dev/) | Schema validation |
-| [Lucide React](https://lucide.dev/) | Icons |
+| Technology                                      | Purpose                         |
+| ----------------------------------------------- | ------------------------------- |
+| [Next.js 16](https://nextjs.org/)               | React framework with App Router |
+| [React 19](https://react.dev/)                  | UI library                      |
+| [TypeScript](https://www.typescriptlang.org/)   | Type safety                     |
+| [Tailwind CSS](https://tailwindcss.com/)        | Utility-first styling           |
+| [shadcn/ui](https://ui.shadcn.com/)             | UI component library            |
+| [Radix UI](https://www.radix-ui.com/)           | Accessible primitives           |
+| [Recharts](https://recharts.org/)               | Data visualization              |
+| [TanStack Query](https://tanstack.com/query/)   | Data fetching & caching         |
+| [React Hook Form](https://react-hook-form.com/) | Form management                 |
+| [Zod](https://zod.dev/)                         | Schema validation               |
+| [Lucide React](https://lucide.dev/)             | Icons                           |
 
 ### Backend
 
-| Technology | Purpose |
-|------------|---------|
+| Technology                                                            | Purpose            |
+| --------------------------------------------------------------------- | ------------------ |
 | [Next.js API Routes](https://nextjs.org/docs/api-routes/introduction) | REST API endpoints |
-| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) | SQLite database |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)          | SQLite database    |
 
 ### Desktop
 
-| Technology | Purpose |
-|------------|---------|
-| [Electron](https://www.electronjs.org/) | Cross-platform desktop framework |
-| [electron-builder](https://www.electron.build/) | Application packaging |
+| Technology                                      | Purpose                          |
+| ----------------------------------------------- | -------------------------------- |
+| [Electron](https://www.electronjs.org/)         | Cross-platform desktop framework |
+| [electron-builder](https://www.electron.build/) | Application packaging            |
 
 ### Development Tools
 
-| Tool | Purpose |
-|------|---------|
-| [pnpm](https://pnpm.io/) | Package manager |
-| [ESLint](https://eslint.org/) | Code linting |
-| [Concurrently](https://github.com/open-cli-tools/concurrently) | Parallel script execution |
-| [cross-env](https://github.com/kentcdodds/cross-env) | Cross-platform environment variables |
+| Tool                                                           | Purpose                              |
+| -------------------------------------------------------------- | ------------------------------------ |
+| [pnpm](https://pnpm.io/)                                       | Package manager                      |
+| [ESLint](https://eslint.org/)                                  | Code linting                         |
+| [Concurrently](https://github.com/open-cli-tools/concurrently) | Parallel script execution            |
+| [cross-env](https://github.com/kentcdodds/cross-env)           | Cross-platform environment variables |
 
 ---
 
@@ -451,20 +461,20 @@ Task-Tracker-Pro/
 
 The app uses a REST API internally. If you're developing or extending the app, here are the endpoints:
 
-| Endpoint | Methods | Description |
-|----------|---------|-------------|
-| `/api/tasks` | GET, POST | List all tasks or create new |
-| `/api/tasks/:id` | GET, PATCH, DELETE | Get, update, or delete a task |
-| `/api/projects` | GET, POST | List all projects or create new |
-| `/api/projects/:id` | GET, PATCH, DELETE | Get, update, or delete a project |
-| `/api/time-entries` | GET, POST | List time entries or create new |
-| `/api/time-entries/:id` | GET, PATCH, DELETE | Get, update, or delete entry |
-| `/api/dashboard/combined` | GET | Get all dashboard data |
-| `/api/database/export` | GET | Export data as JSON |
-| `/api/database/import` | POST | Import data from JSON |
-| `/api/database/reset` | POST | Reset database |
-| `/api/search?q=query` | GET | Search everything |
-| `/api/logs` | GET | Get activity logs |
+| Endpoint                  | Methods            | Description                      |
+| ------------------------- | ------------------ | -------------------------------- |
+| `/api/tasks`              | GET, POST          | List all tasks or create new     |
+| `/api/tasks/:id`          | GET, PATCH, DELETE | Get, update, or delete a task    |
+| `/api/projects`           | GET, POST          | List all projects or create new  |
+| `/api/projects/:id`       | GET, PATCH, DELETE | Get, update, or delete a project |
+| `/api/time-entries`       | GET, POST          | List time entries or create new  |
+| `/api/time-entries/:id`   | GET, PATCH, DELETE | Get, update, or delete entry     |
+| `/api/dashboard/combined` | GET                | Get all dashboard data           |
+| `/api/database/export`    | GET                | Export data as JSON              |
+| `/api/database/import`    | POST               | Import data from JSON            |
+| `/api/database/reset`     | POST               | Reset database                   |
+| `/api/search?q=query`     | GET                | Search everything                |
+| `/api/logs`               | GET                | Get activity logs                |
 
 ### Database
 
@@ -478,15 +488,15 @@ The app uses SQLite with the following main tables:
 
 ### Scripts
 
-| Script | What it does |
-|--------|--------------|
-| `pnpm dev` | Start dev server (web only) |
-| `pnpm electron-dev` | Start dev with Electron |
-| `pnpm build-electron` | Build for your current OS |
-| `pnpm build-electron-win` | Build for Windows |
-| `pnpm build-electron-mac` | Build for macOS |
-| `pnpm build-electron-linux` | Build for Linux |
-| `pnpm lint` | Check code quality |
+| Script                      | What it does                |
+| --------------------------- | --------------------------- |
+| `pnpm dev`                  | Start dev server (web only) |
+| `pnpm electron-dev`         | Start dev with Electron     |
+| `pnpm build-electron`       | Build for your current OS   |
+| `pnpm build-electron-win`   | Build for Windows           |
+| `pnpm build-electron-mac`   | Build for macOS             |
+| `pnpm build-electron-linux` | Build for Linux             |
+| `pnpm lint`                 | Check code quality          |
 
 </details>
 

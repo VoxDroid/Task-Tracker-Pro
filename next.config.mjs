@@ -2,9 +2,9 @@
 const nextConfig = {
   output: 'standalone',
   images: {
-    unoptimized: true,
+    unoptimized: true
   },
-  devIndicators: false,
+  devIndicators: false
 }
 
 export default nextConfig

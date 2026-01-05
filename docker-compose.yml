@@ -4,7 +4,7 @@ services:
   task-tracker-pro:
     build: .
     ports:
-      - "3456:3456"
+      - '3456:3456'
     volumes:
       # Mount the data directory to persist SQLite database
       - ./data:/app/data
@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     ports:
-      - "3456:3456"
+      - '3456:3456'
     volumes:
       # Mount source code for hot reloading
       - .:/app
