@@ -1,13 +1,13 @@
 name: 🐛 Bug Report
 description: Report a bug or unexpected behavior in Task-Tracker-Pro
-labels: ["bug", "triage"]
-assignees: ["VoxDroid"]
+labels: ['bug', 'triage']
+assignees: ['VoxDroid']
 body:
   - type: markdown
     attributes:
       value: |
         ## Thank you for taking the time to report a bug!
-        
+
         Please fill out this form as completely as possible to help us diagnose and fix the issue quickly.
         Before submitting, please search existing issues to avoid duplicates.
 

@@ -1,17 +1,17 @@
 name: ❓ Support Question
 description: Ask a question or seek help with using Task-Tracker-Pro
-labels: ["question", "support"]
+labels: ['question', 'support']
 body:
   - type: markdown
     attributes:
       value: |
         ## Need help with Task-Tracker-Pro?
-        
+
         We're here to help! Before submitting, please:
         - Check the **README** and any available documentation
         - Search existing [issues](https://github.com/VoxDroid/Task-Tracker-Pro/issues) for similar questions
         - Consider using [Discussions](https://github.com/VoxDroid/Task-Tracker-Pro/discussions) for general questions
-        
+
         ---
 
   - type: checkboxes

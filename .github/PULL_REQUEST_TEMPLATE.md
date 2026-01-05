@@ -4,8 +4,6 @@
 
 <!-- Provide a clear and concise description of your changes. What problem does this solve, or what feature does it add? -->
 
-
-
 ## Related Issue
 
 <!-- Link to the issue this PR addresses. Use keywords like "Fixes", "Closes", or "Resolves" for automatic issue closing. -->
@@ -66,15 +64,15 @@ Fixes #
 
 <!-- List the specific scenarios you tested -->
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ### Node.js Version
 
 <!-- What version of Node.js did you use for testing? -->
 
-- Node.js version: 
+- Node.js version:
 
 ## Screenshots / Recordings
 
@@ -133,13 +131,9 @@ N/A
 
 <!-- Add any other context about the PR here. Include any challenges faced, trade-offs made, or future work needed. -->
 
-
-
 ## Reviewer Notes
 
 <!-- Is there anything specific you'd like reviewers to focus on? Any areas of uncertainty? -->
-
-
 
 ---
 

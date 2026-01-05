@@ -1,12 +1,12 @@
 name: 📚 Documentation Issue
 description: Report errors, gaps, or suggest improvements to Task-Tracker-Pro documentation
-labels: ["documentation", "triage"]
+labels: ['documentation', 'triage']
 body:
   - type: markdown
     attributes:
       value: |
         ## Help us improve our documentation!
-        
+
         Good documentation is essential for a great user experience. Thank you for helping us make Task-Tracker-Pro easier to understand and use.
 
   - type: checkboxes

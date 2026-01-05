@@ -1,19 +1,19 @@
 name: 🔒 Security Vulnerability Report
 description: Report a security vulnerability in Task-Tracker-Pro (for non-sensitive issues only)
-labels: ["security", "triage"]
+labels: ['security', 'triage']
 body:
   - type: markdown
     attributes:
       value: |
         ## ⚠️ Important Security Notice
-        
+
         **For sensitive security vulnerabilities**, please do NOT use this public form. Instead, report them privately by emailing **izeno.contact@gmail.com** to ensure responsible disclosure.
-        
+
         Use this form only for:
         - Security improvements or hardening suggestions
         - Non-critical security concerns
         - Security-related questions
-        
+
         ---
 
   - type: checkboxes

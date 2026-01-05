@@ -1,12 +1,12 @@
 name: 💡 Feature Request
 description: Suggest a new feature or enhancement for Task-Tracker-Pro
-labels: ["enhancement", "triage"]
+labels: ['enhancement', 'triage']
 body:
   - type: markdown
     attributes:
       value: |
         ## Thank you for your feature suggestion!
-        
+
         We appreciate your ideas for improving Task-Tracker-Pro. Please provide as much detail as possible to help us understand and evaluate your request.
 
   - type: checkboxes
