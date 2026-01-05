@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import type { CSSProperties } from "react"
-import { useEffect, useState } from "react"
+import type { CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 
 function DelayedLoading() {
   const [showLoading, setShowLoading] = useState(false)
@@ -23,13 +23,22 @@ function DelayedLoading() {
 
         {/* Loading text with dots */}
         <div className="flex items-center space-x-2">
-          <span className="text-lg font-medium" style={{ color: 'var(--color-text)' } as CSSProperties}>
+          <span
+            className="text-lg font-medium"
+            style={{ color: 'var(--color-text)' } as CSSProperties}
+          >
             Loading
           </span>
           <div className="flex space-x-1">
             <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce"></div>
-            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce" style={{ animationDelay: '0.1s' } as CSSProperties}></div>
-            <div className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce" style={{ animationDelay: '0.2s' } as CSSProperties}></div>
+            <div
+              className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce"
+              style={{ animationDelay: '0.1s' } as CSSProperties}
+            ></div>
+            <div
+              className="w-2 h-2 bg-[var(--color-primary)] rounded-full animate-bounce"
+              style={{ animationDelay: '0.2s' } as CSSProperties}
+            ></div>
           </div>
         </div>
       </div>

@@ -1,11 +1,6 @@
+import type { CSSProperties, SVGProps } from 'react'
 
-import type { CSSProperties, SVGProps } from "react"
-
-export function AppLogo({
-  className,
-  style,
-  ...props
-}: SVGProps<SVGSVGElement>) {
+export function AppLogo({ className, style, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
