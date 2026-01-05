@@ -28,5 +28,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Listen for app updates (future implementation)
   onUpdateAvailable: (callback) => ipcRenderer.on('update-available', callback),
-  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', callback),
+  onUpdateDownloaded: (callback) => ipcRenderer.on('update-downloaded', callback)
 })

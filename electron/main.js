@@ -28,22 +28,25 @@ if (!gotTheLock) {
     // Someone tried to run a second instance
     if (mainWindow) {
       // Show dialog to the user in the existing instance
-      dialog.showMessageBox(mainWindow, {
-        type: 'info',
-        title: 'Task Tracker Pro Already Running',
-        message: 'Another instance of Task Tracker Pro tried to start.',
-        detail: 'This instance is already running. The new instance has been prevented from starting.\n\nYour existing window will now be focused.',
-        buttons: ['OK'],
-        defaultId: 0,
-        noLink: true
-      }).then(() => {
-        // Restore and focus the existing window
-        if (mainWindow.isMinimized()) {
-          mainWindow.restore()
-        }
-        mainWindow.show()
-        mainWindow.focus()
-      })
+      dialog
+        .showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Task Tracker Pro Already Running',
+          message: 'Another instance of Task Tracker Pro tried to start.',
+          detail:
+            'This instance is already running. The new instance has been prevented from starting.\n\nYour existing window will now be focused.',
+          buttons: ['OK'],
+          defaultId: 0,
+          noLink: true
+        })
+        .then(() => {
+          // Restore and focus the existing window
+          if (mainWindow.isMinimized()) {
+            mainWindow.restore()
+          }
+          mainWindow.show()
+          mainWindow.focus()
+        })
     }
   })
 }
@@ -55,7 +58,7 @@ if (!gotTheLock) {
 function killProcessOnPort(port) {
   return new Promise((resolve) => {
     const isWindows = process.platform === 'win32'
-    
+
     try {
       if (isWindows) {
         // Windows: Find and kill process using netstat and taskkill
@@ -63,16 +66,16 @@ function killProcessOnPort(port) {
           if (stdout) {
             const lines = stdout.trim().split('\n')
             const pids = new Set()
-            
-            lines.forEach(line => {
+
+            lines.forEach((line) => {
               const parts = line.trim().split(/\s+/)
               const pid = parts[parts.length - 1]
               if (pid && !isNaN(parseInt(pid))) {
                 pids.add(pid)
               }
             })
-            
-            pids.forEach(pid => {
+
+            pids.forEach((pid) => {
               try {
                 execSync(`taskkill /F /PID ${pid}`, { stdio: 'ignore' })
                 console.log(`Killed process with PID ${pid} on port ${port}`)
@@ -87,8 +90,11 @@ function killProcessOnPort(port) {
         // macOS/Linux: Use lsof to find and kill process
         exec(`lsof -ti :${port}`, (error, stdout) => {
           if (stdout) {
-            const pids = stdout.trim().split('\n').filter(pid => pid)
-            pids.forEach(pid => {
+            const pids = stdout
+              .trim()
+              .split('\n')
+              .filter((pid) => pid)
+            pids.forEach((pid) => {
               try {
                 // First try SIGTERM, then SIGKILL
                 execSync(`kill -9 ${pid}`, { stdio: 'ignore' })
@@ -160,16 +166,16 @@ function killAllChildProcesses() {
  */
 async function performCleanup() {
   console.log('Performing cleanup...')
-  
+
   // Kill the Next.js server process tree
   await killAllChildProcesses()
-  
+
   // Force kill any remaining process on the port
   await killProcessOnPort(PORT)
-  
+
   // Small delay to ensure port is fully released
-  await new Promise(resolve => setTimeout(resolve, 100))
-  
+  await new Promise((resolve) => setTimeout(resolve, 100))
+
   console.log('Cleanup completed')
 }
 
@@ -184,12 +190,14 @@ function waitForPortAvailable(port, maxAttempts = 10) {
     function checkPort() {
       attempts++
       const server = net.createServer()
-      
+
       server.once('error', async (err) => {
         if (err.code === 'EADDRINUSE') {
-          console.log(`Port ${port} is busy, attempting to free it (attempt ${attempts}/${maxAttempts})...`)
+          console.log(
+            `Port ${port} is busy, attempting to free it (attempt ${attempts}/${maxAttempts})...`
+          )
           await killProcessOnPort(port)
-          
+
           if (attempts < maxAttempts) {
             setTimeout(checkPort, 500)
           } else {
@@ -220,16 +228,16 @@ function createWindow() {
     console.log('Starting Next.js server in production mode...')
     // In packaged app, use resourcesPath
     const resourcesPath = process.resourcesPath
-    
+
     // Path to the standalone server.js (in extraResources as 'standalone')
     const standaloneDir = path.join(resourcesPath, 'standalone')
     const serverPath = path.join(standaloneDir, 'server.js')
-    
+
     // Handle renamed node_modules (_modules -> node_modules)
     // electron-builder excludes node_modules by default, so we rename it during build
     const modulesPath = path.join(standaloneDir, '_modules')
     const nodeModulesPath = path.join(standaloneDir, 'node_modules')
-    
+
     if (fs.existsSync(modulesPath) && !fs.existsSync(nodeModulesPath)) {
       console.log('Renaming _modules to node_modules...')
       try {
@@ -239,7 +247,7 @@ function createWindow() {
         console.error('Failed to rename _modules:', e)
       }
     }
-    
+
     console.log('Resources path:', resourcesPath)
     console.log('Standalone dir:', standaloneDir)
     console.log('Server path:', serverPath)
@@ -278,24 +286,24 @@ function createWindow() {
 function startNextServer(standaloneDir, serverPath) {
   try {
     const isWindows = process.platform === 'win32'
-    
+
     // Use Electron's bundled Node.js executable instead of system 'node'
     // process.execPath points to the Electron executable which includes Node.js
     // Use the ELECTRON_RUN_AS_NODE=1 env var to make Electron behave like Node.js
     const nodeExecutable = process.execPath
-    
+
     console.log('Using Node executable:', nodeExecutable)
-    
+
     // Spawn the Next.js standalone server using Electron's Node.js
     nextServer = spawn(nodeExecutable, [serverPath], {
       cwd: standaloneDir,
       stdio: ['ignore', 'pipe', 'pipe'],
-      env: { 
-        ...process.env, 
+      env: {
+        ...process.env,
         PORT: String(PORT),
         NODE_ENV: 'production',
         HOSTNAME: 'localhost',
-        ELECTRON_RUN_AS_NODE: '1'  // Make Electron run as Node.js
+        ELECTRON_RUN_AS_NODE: '1' // Make Electron run as Node.js
       },
       shell: isWindows,
       windowsHide: true,
@@ -309,7 +317,13 @@ function startNextServer(standaloneDir, serverPath) {
       const output = data.toString()
       console.log('Next.js stdout:', output)
       // When server is ready, create the window
-      if (!serverStarted && (output.includes('Ready') || output.includes('started') || output.includes('listening') || output.includes(String(PORT)))) {
+      if (
+        !serverStarted &&
+        (output.includes('Ready') ||
+          output.includes('started') ||
+          output.includes('listening') ||
+          output.includes(String(PORT)))
+      ) {
         console.log('Next.js server is ready!')
         serverStarted = true
         setTimeout(() => createBrowserWindow(), 500)
@@ -371,7 +385,7 @@ function createBrowserWindow() {
       : path.join(process.resourcesPath, 'standalone', 'public', 'TaskTrackerPro.png'),
     show: false, // Don't show until ready-to-show
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    autoHideMenuBar: true, // Hide the menu bar
+    autoHideMenuBar: true // Hide the menu bar
   })
 
   console.log(`Loading URL: http://localhost:${PORT}`)
@@ -531,10 +545,7 @@ app.whenReady().then(() => {
       },
       {
         label: 'Window',
-        submenu: [
-          { role: 'minimize' },
-          { role: 'close' }
-        ]
+        submenu: [{ role: 'minimize' }, { role: 'close' }]
       }
     ]
 
@@ -587,10 +598,10 @@ app.on('before-quit', async (event) => {
   if (!isQuitting) {
     isQuitting = true
     event.preventDefault()
-    
+
     console.log('App is quitting, performing cleanup...')
     await performCleanup()
-    
+
     // Now actually quit
     app.quit()
   }
@@ -724,7 +735,9 @@ process.on('exit', () => {
   if (nextServer && nextServer.pid) {
     try {
       if (process.platform === 'win32') {
-        require('child_process').execSync(`taskkill /F /T /PID ${nextServer.pid}`, { stdio: 'ignore' })
+        require('child_process').execSync(`taskkill /F /T /PID ${nextServer.pid}`, {
+          stdio: 'ignore'
+        })
       } else {
         try {
           process.kill(-nextServer.pid, 'SIGKILL')

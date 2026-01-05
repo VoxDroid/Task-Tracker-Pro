@@ -3,7 +3,7 @@ export interface Project {
   name: string
   description?: string
   color: string
-  status: "active" | "completed" | "archived"
+  status: 'active' | 'completed' | 'archived'
   created_at: string
   updated_at: string
 }
@@ -13,8 +13,8 @@ export interface Task {
   title: string
   description?: string
   project_id?: number
-  status: "todo" | "in_progress" | "completed" | "archived"
-  priority: "low" | "medium" | "high" | "urgent"
+  status: 'todo' | 'in_progress' | 'completed' | 'archived'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
   assigned_to?: string
   due_date?: string
   completed_at?: string

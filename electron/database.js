@@ -1,51 +1,51 @@
-import Database from "better-sqlite3"
-import path from "path"
-import fs from "fs"
+import Database from 'better-sqlite3'
+import path from 'path'
+import fs from 'fs'
 import { app } from 'electron'
 
-let db: Database.Database | null = null
+let db = null
 let dbInitialized = false
 
-function createFreshDatabase(dbPath: string): Database.Database {
+function createFreshDatabase(dbPath) {
   try {
     if (fs.existsSync(dbPath)) {
       fs.unlinkSync(dbPath)
     }
-    const walPath = dbPath + "-wal"
-    const shmPath = dbPath + "-shm"
+    const walPath = dbPath + '-wal'
+    const shmPath = dbPath + '-shm'
     if (fs.existsSync(walPath)) fs.unlinkSync(walPath)
     if (fs.existsSync(shmPath)) fs.unlinkSync(shmPath)
   } catch (error) {
-    console.warn("Could not clean old database files:", error)
+    console.warn('Could not clean old database files:', error)
   }
 
   const newDb = new Database(dbPath)
   return newDb
 }
 
-function testDatabaseIntegrity(database: Database.Database): boolean {
+function testDatabaseIntegrity(database) {
   try {
-    const result = database.prepare("PRAGMA integrity_check").get() as any
-    return result && result.integrity_check === "ok"
+    const result = database.prepare('PRAGMA integrity_check').get()
+    return result && result.integrity_check === 'ok'
   } catch (error) {
     return false
   }
 }
 
-function setupDatabase(database: Database.Database): void {
+function setupDatabase(database) {
   try {
-    database.pragma("foreign_keys = ON")
-    database.pragma("journal_mode = DELETE")
-    database.pragma("synchronous = NORMAL")
-    database.pragma("cache_size = 1000")
-    database.pragma("temp_store = memory")
-    database.pragma("page_size = 4096")
+    database.pragma('foreign_keys = ON')
+    database.pragma('journal_mode = DELETE')
+    database.pragma('synchronous = NORMAL')
+    database.pragma('cache_size = 1000')
+    database.pragma('temp_store = memory')
+    database.pragma('page_size = 4096')
   } catch (error) {
-    throw new Error("Failed to configure database")
+    throw new Error('Failed to configure database')
   }
 }
 
-function initializeTables(database: Database.Database): void {
+function initializeTables(database) {
   // Create tables if they don't exist
   database.exec(`
     CREATE TABLE IF NOT EXISTS projects (
@@ -94,13 +94,13 @@ function initializeTables(database: Database.Database): void {
   `)
 }
 
-export function getDatabase(): Database.Database {
+export function getDatabase() {
   if (db && dbInitialized) {
     try {
-      db.prepare("SELECT 1").get()
+      db.prepare('SELECT 1').get()
       return db
     } catch (error) {
-      console.warn("Database connection lost, reconnecting...")
+      console.warn('Database connection lost, reconnecting...')
       db = null
       dbInitialized = false
     }
@@ -114,7 +114,7 @@ export function getDatabase(): Database.Database {
     fs.mkdirSync(dataDir, { recursive: true })
   }
 
-  const dbPath = path.join(dataDir, "tasktracker.db")
+  const dbPath = path.join(dataDir, 'tasktracker.db')
   let attempts = 0
   const maxAttempts = 3
 
@@ -129,7 +129,9 @@ export function getDatabase(): Database.Database {
           tempDb.close()
 
           if (!isValid) {
-            console.warn(`Database integrity check failed (attempt ${attempts}), creating fresh database`)
+            console.warn(
+              `Database integrity check failed (attempt ${attempts}), creating fresh database`
+            )
             db = createFreshDatabase(dbPath)
           } else {
             db = new Database(dbPath)
@@ -146,12 +148,11 @@ export function getDatabase(): Database.Database {
       initializeTables(db)
 
       if (!testDatabaseIntegrity(db)) {
-        throw new Error("Database integrity check failed after initialization")
+        throw new Error('Database integrity check failed after initialization')
       }
 
       dbInitialized = true
       console.log(`Database initialized successfully at: ${dbPath}`)
-
     } catch (error) {
       console.error(`Database initialization attempt ${attempts} failed:`, error)
       if (attempts >= maxAttempts) {
@@ -163,7 +164,7 @@ export function getDatabase(): Database.Database {
   }
 
   if (!db) {
-    throw new Error("Database initialization failed")
+    throw new Error('Database initialization failed')
   }
 
   return db

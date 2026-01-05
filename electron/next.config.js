@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    unoptimized: true,
+    unoptimized: true
   },
   devIndicators: false,
   // Electron-specific configuration
@@ -13,7 +13,7 @@ const nextConfig = {
     // This ensures all pages are statically exported
   },
   // Asset prefix for Electron (served from file:// protocol)
-  assetPrefix: './',
+  assetPrefix: './'
 }
 
 module.exports = nextConfig

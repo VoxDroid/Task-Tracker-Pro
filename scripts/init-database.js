@@ -1,18 +1,18 @@
-const Database = require("better-sqlite3")
-const path = require("path")
-const fs = require("fs")
+const Database = require('better-sqlite3')
+const path = require('path')
+const fs = require('fs')
 
 // Ensure data directory exists
-const dataDir = path.join(process.cwd(), "data")
+const dataDir = path.join(process.cwd(), 'data')
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true })
 }
 
-const dbPath = path.join(dataDir, "tasktracker.db")
+const dbPath = path.join(dataDir, 'tasktracker.db')
 const db = new Database(dbPath)
 
 // Enable foreign keys
-db.pragma("foreign_keys = ON")
+db.pragma('foreign_keys = ON')
 
 // Create tables
 db.exec(`
@@ -93,5 +93,5 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_time_entries_task_id ON time_entries (task_id);
 `)
 
-console.log("Database initialized successfully!")
+console.log('Database initialized successfully!')
 db.close()

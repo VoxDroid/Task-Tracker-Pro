@@ -1,6 +1,6 @@
-import Database from "better-sqlite3"
-import path from "path"
-import fs from "fs"
+import Database from 'better-sqlite3'
+import path from 'path'
+import fs from 'fs'
 
 let db: Database.Database | null = null
 let dbInitialized = false
@@ -10,12 +10,12 @@ function createFreshDatabase(dbPath: string): Database.Database {
     if (fs.existsSync(dbPath)) {
       fs.unlinkSync(dbPath)
     }
-    const walPath = dbPath + "-wal"
-    const shmPath = dbPath + "-shm"
+    const walPath = dbPath + '-wal'
+    const shmPath = dbPath + '-shm'
     if (fs.existsSync(walPath)) fs.unlinkSync(walPath)
     if (fs.existsSync(shmPath)) fs.unlinkSync(shmPath)
   } catch (error) {
-    console.warn("Could not clean old database files:", error)
+    console.warn('Could not clean old database files:', error)
   }
 
   const newDb = new Database(dbPath)
@@ -24,8 +24,8 @@ function createFreshDatabase(dbPath: string): Database.Database {
 
 function testDatabaseIntegrity(database: Database.Database): boolean {
   try {
-    const result = database.prepare("PRAGMA integrity_check").get() as any
-    return result && result.integrity_check === "ok"
+    const result = database.prepare('PRAGMA integrity_check').get() as any
+    return result && result.integrity_check === 'ok'
   } catch (error) {
     return false
   }
@@ -33,35 +33,35 @@ function testDatabaseIntegrity(database: Database.Database): boolean {
 
 function setupDatabase(database: Database.Database): void {
   try {
-    database.pragma("foreign_keys = ON")
-    database.pragma("journal_mode = DELETE")
-    database.pragma("synchronous = NORMAL")  // Changed from FULL for better performance
-    database.pragma("cache_size = 1000")
-    database.pragma("temp_store = memory")
-    database.pragma("page_size = 4096")
+    database.pragma('foreign_keys = ON')
+    database.pragma('journal_mode = DELETE')
+    database.pragma('synchronous = NORMAL') // Changed from FULL for better performance
+    database.pragma('cache_size = 1000')
+    database.pragma('temp_store = memory')
+    database.pragma('page_size = 4096')
   } catch (error) {
-    throw new Error("Failed to configure database")
+    throw new Error('Failed to configure database')
   }
 }
 
 export function getDatabase(): Database.Database {
   if (db && dbInitialized) {
     try {
-      db.prepare("SELECT 1").get()
+      db.prepare('SELECT 1').get()
       return db
     } catch (error) {
-      console.warn("Database connection lost, reconnecting...")
+      console.warn('Database connection lost, reconnecting...')
       db = null
       dbInitialized = false
     }
   }
 
-  const dataDir = path.join(process.cwd(), "data")
+  const dataDir = path.join(process.cwd(), 'data')
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true })
   }
 
-  const dbPath = path.join(dataDir, "tasktracker.db")
+  const dbPath = path.join(dataDir, 'tasktracker.db')
   let attempts = 0
   const maxAttempts = 3
 
@@ -76,7 +76,9 @@ export function getDatabase(): Database.Database {
           tempDb.close()
 
           if (!isValid) {
-            console.warn(`Database integrity check failed (attempt ${attempts}), creating fresh database`)
+            console.warn(
+              `Database integrity check failed (attempt ${attempts}), creating fresh database`
+            )
             db = createFreshDatabase(dbPath)
           } else {
             db = new Database(dbPath)
@@ -95,13 +97,13 @@ export function getDatabase(): Database.Database {
       initializeTables(db)
 
       if (!testDatabaseIntegrity(db)) {
-        throw new Error("Database integrity check failed after initialization")
+        throw new Error('Database integrity check failed after initialization')
       }
 
-      db.prepare("SELECT 1").get()
+      db.prepare('SELECT 1').get()
       dbInitialized = true
 
-      console.log("Database initialized successfully")
+      console.log('Database initialized successfully')
       return db
     } catch (error) {
       console.error(`Database initialization failed (attempt ${attempts}):`, error)
@@ -110,14 +112,14 @@ export function getDatabase(): Database.Database {
         try {
           db.close()
         } catch (closeError) {
-          console.warn("Error closing failed database:", closeError)
+          console.warn('Error closing failed database:', closeError)
         }
         db = null
       }
 
       if (attempts === maxAttempts) {
-        console.error("All database initialization attempts failed, using in-memory database")
-        db = new Database(":memory:")
+        console.error('All database initialization attempts failed, using in-memory database')
+        db = new Database(':memory:')
         setupDatabase(db)
         initializeTables(db)
         dbInitialized = true
@@ -126,7 +128,7 @@ export function getDatabase(): Database.Database {
     }
   }
 
-  throw new Error("Failed to initialize database")
+  throw new Error('Failed to initialize database')
 }
 
 function initializeTables(database: Database.Database): void {
@@ -193,22 +195,22 @@ function initializeTables(database: Database.Database): void {
       PRIMARY KEY (task_id, tag_id),
       FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE,
       FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE
-    )`,
+    )`
   ]
 
   const indexes = [
-    "CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status)",
-    "CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks (priority)",
-    "CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks (project_id)",
-    "CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks (due_date)",
-    "CREATE INDEX IF NOT EXISTS idx_tasks_favorite ON tasks (is_favorite)",
-    "CREATE INDEX IF NOT EXISTS idx_projects_favorite ON projects (is_favorite)",
-    "CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON activity_logs (entity_type, entity_id)",
-    "CREATE INDEX IF NOT EXISTS idx_time_entries_task_id ON time_entries (task_id)",
+    'CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks (status)',
+    'CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks (priority)',
+    'CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks (project_id)',
+    'CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks (due_date)',
+    'CREATE INDEX IF NOT EXISTS idx_tasks_favorite ON tasks (is_favorite)',
+    'CREATE INDEX IF NOT EXISTS idx_projects_favorite ON projects (is_favorite)',
+    'CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON activity_logs (entity_type, entity_id)',
+    'CREATE INDEX IF NOT EXISTS idx_time_entries_task_id ON time_entries (task_id)'
   ]
 
   try {
-    database.exec("BEGIN TRANSACTION")
+    database.exec('BEGIN TRANSACTION')
 
     for (const tableSQL of tables) {
       database.exec(tableSQL)
@@ -218,18 +220,23 @@ function initializeTables(database: Database.Database): void {
       database.exec(indexSQL)
     }
 
-    database.exec("COMMIT")
+    database.exec('COMMIT')
   } catch (error) {
     try {
-      database.exec("ROLLBACK")
+      database.exec('ROLLBACK')
     } catch (rollbackError) {
-      console.warn("Rollback failed:", rollbackError)
+      console.warn('Rollback failed:', rollbackError)
     }
     throw error
   }
 }
 
-export function logActivity(action: string, entityType: string, entityId: number, details?: string): void {
+export function logActivity(
+  action: string,
+  entityType: string,
+  entityId: number,
+  details?: string
+): void {
   try {
     const database = getDatabase()
     const stmt = database.prepare(`
@@ -238,7 +245,7 @@ export function logActivity(action: string, entityType: string, entityId: number
     `)
     stmt.run(action, entityType, entityId, details)
   } catch (error) {
-    console.error("Error logging activity:", error)
+    console.error('Error logging activity:', error)
   }
 }
 
@@ -247,7 +254,7 @@ export function executeQuery<T = any>(query: string, params: any[] = []): T[] {
     const database = getDatabase()
     return database.prepare(query).all(...params) as T[]
   } catch (error) {
-    console.error("Error executing query:", error)
+    console.error('Error executing query:', error)
     return []
   }
 }
@@ -257,21 +264,24 @@ export function executeQuerySingle<T = any>(query: string, params: any[] = []): 
     const database = getDatabase()
     return (database.prepare(query).get(...params) as T) || null
   } catch (error) {
-    console.error("Error executing single query:", error)
+    console.error('Error executing single query:', error)
     return null
   }
 }
 
-export function executeUpdate(query: string, params: any[] = []): { changes: number; lastInsertRowid: number } {
+export function executeUpdate(
+  query: string,
+  params: any[] = []
+): { changes: number; lastInsertRowid: number } {
   try {
     const database = getDatabase()
     const result = database.prepare(query).run(...params)
     return {
       changes: result.changes,
-      lastInsertRowid: result.lastInsertRowid as number,
+      lastInsertRowid: result.lastInsertRowid as number
     }
   } catch (error) {
-    console.error("Error executing update:", error)
+    console.error('Error executing update:', error)
     return { changes: 0, lastInsertRowid: 0 }
   }
 }
@@ -281,16 +291,16 @@ export function closeDatabaseConnection(): void {
     try {
       db.close()
     } catch (error) {
-      console.warn("Error closing database:", error)
+      console.warn('Error closing database:', error)
     }
     db = null
     dbInitialized = false
   }
 }
 
-process.on("exit", closeDatabaseConnection)
-process.on("SIGINT", () => {
+process.on('exit', closeDatabaseConnection)
+process.on('SIGINT', () => {
   closeDatabaseConnection()
   process.exit(0)
 })
-process.on("SIGTERM", closeDatabaseConnection)
+process.on('SIGTERM', closeDatabaseConnection)
