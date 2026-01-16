@@ -1,8 +1,29 @@
-import Database from 'better-sqlite3'
+// Check if we're running on Vercel (serverless environment)
+const isVercel = process.env.VERCEL_DEPLOYMENT === 'true' || process.env.VERCEL === '1'
+
+// Dynamically import the appropriate database module
+let mockDb: typeof import('./mock-database') | null = null
+
+if (isVercel) {
+  // Use mock database on Vercel
+  mockDb = require('./mock-database')
+}
+
+// Only import better-sqlite3 if not on Vercel
+let Database: typeof import('better-sqlite3') | null = null
+if (!isVercel) {
+  try {
+    Database = require('better-sqlite3')
+  } catch (e) {
+    console.warn('better-sqlite3 not available, using mock database')
+    mockDb = require('./mock-database')
+  }
+}
+
 import path from 'path'
 import fs from 'fs'
 
-let db: Database.Database | null = null
+let db: any = null
 let dbInitialized = false
 
 function createFreshDatabase(dbPath: string): Database.Database {
@@ -237,6 +258,11 @@ export function logActivity(
   entityId: number,
   details?: string
 ): void {
+  // Use mock database on Vercel
+  if (mockDb) {
+    return mockDb.logActivity(action, entityType, entityId, details)
+  }
+
   try {
     const database = getDatabase()
     const stmt = database.prepare(`
@@ -250,6 +276,11 @@ export function logActivity(
 }
 
 export function executeQuery<T = any>(query: string, params: any[] = []): T[] {
+  // Use mock database on Vercel
+  if (mockDb) {
+    return mockDb.executeQuery<T>(query, params)
+  }
+
   try {
     const database = getDatabase()
     return database.prepare(query).all(...params) as T[]
@@ -260,6 +291,11 @@ export function executeQuery<T = any>(query: string, params: any[] = []): T[] {
 }
 
 export function executeQuerySingle<T = any>(query: string, params: any[] = []): T | null {
+  // Use mock database on Vercel
+  if (mockDb) {
+    return mockDb.executeQuerySingle<T>(query, params)
+  }
+
   try {
     const database = getDatabase()
     return (database.prepare(query).get(...params) as T) || null
@@ -273,6 +309,11 @@ export function executeUpdate(
   query: string,
   params: any[] = []
 ): { changes: number; lastInsertRowid: number } {
+  // Use mock database on Vercel
+  if (mockDb) {
+    return mockDb.executeUpdate(query, params)
+  }
+
   try {
     const database = getDatabase()
     const result = database.prepare(query).run(...params)
@@ -287,6 +328,11 @@ export function executeUpdate(
 }
 
 export function closeDatabaseConnection(): void {
+  // No-op for mock database
+  if (mockDb) {
+    return
+  }
+
   if (db) {
     try {
       db.close()
