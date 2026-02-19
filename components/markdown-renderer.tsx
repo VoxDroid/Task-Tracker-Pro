@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from 'react'
 import ReactMarkdown from 'react-markdown'
+import Image from 'next/image'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import rehypeRaw from 'rehype-raw'
@@ -304,14 +305,22 @@ export default function MarkdownRenderer({
             return <input type={type} {...props} />
           },
           // Images
-          img: ({ src, alt }) => (
-            <img
-              src={src}
-              alt={alt || ''}
-              className="max-w-full h-auto rounded-lg my-4"
-              style={{ maxHeight: '400px' } as CSSProperties}
-            />
-          )
+          img: ({ src, alt }) => {
+            if (!src) return null
+            return (
+              <div className="relative rounded-lg my-4 overflow-hidden" style={{ maxHeight: '400px' }}>
+                <Image
+                  src={src as string}
+                  alt={alt || ''}
+                  width={800}
+                  height={400}
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  style={{ objectFit: 'contain' }}
+                  className="w-full h-auto"
+                />
+              </div>
+            )
+          }
         }}
       >
         {content}

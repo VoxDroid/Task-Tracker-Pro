@@ -1,11 +1,30 @@
-import Database from 'better-sqlite3'
+/* Load better-sqlite3 dynamically so load failures (architecture/stale binary) can be caught with a helpful message */
+let Database: typeof import('better-sqlite3')
+try {
+  // Use require so we can catch native load errors synchronously
+  Database = require('better-sqlite3')
+} catch (err: any) {
+  const msg = err && err.message ? err.message : String(err)
+  if (err && err.code === 'ERR_DLOPEN_FAILED') {
+    console.error(
+      'Failed to load better-sqlite3 native addon — possible architecture mismatch or stale build artifacts.',
+      'Suggested fixes: 1) run `pnpm rebuild better-sqlite3` 2) delete `node_modules`, `.next`, and `dist`, then reinstall.',
+      'Original error:',
+      msg
+    )
+  }
+  throw err
+}
+
 import path from 'path'
 import fs from 'fs'
 
-let db: Database.Database | null = null
+type DBInstance = import('better-sqlite3').Database
+
+let db: DBInstance | null = null
 let dbInitialized = false
 
-function createFreshDatabase(dbPath: string): Database.Database {
+function createFreshDatabase(dbPath: string): DBInstance {
   try {
     if (fs.existsSync(dbPath)) {
       fs.unlinkSync(dbPath)
@@ -22,7 +41,7 @@ function createFreshDatabase(dbPath: string): Database.Database {
   return newDb
 }
 
-function testDatabaseIntegrity(database: Database.Database): boolean {
+function testDatabaseIntegrity(database: DBInstance): boolean {
   try {
     const result = database.prepare('PRAGMA integrity_check').get() as any
     return result && result.integrity_check === 'ok'
@@ -31,7 +50,7 @@ function testDatabaseIntegrity(database: Database.Database): boolean {
   }
 }
 
-function setupDatabase(database: Database.Database): void {
+function setupDatabase(database: DBInstance): void {
   try {
     database.pragma('foreign_keys = ON')
     database.pragma('journal_mode = DELETE')
@@ -44,7 +63,7 @@ function setupDatabase(database: Database.Database): void {
   }
 }
 
-export function getDatabase(): Database.Database {
+export function getDatabase(): DBInstance {
   if (db && dbInitialized) {
     try {
       db.prepare('SELECT 1').get()
@@ -131,7 +150,7 @@ export function getDatabase(): Database.Database {
   throw new Error('Failed to initialize database')
 }
 
-function initializeTables(database: Database.Database): void {
+function initializeTables(database: DBInstance): void {
   if (!database) return
 
   const tables = [

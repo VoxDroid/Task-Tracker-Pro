@@ -127,16 +127,16 @@ export default function TasksPage() {
   const queryClient = useQueryClient()
 
   // Fetch tasks with React Query
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ['tasks', filter],
-    queryFn: async () => {
+    queryFn: async (): Promise<Task[]> => {
       const params = new URLSearchParams()
       if (filter !== 'all') params.append('status', filter)
       if (filter === 'archived') params.append('archived', 'true')
 
       const response = await fetch(`/api/tasks?${params}`)
       if (!response.ok) throw new Error('Failed to fetch tasks')
-      return response.json()
+      return (await response.json()) as Task[]
     },
     staleTime: 30 * 1000 // 30 seconds
   })

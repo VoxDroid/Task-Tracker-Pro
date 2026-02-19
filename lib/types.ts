@@ -22,6 +22,9 @@ export interface Task {
   updated_at: string
   is_favorite?: number
   project?: Project
+  // optional flattened fields returned by some API queries
+  project_name?: string
+  project_color?: string
   tags?: Tag[]
 }
 

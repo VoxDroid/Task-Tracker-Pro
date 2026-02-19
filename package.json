@@ -20,6 +20,7 @@
     "copy-static": "node -e \"const fs=require('fs');const path=require('path');function copyDir(s,d){fs.mkdirSync(d,{recursive:true});fs.readdirSync(s).forEach(f=>{const sp=path.join(s,f),dp=path.join(d,f);fs.statSync(sp).isDirectory()?copyDir(sp,dp):fs.copyFileSync(sp,dp)})};copyDir('.next/static','.next/standalone/.next/static');copyDir('public','.next/standalone/public')\"",
     "rename-modules": "node -e \"const fs=require('fs');const p='.next/standalone/node_modules';if(fs.existsSync(p))fs.renameSync(p,'.next/standalone/_modules')\"",
     "rebuild-sqlite": "node scripts/rebuild-sqlite.js",
+    "postinstall": "pnpm rebuild better-sqlite3 || true",
     "build-electron": "next build && npm run copy-static && npm run rebuild-sqlite && npm run rename-modules && electron-builder",
     "build-electron-win": "next build && npm run copy-static && npm run rebuild-sqlite && npm run rename-modules && electron-builder --win",
     "build-electron-mac": "next build && npm run copy-static && npm run rebuild-sqlite && npm run rename-modules && electron-builder --mac",

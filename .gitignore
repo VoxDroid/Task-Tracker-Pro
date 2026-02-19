@@ -37,3 +37,6 @@ TODO.txt
 
 # Rebuilt
 REBUILD.txt
+
+# MacOS specific files
+.DS_Store
